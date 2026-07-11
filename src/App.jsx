@@ -57,17 +57,17 @@ const AURAS = [
 ];
 const CAPES = [
   { id: "cape_none",   name: "No cape",           rarity: "common",    color: null, desc: "—" },
-  { id: "cape_travel", name: "Traveler's Cloak",  rarity: "rare",      color: "#7A6A52", dark: "#5E5140", regen: 2, desc: "+2 mana/turn" },
-  { id: "cape_shadow", name: "Shadowweave Drape", rarity: "rare",      color: "#3D3466", dark: "#28223F", crit: 5, desc: "+5% crit chance" },
-  { id: "cape_star",   name: "Starweave Mantle",  rarity: "epic",      color: "#8E5FD1", dark: "#5F3F94", maxHpBonus: 8, desc: "+8 Max HP" },
-  { id: "cape_phoenix",name: "Phoenixwing Cloak", rarity: "legendary", color: "#E85A3D", dark: "#B03D24", revive: true, desc: "Survive a fatal blow once (20 HP)" },
+  { id: "cape_travel", name: "Traveler's Cloak",  rarity: "rare",      color: "#7A6A52", dark: "#5E5140" },
+  { id: "cape_shadow", name: "Shadowweave Drape", rarity: "rare",      color: "#3D3466", dark: "#28223F" },
+  { id: "cape_star",   name: "Starweave Mantle",  rarity: "epic",      color: "#8E5FD1", dark: "#5F3F94" },
+  { id: "cape_phoenix",name: "Phoenixwing Cloak", rarity: "legendary", color: "#E85A3D", dark: "#B03D24" },
 ];
 const ROBES = [
   { id: "robe_classic",  name: "Classic Robe",  rarity: "common",    colors: null, desc: "—" },
-  { id: "robe_midnight", name: "Midnight Robe", rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" }, regen: 3, desc: "+3 mana/turn" },
-  { id: "robe_ivory",    name: "Ivory Robe",    rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" }, healBonus: 0.25, desc: "+25% healing" },
-  { id: "robe_crimson",  name: "Crimson Robe",  rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" }, crit: 6, desc: "+6% crit chance" },
-  { id: "robe_gilded",   name: "Gilded Robe",   rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" }, allDmg: 0.08, desc: "+8% all damage" },
+  { id: "robe_midnight", name: "Midnight Robe", rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" } },
+  { id: "robe_ivory",    name: "Ivory Robe",    rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" } },
+  { id: "robe_crimson",  name: "Crimson Robe",  rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" } },
+  { id: "robe_gilded",   name: "Gilded Robe",   rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" } },
 ];
 const ARMORS = [
   { id: "armor_none",   name: "No armor",          rarity: "common",    desc: "—" },
@@ -115,10 +115,9 @@ function computeDamage(skill, atk, def) {
     if (atk.staffGear.el === skill.el && atk.staffGear.elBonus) mult *= 1 + atk.staffGear.elBonus;
     if (atk.staffGear.allDmg) mult *= 1 + atk.staffGear.allDmg;
   }
-  if (atk.robeGear?.allDmg) mult *= 1 + atk.robeGear.allDmg;
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
-  const critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.robeGear?.crit || 0) + (atk.cape?.crit || 0);
+  const critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0);
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
   if (def.armor?.dmgReduction) mult *= 1 - def.armor.dmgReduction;
@@ -128,14 +127,13 @@ function computeDamage(skill, atk, def) {
 
 function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId) {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
-  const cape = CAPES.find(c => c.id === capeId && c.id !== "cape_none") || null;
-  const robeGear = ROBES.find(r => r.id === robeId && r.id !== "robe_classic") || null;
-  const maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (cape?.maxHpBonus || 0);
+  const maxHp = MAX_HP + (armor?.maxHpBonus || 0);
   return {
     name, affinity, skills,
     staffGear: STAFFS.find(s => s.id === staffId) || null,
     relic: RELICS.find(r => r.id === relicId && r.id !== "none") || null,
-    armor, cape, robeGear,
+    armor,
+    cape: CAPES.find(c => c.id === capeId && c.id !== "cape_none") || null,
     pet: PETS.find(p => p.id === petId && p.id !== "pet_none") || null,
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     maxHp, hp: maxHp, mana: MAX_MANA, shield: 0, cds: {},
@@ -506,8 +504,28 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
   const Cape = mage.cape ? CAPE_COMPONENTS[mage.cape.id] : null;
   const RobeTrim = ROBE_COMPONENTS[mage.robe];
   const w = 96 * size, h = 120 * size;
+  const floatRef = useRef(null);
+
+  useEffect(() => {
+    const el = floatRef.current;
+    if (!el) return;
+    if (hurt || casting) { el.style.transform = ""; return; }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const amplitude = 5, period = 3200;
+    const start = performance.now();
+    let raf;
+    function tick(now) {
+      const phase = ((now - start) % period) / period;
+      const y = -amplitude * (0.5 - 0.5 * Math.cos(phase * Math.PI * 2));
+      el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0)`;
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [hurt, casting]);
+
   return (
-    <div className={hurt ? "shake" : casting ? "cast" : "idle"} style={{ position: "relative", width: w, height: h, flexShrink: 0 }}>
+    <div ref={floatRef} className={hurt ? "shake" : casting ? "cast" : ""} style={{ position: "relative", width: w, height: h, flexShrink: 0, willChange: "transform" }}>
       {aura?.color && (
         <div className="auraPulse" style={{
           position: "absolute", inset: `${4 * size}px`, borderRadius: "50%",
@@ -554,7 +572,7 @@ function StatusIcons({ mage }) {
       {mage.shield > 0 && <span title="Shield" style={{ color: "#5FC1E8" }}>🛡{mage.shield}</span>}
       {mage.status.burn > 0 && <span title="Burning" style={{ color: "#FF6B3D" }}>🔥{mage.status.burn}</span>}
       {mage.status.chill && <span title="Chilled: -30% next attack" style={{ color: "#5FC1E8" }}>❄</span>}
-      {(mage.relic?.revive || mage.cape?.revive) && !mage.phoenixUsed && <span title="Phoenix ready" style={{ color: "#E8B44F" }}>✧</span>}
+      {mage.relic?.revive && !mage.phoenixUsed && <span title="Phoenix Feather ready" style={{ color: "#E8B44F" }}>✧</span>}
     </span>
   );
 }
@@ -614,6 +632,7 @@ export default function MageDuel() {
   const [projectiles, setProjectiles] = useState([]);
   const [result, setResult] = useState(null);
   const [loot, setLoot] = useState(null);
+  const [confirmSurrender, setConfirmSurrender] = useState(false);
   const logRef = useRef(null);
   const floatId = useRef(0);
   const projId = useRef(0);
@@ -650,7 +669,7 @@ export default function MageDuel() {
   function confirmDuel() {
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId);
     if (p.relic?.startShield) p.shield = p.relic.startShield;
-    setPlayer(p); setResult(null); setLoot(null);
+    setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setLog([
       `${enemy.name} challenges you!`,
       `Foe: ${ELEMENTS[enemy.affinity].name} affinity · ${enemy.staffGear.name}${enemy.relic ? " · " + enemy.relic.name : ""}`,
@@ -695,14 +714,14 @@ export default function MageDuel() {
         d.mana = Math.max(0, d.mana - 8); lines.push("Entangled! Foe loses 8 mana.");
       }
       if (skill.heal) {
-        const h = Math.round(skill.heal * (1 + (a.staffGear?.healBonus || 0) + (a.robeGear?.healBonus || 0)));
+        const h = Math.round(skill.heal * (1 + (a.staffGear?.healBonus || 0)));
         a.hp = Math.min(a.maxHp, a.hp + h);
         lines.push(`Drained ${h} HP.`);
         addFloat(side, `+${h}`, "#72C063", false);
       }
-      if (d.hp <= 0 && (d.relic?.revive || d.cape?.revive) && !d.phoenixUsed) {
+      if (d.hp <= 0 && d.relic?.revive && !d.phoenixUsed) {
         d.hp = 20; d.phoenixUsed = true;
-        lines.push(`${side === "p" ? "The foe's" : "Your"} Phoenix blazes — risen at 20 HP!`);
+        lines.push(`${side === "p" ? "The foe's" : "Your"} Phoenix Feather blazes — risen at 20 HP!`);
       }
     }
     return { a, d, lines, didDamage };
@@ -712,7 +731,7 @@ export default function MageDuel() {
     const n = { ...m, status: { ...m.status }, cds: {} };
     for (const k in m.cds) if (m.cds[k] - 1 > 0) n.cds[k] = m.cds[k] - 1;
     if (n.status.burn > 0) { n.hp -= 4; n.status.burn -= 1; }
-    n.mana = Math.min(MAX_MANA, n.mana + REGEN + (n.staffGear?.regen || 0) + (n.relic?.regen || 0) + (n.robeGear?.regen || 0) + (n.cape?.regen || 0));
+    n.mana = Math.min(MAX_MANA, n.mana + REGEN + (n.staffGear?.regen || 0) + (n.relic?.regen || 0));
     return n;
   }
 
@@ -758,6 +777,13 @@ export default function MageDuel() {
     setTimeout(() => setPhase("result"), 1200);
   }
 
+  function surrender() {
+    if (phase !== "battle" || busy) return;
+    setBusy(true);
+    addLog(`${player.name} surrenders the duel.`);
+    finishBattle(false);
+  }
+
   function playerAction(skill) {
     if (busy || phase !== "battle") return;
     setBusy(true);
@@ -801,14 +827,8 @@ export default function MageDuel() {
       .shake { animation: shakeAnim 0.45s ease; will-change: transform; }
       @keyframes castAnim { 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(0,-8px,0)} }
       .cast { animation: castAnim 0.55s ease; will-change: transform; }
-      @keyframes idleAnim {
-        0% { transform: translate3d(0,0,0); }
-        25% { transform: translate3d(0,-2.2px,0); }
-        50% { transform: translate3d(0,-4px,0); }
-        75% { transform: translate3d(0,-2.2px,0); }
-        100% { transform: translate3d(0,0,0); }
-      }
-      .idle { animation: idleAnim 3.4s ease-in-out infinite; will-change: transform; backface-visibility: hidden; }
+      @keyframes idleAnim { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-5px,0); } }
+      .idle { animation: idleAnim 3.2s cubic-bezier(0.45,0,0.55,1) infinite; will-change: transform; backface-visibility: hidden; }
       @keyframes auraAnim { 0%,100%{opacity:0.9; transform:scale(1)} 50%{opacity:0.5; transform:scale(1.08)} }
       .auraPulse { animation: auraAnim 2.2s ease-in-out infinite; will-change: transform, opacity; }
       @keyframes twinkle { 0%,100%{opacity:0.15} 50%{opacity:0.8} }
@@ -980,16 +1000,16 @@ export default function MageDuel() {
                   <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
               <div className="grid gap-2 mb-4">
                 {ROBES.map(r => (
-                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} />
+                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
               <div className="grid gap-2">
                 {CAPES.map(c => (
-                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} />
+                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} subtitle=" " />
                 ))}
               </div>
             </div>
@@ -1003,16 +1023,16 @@ export default function MageDuel() {
                   <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
               <div className="grid gap-2 mb-4">
                 {ROBES.map(r => (
-                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} />
+                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
               <div className="grid gap-2 mb-4">
                 {CAPES.map(c => (
-                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} />
+                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} subtitle=" " />
                 ))}
               </div>
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Aura <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
@@ -1071,7 +1091,7 @@ export default function MageDuel() {
           <ElementBadge el={enemy.affinity} />
         </div>
         <div className="text-xs font-mono mb-2" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
-          {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.robeGear ? ` · ${enemy.robeGear.name}` : ""}{enemy.cape ? ` · ${enemy.cape.name}` : ""}
+          {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {foeSkills.map(s => {
@@ -1175,7 +1195,7 @@ export default function MageDuel() {
               <ElementBadge el={enemy.affinity} />
               <StatusIcons mage={enemy} />
             </div>
-            <div className="text-xs font-mono mb-1" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.robeGear ? ` · ${enemy.robeGear.name}` : ""}{enemy.cape ? ` · ${enemy.cape.name}` : ""}</div>
+            <div className="text-xs font-mono mb-1" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}</div>
             <Bar value={enemy.hp} max={enemy.maxHp} color="#72C063" label="HP" />
             <Bar value={enemy.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
           </div>
@@ -1194,7 +1214,7 @@ export default function MageDuel() {
               <ElementBadge el={player.affinity} />
               <StatusIcons mage={player} />
             </div>
-            <div className="text-xs font-mono mb-1" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : "#5A5478" }}>{player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.robeGear ? ` · ${player.robeGear.name}` : ""}{player.cape ? ` · ${player.cape.name}` : ""}</div>
+            <div className="text-xs font-mono mb-1" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : "#5A5478" }}>{player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}</div>
             <Bar value={player.hp} max={player.maxHp} color="#72C063" label="HP" />
             <Bar value={player.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
           </div>
@@ -1241,6 +1261,24 @@ export default function MageDuel() {
           })}
         </div>
         <p className="text-center text-xs font-mono mt-2" style={{ color: "#5A5478" }}>+{REGEN} mana/turn (+gear) · heavy spells can Burn 🔥, Chill ❄ or Entangle</p>
+
+        <div className="flex justify-center mt-2">
+          {confirmSurrender ? (
+            <div className="flex gap-2 items-center">
+              <span className="text-xs font-mono" style={{ color: "#B7AE95" }}>Forfeit the duel?</span>
+              <button onClick={surrender} disabled={busy} className="rounded-md border px-3 py-1 font-mono text-xs" style={{ borderColor: "#FF6B3D", color: "#FF6B3D", background: "#1C1833" }}>
+                Yes, surrender
+              </button>
+              <button onClick={() => setConfirmSurrender(false)} className="rounded-md border px-3 py-1 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmSurrender(true)} disabled={busy} className="font-mono text-xs underline" style={{ color: "#5A5478" }}>
+              Surrender
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
