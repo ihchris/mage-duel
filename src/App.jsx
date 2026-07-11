@@ -38,6 +38,22 @@ const GENDERS = [
   { id: "gender_male",   name: "Male" },
   { id: "gender_female", name: "Female" },
 ];
+const FACES = [
+  { id: "face_round", name: "Round", noseRx: 12, noseRy: 10, eyeR: 7 },
+  { id: "face_slim",  name: "Slim",  noseRx: 8,  noseRy: 11, eyeR: 6.5 },
+  { id: "face_soft",  name: "Soft",  noseRx: 10, noseRy: 8,  eyeR: 8 },
+  { id: "face_sharp", name: "Sharp", noseRx: 7,  noseRy: 12, eyeR: 6 },
+];
+const EARRINGS = [
+  { id: "earring_none",   name: "None" },
+  { id: "earring_gold",   name: "Gold Studs",   color: "#E8B44F", hoop: false },
+  { id: "earring_silver", name: "Silver Hoops", color: "#C9CDD6", hoop: true },
+];
+const NOSE_RINGS = [
+  { id: "nosering_none",   name: "None" },
+  { id: "nosering_gold",   name: "Gold Stud",   color: "#E8B44F", ring: false },
+  { id: "nosering_silver", name: "Silver Ring", color: "#C9CDD6", ring: true },
+];
 
 const RARITY = {
   common:    { label: "Common",    color: "#9AA0B4", glow: "none" },
@@ -210,6 +226,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     skinTone: look?.skinTone || "skin_fair", hairColor: look?.hairColor || "hair_white",
     beardStyle: look?.beardStyle || "beard_long", eyeColor: look?.eyeColor || "eye_dark",
     gender: look?.gender || "gender_male",
+    face: look?.face || "face_round", earrings: look?.earrings || "earring_none", noseRing: look?.noseRing || "nosering_none",
     maxHp, hp: maxHp, mana: MAX_MANA, shield: 0, cds: {},
     status: { burn: 0, chill: false }, phoenixUsed: false,
   };
@@ -227,7 +244,11 @@ function makeEnemy() {
     "armor_none", // armor hidden from the game for now
     Math.random() < 0.4 ? pick(PETS.filter(p => p.id !== "pet_none")).id : "pet_none",
     "robe_classic", // keep enemy robe tied to their affinity color so it reads clearly
-    { skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id, gender: pick(GENDERS).id },
+    {
+      skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id, gender: pick(GENDERS).id,
+      face: pick(FACES).id, earrings: Math.random() < 0.3 ? pick(EARRINGS.filter(x => x.id !== "earring_none")).id : "earring_none",
+      noseRing: Math.random() < 0.15 ? pick(NOSE_RINGS.filter(x => x.id !== "nosering_none")).id : "nosering_none",
+    },
     Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none");
   if (e.relic?.startShield) e.shield = e.relic.startShield;
   return e;
@@ -242,7 +263,7 @@ const ART = {
 };
 const SKIN = "#F3C79E", SKIN_D = "#DBA97D", BEARD = "#F4F1EA", BEARD_D = "#D9D2C2";
 const GOLD = "#E8B44F", GOLD_D = "#C08A2E";
-const DEFAULT_LOOK = { skin: SKIN, skinD: SKIN_D, hair: BEARD, hairD: BEARD_D, eye: "#2B2430", beardStyle: "beard_long" };
+const DEFAULT_LOOK = { skin: SKIN, skinD: SKIN_D, hair: BEARD, hairD: BEARD_D, eye: "#2B2430", beardStyle: "beard_long", face: FACES[0], earrings: EARRINGS[0], noseRing: NOSE_RINGS[0] };
 
 function Beard({ style, hair, hairD }) {
   if (style === "beard_none") return null;
@@ -269,6 +290,14 @@ function Base({ p, look = DEFAULT_LOOK }) {
   const { skin, skinD, hair, hairD, eye } = look;
   const beardStyle = look.beardStyle || "beard_long";
   const isFemale = look.gender === "gender_female";
+  const face = look.face || FACES[0];
+  const earrings = look.earrings || EARRINGS[0];
+  const noseRing = look.noseRing || NOSE_RINGS[0];
+  const eyeR = face.eyeR ?? 7;
+  const pupilR = eyeR * 0.543;
+  const shineR = eyeR * 0.186;
+  const noseRx = face.noseRx ?? 12, noseRy = face.noseRy ?? 10;
+  const nosePX = 200 + noseRx * 0.7, nosePY = 189 + noseRy * 0.45;
   return (
     <g>
       <ellipse cx="200" cy="468" rx="96" ry="13" fill="#000" opacity="0.25" />
@@ -293,22 +322,40 @@ function Base({ p, look = DEFAULT_LOOK }) {
         </>
       )}
       <Beard style={beardStyle} hair={hair} hairD={hairD} />
-      <ellipse cx="200" cy="189" rx="12" ry="10" fill={skinD} />
-      <ellipse cx="197" cy="186" rx="5" ry="4" fill={skin} opacity="0.6" />
+      <ellipse cx="200" cy="189" rx={noseRx} ry={noseRy} fill={skinD} />
+      <ellipse cx="197" cy="186" rx={noseRx * 0.42} ry={noseRy * 0.4} fill={skin} opacity="0.6" />
+      {noseRing.id !== "nosering_none" && (
+        noseRing.ring
+          ? <circle cx={nosePX} cy={nosePY} r="3" fill="none" stroke={noseRing.color} strokeWidth="1.5" />
+          : <circle cx={nosePX} cy={nosePY} r="1.8" fill={noseRing.color} />
+      )}
       {beardStyle !== "beard_none" && (
         <path d="M168 199 C 178 190 192 188 200 195 C 208 188 222 190 232 199 C 226 211 208 213 200 206 C 192 213 174 211 168 199 Z" fill={hair} />
       )}
-      <circle cx="178" cy="165" r="7" fill="#FFFFFF" />
-      <circle cx="222" cy="165" r="7" fill="#FFFFFF" />
-      <circle cx="180" cy="166" r="3.8" fill={eye} />
-      <circle cx="220" cy="166" r="3.8" fill={eye} />
-      <circle cx="181.5" cy="164.5" r="1.3" fill="#FFFFFF" />
-      <circle cx="221.5" cy="164.5" r="1.3" fill="#FFFFFF" />
+      <circle cx="178" cy="165" r={eyeR} fill="#FFFFFF" />
+      <circle cx="222" cy="165" r={eyeR} fill="#FFFFFF" />
+      <circle cx="180" cy="166" r={pupilR} fill={eye} />
+      <circle cx="220" cy="166" r={pupilR} fill={eye} />
+      <circle cx="181.5" cy="164.5" r={shineR} fill="#FFFFFF" />
+      <circle cx="221.5" cy="164.5" r={shineR} fill="#FFFFFF" />
       {isFemale && (
         <g stroke={eye} strokeWidth="1" strokeLinecap="round" fill="none">
           <path d="M172 161 L166 155 M174 158 L169 151 M177 157 L175 150" />
           <path d="M228 161 L234 155 M226 158 L231 151 M223 157 L225 150" />
         </g>
+      )}
+      {earrings.id !== "earring_none" && (
+        earrings.hoop ? (
+          <>
+            <circle cx="146" cy="187" r="4" fill="none" stroke={earrings.color} strokeWidth="1.8" />
+            <circle cx="254" cy="187" r="4" fill="none" stroke={earrings.color} strokeWidth="1.8" />
+          </>
+        ) : (
+          <>
+            <circle cx="146" cy="185" r="2.3" fill={earrings.color} />
+            <circle cx="254" cy="185" r="2.3" fill={earrings.color} />
+          </>
+        )
       )}
       {isFemale ? (
         <>
@@ -693,11 +740,15 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
   const skinTone = SKIN_TONES.find(s => s.id === mage.skinTone) || SKIN_TONES[0];
   const hairColor = HAIR_COLORS.find(h => h.id === mage.hairColor) || HAIR_COLORS[0];
   const eyeColor = EYE_COLORS.find(e => e.id === mage.eyeColor) || EYE_COLORS[0];
+  const face = FACES.find(f => f.id === mage.face) || FACES[0];
+  const earrings = EARRINGS.find(e => e.id === mage.earrings) || EARRINGS[0];
+  const noseRing = NOSE_RINGS.find(n => n.id === mage.noseRing) || NOSE_RINGS[0];
   const look = {
     skin: skinTone.skin, skinD: skinTone.skinD,
     hair: hairColor.hair, hairD: hairColor.hairD,
     eye: eyeColor.color, beardStyle: mage.beardStyle || "beard_long",
     gender: mage.gender || "gender_male",
+    face, earrings, noseRing,
   };
   const aura = AURAS.find(a => a.id === mage.aura);
   const Hat = HAT_COMPONENTS[mage.hat];
@@ -822,13 +873,16 @@ export default function MageDuel() {
   const [beardStyleId, setBeardStyleId] = useState(saved?.beardStyleId ?? "beard_long");
   const [eyeColorId, setEyeColorId] = useState(saved?.eyeColorId ?? "eye_dark");
   const [genderId, setGenderId] = useState(saved?.genderId ?? "gender_male");
+  const [faceId, setFaceId] = useState(saved?.faceId ?? "face_round");
+  const [earringId, setEarringId] = useState(saved?.earringId ?? "earring_none");
+  const [noseRingId, setNoseRingId] = useState(saved?.noseRingId ?? "nosering_none");
   const [offhandId, setOffhandId] = useState(saved?.offhandId ?? "offhand_tome");
   const [owned, setOwned] = useState(new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED)));
 
   useEffect(() => {
-    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, genderId, offhandId, owned: [...owned] };
+    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, owned: [...owned] };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, genderId, offhandId, owned]);
+  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, owned]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -913,7 +967,7 @@ export default function MageDuel() {
 
   function confirmDuel() {
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
-      { skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId }, offhandId);
+      { skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId);
     if (p.relic?.startShield) p.shield = p.relic.startShield;
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setLog([
@@ -1109,6 +1163,7 @@ export default function MageDuel() {
       affinity, hat: "hat_pointed", aura: "aura_ember", robe: "robe_classic",
       staffGear: STAFFS.find(s => s.id === "ashwood"), cape: CAPES.find(c => c.id === "cape_travel"), armor: null, pet: PETS.find(p => p.id === "pet_imp"),
       skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
+      face: faceId, earrings: earringId, noseRing: noseRingId,
       status: {},
     };
     const trimmedName = mageName.trim();
@@ -1181,11 +1236,41 @@ export default function MageDuel() {
           </div>
 
           <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Eyes</p>
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-2 mb-4">
             {EYE_COLORS.map(e => (
               <button key={e.id} onClick={() => setEyeColorId(e.id)} title={e.name}
                 className="rounded-full"
                 style={{ width: 34, height: 34, background: e.color, border: eyeColorId === e.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: eyeColorId === e.id ? "0 0 8px #E8B44F66" : "none" }} />
+            ))}
+          </div>
+
+          <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Face</p>
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            {FACES.map(f => (
+              <button key={f.id} onClick={() => setFaceId(f.id)} className="rounded-md border py-2 font-mono text-xs"
+                style={{ borderColor: faceId === f.id ? "#E8B44F" : "#3A3356", background: faceId === f.id ? "#E8B44F1F" : "#1C1833", color: faceId === f.id ? "#E8B44F" : "#B7AE95" }}>
+                {f.name}
+              </button>
+            ))}
+          </div>
+
+          <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Earrings</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {EARRINGS.map(e => (
+              <button key={e.id} onClick={() => setEarringId(e.id)} className="rounded-md border py-2 font-mono text-xs"
+                style={{ borderColor: earringId === e.id ? "#E8B44F" : "#3A3356", background: earringId === e.id ? "#E8B44F1F" : "#1C1833", color: earringId === e.id ? "#E8B44F" : "#B7AE95" }}>
+                {e.name}
+              </button>
+            ))}
+          </div>
+
+          <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Nose Piercing</p>
+          <div className="grid grid-cols-3 gap-2 mb-6">
+            {NOSE_RINGS.map(n => (
+              <button key={n.id} onClick={() => setNoseRingId(n.id)} className="rounded-md border py-2 font-mono text-xs"
+                style={{ borderColor: noseRingId === n.id ? "#E8B44F" : "#3A3356", background: noseRingId === n.id ? "#E8B44F1F" : "#1C1833", color: noseRingId === n.id ? "#E8B44F" : "#B7AE95" }}>
+                {n.name}
+              </button>
             ))}
           </div>
 
@@ -1209,6 +1294,7 @@ export default function MageDuel() {
       pet: PETS.find(p => p.id === petId),
       offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
       skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
+      face: faceId, earrings: earringId, noseRing: noseRingId,
       status: {},
     };
   }
