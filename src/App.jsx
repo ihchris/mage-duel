@@ -267,16 +267,88 @@ function HatCrown() {
   );
 }
 
-function Cape({ color, dark }) {
+function CapeTravel({ color, dark }) {
   return (
     <g opacity="0.95">
       <path d="M158 226 C 118 250 96 320 100 430 C 100 444 106 456 116 460 C 122 420 118 340 140 270 C 148 250 158 236 158 226 Z" fill={color} />
       <path d="M242 226 C 282 250 304 320 300 430 C 300 444 294 456 284 460 C 278 420 282 340 260 270 C 252 250 242 236 242 226 Z" fill={color} />
       <path d="M116 460 C 122 420 118 340 140 270 L 150 275 C 130 340 132 415 126 455 Z" fill={dark} opacity="0.55" />
       <path d="M284 460 C 278 420 282 340 260 270 L 250 275 C 270 340 268 415 274 455 Z" fill={dark} opacity="0.55" />
+      <circle cx="200" cy="234" r="5" fill="#8B6A45" />
+      <path d="M116 380 L124 388 M280 380 L288 388" stroke={dark} strokeWidth="2" opacity="0.6" />
     </g>
   );
 }
+function CapeShadow({ color, dark }) {
+  return (
+    <g opacity="0.95">
+      <path d="M156 226 C 112 252 88 320 96 418 L 110 452 L 116 424 L 122 456 L 132 432 L 122 462 C 128 420 120 336 144 268 C 150 250 156 236 156 226 Z" fill={color} />
+      <path d="M244 226 C 288 252 312 320 304 418 L 290 452 L 284 424 L 278 456 L 268 432 L 278 462 C 272 420 280 336 256 268 C 250 250 244 236 244 226 Z" fill={color} />
+      <path d="M96 418 C 100 380 108 320 132 280" stroke={dark} strokeWidth="2" fill="none" opacity="0.6" />
+      <path d="M304 418 C 300 380 292 320 268 280" stroke={dark} strokeWidth="2" fill="none" opacity="0.6" />
+    </g>
+  );
+}
+function CapeStar({ color, dark }) {
+  const starPts = "M0 -7 L2 -2.2 L7 -2.2 L3.2 1.3 L4.8 6.3 L0 3.5 L-4.8 6.3 L-3.2 1.3 L-7 -2.2 L-2 -2.2 Z";
+  const stars = [[128, 320, 1], [270, 340, 0.9], [136, 400, 0.8], [262, 400, 1]];
+  return (
+    <g opacity="0.96">
+      <path d="M158 226 C 118 250 96 320 100 430 C 100 444 106 456 116 460 C 122 420 118 340 140 270 C 148 250 158 236 158 226 Z" fill={color} />
+      <path d="M242 226 C 282 250 304 320 300 430 C 300 444 294 456 284 460 C 278 420 282 340 260 270 C 252 250 242 236 242 226 Z" fill={color} />
+      <path d="M116 460 C 122 420 118 340 140 270 L 150 275 C 130 340 132 415 126 455 Z" fill={dark} opacity="0.5" />
+      <path d="M284 460 C 278 420 282 340 260 270 L 250 275 C 270 340 268 415 274 455 Z" fill={dark} opacity="0.5" />
+      {stars.map(([x, y, s], i) => (
+        <path key={i} transform={`translate(${x} ${y}) scale(${s})`} d={starPts} fill={GOLD} opacity="0.9" />
+      ))}
+    </g>
+  );
+}
+function CapePhoenix({ color, dark }) {
+  return (
+    <g opacity="0.97">
+      <path d="M150 228 C 108 250 84 310 90 400 C 76 410 66 428 70 448 C 92 440 108 424 118 404 C 110 440 112 458 122 464 C 132 440 138 400 150 350 C 156 300 156 260 150 228 Z" fill={color} />
+      <path d="M250 228 C 292 250 316 310 310 400 C 324 410 334 428 330 448 C 308 440 292 424 282 404 C 290 440 288 458 278 464 C 268 440 262 400 250 350 C 244 300 244 260 250 228 Z" fill={color} />
+      <path d="M90 400 C 76 410 66 428 70 448 C 92 440 108 424 118 404 Z" fill={dark} opacity="0.75" />
+      <path d="M310 400 C 324 410 334 428 330 448 C 308 440 292 424 282 404 Z" fill={dark} opacity="0.75" />
+      <path d="M118 340 C 108 356 102 374 102 392 M282 340 C 292 356 298 374 298 392" stroke={GOLD} strokeWidth="2" opacity="0.7" fill="none" />
+    </g>
+  );
+}
+const CAPE_COMPONENTS = { cape_travel: CapeTravel, cape_shadow: CapeShadow, cape_star: CapeStar, cape_phoenix: CapePhoenix };
+
+function RobeMidnightTrim() {
+  const stars = [[168, 270, 2.2], [228, 300, 1.8], [178, 360, 2], [222, 400, 2.4], [196, 330, 1.6], [205, 420, 2]];
+  return <g>{stars.map(([x, y, r], i) => <circle key={i} cx={x} cy={y} r={r} fill="#FFF3C4" opacity="0.85" />)}</g>;
+}
+function RobeIvoryTrim() {
+  return (
+    <g stroke="#C9BFA8" strokeWidth="3" fill="none" opacity="0.85">
+      <path d="M155 234 Q200 224 245 234" />
+      <path d="M122 448 Q200 464 278 448" />
+      <path d="M170 262 L170 418 M230 262 L230 418" strokeWidth="1.5" opacity="0.5" />
+    </g>
+  );
+}
+function RobeCrimsonTrim() {
+  return (
+    <g fill="none" stroke="#FFD75E" strokeWidth="2.5" opacity="0.85">
+      <path d="M160 280 L172 300 L160 320" />
+      <path d="M240 280 L228 300 L240 320" />
+      <path d="M182 400 L200 428 L218 400" />
+    </g>
+  );
+}
+function RobeGildedTrim() {
+  return (
+    <g stroke={GOLD} fill="none">
+      <path d="M122 448 Q200 466 278 448" strokeWidth="4" />
+      <path d="M152 236 Q200 226 248 236" strokeWidth="3" />
+      <path d="M188 310 L200 298 L212 310 L200 322 Z" fill="#FFE28A" stroke="none" opacity="0.9" />
+    </g>
+  );
+}
+const ROBE_COMPONENTS = { robe_midnight: RobeMidnightTrim, robe_ivory: RobeIvoryTrim, robe_crimson: RobeCrimsonTrim, robe_gilded: RobeGildedTrim };
 
 function ArmorPadded() {
   return (
@@ -429,6 +501,8 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
   const Hat = HAT_COMPONENTS[mage.hat];
   const Staff = mage.staffGear ? STAFF_COMPONENTS[mage.staffGear.id] : null;
   const Armor = mage.armor ? ARMOR_COMPONENTS[mage.armor.id] : null;
+  const Cape = mage.cape ? CAPE_COMPONENTS[mage.cape.id] : null;
+  const RobeTrim = ROBE_COMPONENTS[mage.robe];
   const w = 96 * size, h = 120 * size;
   return (
     <div className={hurt ? "shake" : casting ? "cast" : "idle"} style={{ position: "relative", width: w, height: h, flexShrink: 0 }}>
@@ -439,8 +513,9 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
         }} />
       )}
       <svg width={w} height={h} viewBox="0 0 400 500" style={{ position: "relative", transform: facing === "left" ? "scaleX(-1)" : "none", filter: casting ? "brightness(1.25)" : "none" }}>
-        {mage.cape?.color && <Cape color={mage.cape.color} dark={mage.cape.dark} />}
+        {Cape && mage.cape?.color && <Cape color={mage.cape.color} dark={mage.cape.dark} />}
         <Base p={p} />
+        {RobeTrim && <RobeTrim />}
         {Armor && <Armor />}
         {Staff && <Staff />}
         {Staff && <HandGrip />}
