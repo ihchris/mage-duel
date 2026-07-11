@@ -79,7 +79,20 @@ const PETS = [
 
 const START_OWNED = ["ashwood", "frostbound", "manapearl", "wardsigil", "none", "hat_pointed", "hat_hood", "aura_none", "aura_ember", "cape_none", "cape_travel", "armor_none", "armor_padded", "pet_none", "pet_imp"];
 const LOOTABLE = ["verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "aura_frost", "aura_void", "aura_radiant", "cape_shadow", "cape_star", "cape_phoenix", "armor_chain", "armor_void", "armor_dragon", "pet_sprite", "pet_fox", "pet_wisp"];
-const findItem = (id) => [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS].find(i => i.id === id);
+const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS];
+const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
+// DEV: everything unlocked for now so all equipment/cosmetics are viewable. Swap back to START_OWNED before shipping progression.
+const DEV_UNLOCK_ALL = true;
+
+const SAVE_KEY = "mageDuelSave_v1";
+function loadSave() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
 
 const MAX_HP = 100, MAX_MANA = 60, REGEN = 6, BASE_CRIT = 8;
 const AFFINITY_BONUS = 1.25;
@@ -486,19 +499,25 @@ function RarityCard({ item, selected, locked, onClick, subtitle }) {
 
 // ================= MAIN =================
 export default function MageDuel() {
-  const [phase, setPhase] = useState("create");
+  const [saved] = useState(() => loadSave());
+  const [phase, setPhase] = useState(saved ? "loadout" : "create");
   const [tab, setTab] = useState(null);
-  const [mageName, setMageName] = useState("");
-  const [affinity, setAffinity] = useState("fire");
-  const [chosen, setChosen] = useState(["fireball", "emberjab", "ward", "surge"]);
-  const [staffId, setStaffId] = useState("ashwood");
-  const [relicId, setRelicId] = useState("wardsigil");
-  const [hatId, setHatId] = useState("hat_pointed");
-  const [auraId, setAuraId] = useState("aura_ember");
-  const [capeId, setCapeId] = useState("cape_travel");
-  const [armorId, setArmorId] = useState("armor_padded");
-  const [petId, setPetId] = useState("pet_imp");
-  const [owned, setOwned] = useState(new Set(START_OWNED));
+  const [mageName, setMageName] = useState(saved?.mageName ?? "");
+  const [affinity, setAffinity] = useState(saved?.affinity ?? "fire");
+  const [chosen, setChosen] = useState(saved?.chosen ?? ["fireball", "emberjab", "ward", "surge"]);
+  const [staffId, setStaffId] = useState(saved?.staffId ?? "ashwood");
+  const [relicId, setRelicId] = useState(saved?.relicId ?? "wardsigil");
+  const [hatId, setHatId] = useState(saved?.hatId ?? "hat_pointed");
+  const [auraId, setAuraId] = useState(saved?.auraId ?? "aura_ember");
+  const [capeId, setCapeId] = useState(saved?.capeId ?? "cape_travel");
+  const [armorId, setArmorId] = useState(saved?.armorId ?? "armor_padded");
+  const [petId, setPetId] = useState(saved?.petId ?? "pet_imp");
+  const [owned, setOwned] = useState(new Set(saved?.owned ?? (DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : START_OWNED)));
+
+  useEffect(() => {
+    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, owned: [...owned] };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, owned]);
 
   const [player, setPlayer] = useState(null);
   const [enemy, setEnemy] = useState(null);
