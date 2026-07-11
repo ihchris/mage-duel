@@ -518,7 +518,7 @@ export default function MageDuel() {
   const armorId = "armor_none"; // armor UI hidden for now, kept dormant for later
   const [petId, setPetId] = useState(saved?.petId ?? "pet_imp");
   const [robeId, setRobeId] = useState(saved?.robeId ?? "robe_midnight");
-  const [owned, setOwned] = useState(new Set(saved?.owned ?? (DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : START_OWNED)));
+  const [owned, setOwned] = useState(new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED)));
 
   useEffect(() => {
     const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, owned: [...owned] };
@@ -877,9 +877,15 @@ export default function MageDuel() {
                 ))}
               </div>
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Relic <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-              <div className="grid gap-2">
+              <div className="grid gap-2 mb-4">
                 {RELICS.map(r => (
                   <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
+                ))}
+              </div>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <div className="grid gap-2">
+                {ROBES.map(r => (
+                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " />
                 ))}
               </div>
             </div>
