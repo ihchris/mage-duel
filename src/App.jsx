@@ -958,9 +958,15 @@ export default function MageDuel() {
                 ))}
               </div>
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
-              <div className="grid gap-2">
+              <div className="grid gap-2 mb-4">
                 {ROBES.map(r => (
                   <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " />
+                ))}
+              </div>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <div className="grid gap-2">
+                {CAPES.map(c => (
+                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} subtitle=" " />
                 ))}
               </div>
             </div>
