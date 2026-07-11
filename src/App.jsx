@@ -1097,8 +1097,8 @@ export default function MageDuel() {
   }
 
   // ================= SHARED: character editor + gear modal =================
-  function renderCharacterPreview(extra) {
-    const previewMage = {
+  function buildPreviewMage() {
+    return {
       affinity, hat: hatId, aura: auraId, robe: robeId,
       staffGear: STAFFS.find(s => s.id === staffId),
       armor: ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null,
@@ -1108,6 +1108,10 @@ export default function MageDuel() {
       skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId,
       status: {},
     };
+  }
+
+  function renderCharacterPreview(extra) {
+    const previewMage = buildPreviewMage();
     const relic = RELICS.find(r => r.id === relicId);
     const hat = findItem(hatId), aura = findItem(auraId), robeSkin = findItem(robeId), cape = findItem(capeId), pet = findItem(petId), offhand = findItem(offhandId);
     return (
@@ -1144,13 +1148,18 @@ export default function MageDuel() {
   function renderGearModal() {
     if (!tab) return null;
     const panelTitle = { skills: "Skills", gear: "Gear", style: "Style" }[tab];
+    const previewMage = buildPreviewMage();
     return (
       <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setTab(null)}>
-        <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "80vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>{panelTitle}</span>
+        <div className="w-full max-w-md rounded-t-lg border-t" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "85vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+          <div className="sticky top-0 z-10 flex items-center gap-2 p-3 border-b" style={{ background: "#1A1630", borderColor: "#3A3356" }}>
+            <div style={{ marginTop: -8, marginBottom: -8 }}>
+              <MageSprite mage={previewMage} facing="right" size={1.15} />
+            </div>
+            <span className="font-serif text-lg flex-1" style={{ color: "#E8B44F" }}>{panelTitle}</span>
             <button onClick={() => setTab(null)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
           </div>
+          <div className="p-4 pt-3 pb-6">
 
           {tab === "skills" && (
             <div>
@@ -1253,6 +1262,7 @@ export default function MageDuel() {
               <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>Locked items drop from victories. In the full game, they're tradeable with other players.</p>
             </div>
           )}
+          </div>
         </div>
       </div>
     );
