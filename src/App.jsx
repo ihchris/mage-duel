@@ -7,7 +7,6 @@ const ELEMENTS = {
   nature: { name: "Nature", color: "#72C063", icon: "❋" },
   arcane: { name: "Arcane", color: "#B07FF5", icon: "✶" },
 };
-const STRONG_VS = { fire: "nature", nature: "ice", ice: "fire" };
 
 const RARITY = {
   common:    { label: "Common",    color: "#9AA0B4", glow: "none" },
@@ -62,23 +61,15 @@ const LOOTABLE = ["verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat
 const findItem = (id) => [...STAFFS, ...RELICS, ...HATS, ...AURAS].find(i => i.id === id);
 
 const MAX_HP = 100, MAX_MANA = 60, REGEN = 6, BASE_CRIT = 8;
-const AFFINITY_BONUS = 1.25, STRONG = 1.5, WEAK = 0.66;
+const AFFINITY_BONUS = 1.25;
 const ENEMY_NAMES = ["Morwen the Ashen", "Sylra Frostcall", "Bramblewick", "Vex of the Veil", "Ondrel Pyre", "Nissa Thornheart"];
 
 const rand = (a, b) => Math.random() * (b - a) + a;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const chance = (pct) => Math.random() * 100 < pct;
 
-function effectiveness(attackEl, defAffinity) {
-  if (STRONG_VS[attackEl] === defAffinity) return STRONG;
-  if (STRONG_VS[defAffinity] === attackEl) return WEAK;
-  return 1;
-}
-
 function computeDamage(skill, atk, def) {
-  const aff = skill.el === atk.affinity ? AFFINITY_BONUS : 1;
-  const eff = effectiveness(skill.el, def.affinity);
-  let mult = aff * eff;
+  let mult = skill.el === atk.affinity ? AFFINITY_BONUS : 1;
   if (atk.staffGear) {
     if (atk.staffGear.el === skill.el && atk.staffGear.elBonus) mult *= 1 + atk.staffGear.elBonus;
     if (atk.staffGear.allDmg) mult *= 1 + atk.staffGear.allDmg;
@@ -89,7 +80,7 @@ function computeDamage(skill, atk, def) {
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
   const dmg = Math.round(skill.dmg * mult * rand(0.92, 1.08));
-  return { dmg, eff, crit, chilled };
+  return { dmg, crit, chilled };
 }
 
 function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId) {
@@ -363,7 +354,7 @@ function RarityCard({ item, selected, locked, onClick, subtitle }) {
 // ================= MAIN =================
 export default function MageDuel() {
   const [phase, setPhase] = useState("create");
-  const [tab, setTab] = useState("skills");
+  const [tab, setTab] = useState(null);
   const [mageName, setMageName] = useState("");
   const [affinity, setAffinity] = useState("fire");
   const [chosen, setChosen] = useState(["fireball", "emberjab", "ward", "surge"]);
@@ -430,7 +421,7 @@ export default function MageDuel() {
 
     let didDamage = false;
     if (skill.dmg) {
-      const { dmg, eff, crit, chilled } = computeDamage(skill, a, d);
+      const { dmg, crit, chilled } = computeDamage(skill, a, d);
       if (chilled) { a.status.chill = false; lines.push("The chill dampens the spell..."); }
       let remaining = dmg;
       if (d.shield > 0) {
@@ -440,9 +431,8 @@ export default function MageDuel() {
       }
       d.hp -= remaining;
       didDamage = true;
-      const effTxt = eff > 1 ? "Super effective! " : eff < 1 ? "Not very effective... " : "";
-      lines.push(`${crit ? "CRITICAL HIT! " : ""}${effTxt}${remaining} damage.`);
-      addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : eff > 1 ? "#FF6B3D" : "#F2EAD8", crit);
+      lines.push(`${crit ? "CRITICAL HIT! " : ""}${remaining} damage.`);
+      addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : "#F2EAD8", crit);
 
       const heavy = skill.dmg >= 20;
       if (heavy && skill.el === "fire" && chance(25 + (a.staffGear?.burnChance || 0))) {
@@ -485,7 +475,7 @@ export default function MageDuel() {
     if (attacks.length === 0) return surge || FOCUS;
     let best = attacks[0], bestVal = -1;
     for (const s of attacks) {
-      let v = s.dmg * (s.el === e.affinity ? AFFINITY_BONUS : 1) * effectiveness(s.el, p.affinity);
+      let v = s.dmg * (s.el === e.affinity ? AFFINITY_BONUS : 1);
       if (e.staffGear?.el === s.el && e.staffGear.elBonus) v *= 1 + e.staffGear.elBonus;
       if (v > bestVal) { bestVal = v; best = s; }
     }
@@ -593,7 +583,7 @@ export default function MageDuel() {
         {styles}{bg}
         <div className="relative z-10 w-full max-w-md">
           <h1 className="font-serif text-3xl text-center mt-1" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>Create Your Mage</h1>
-          <p className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>Fire ▲ beats Nature ❋ beats Ice ◆ beats Fire</p>
+          <p className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>Spells matching your affinity deal +25% damage</p>
 
           <div className="flex justify-center mb-4">
             <MageSprite mage={previewMage} facing="right" size={1.5} />
@@ -631,102 +621,124 @@ export default function MageDuel() {
   // ================= LOADOUT =================
   if (phase === "loadout") {
     const previewMage = { affinity, hat: hatId, aura: auraId, staffGear: STAFFS.find(s => s.id === staffId), status: {} };
+    const relic = RELICS.find(r => r.id === relicId);
+    const hat = findItem(hatId), aura = findItem(auraId);
+    const panelTitle = { skills: "Skills", gear: "Gear", style: "Style" }[tab];
     return (
-      <div className="min-h-screen relative" style={{ color: "#F2EAD8" }}>
+      <div className="min-h-screen relative flex flex-col" style={{ color: "#F2EAD8" }}>
         {styles}{bg}
-        <div className="relative z-10 p-4 flex justify-center">
-          <div className="w-full max-w-md pb-24">
-            <h1 className="font-serif text-3xl text-center mt-1" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>Mage Duel</h1>
-            <p className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>Fire ▲ beats Nature ❋ beats Ice ◆ beats Fire</p>
+        <div className="relative z-10 flex-1 flex flex-col items-center px-4 pt-4 pb-28">
+          <div className="w-full max-w-md flex-1 flex flex-col">
+            <h1 className="font-serif text-2xl text-center" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>{mageName.trim() || "Mage Duel"}</h1>
+            <p className="text-center text-xs font-mono mb-1" style={{ color: "#B7AE95" }}>Spells matching your affinity deal +25% damage</p>
 
-            <div className="flex justify-center mb-3">
-              <MageSprite mage={previewMage} facing="right" size={1.5} />
+            <div className="flex-1 flex items-center justify-center">
+              <MageSprite mage={previewMage} facing="right" size={3.2} />
             </div>
 
-            <div className="grid grid-cols-3 gap-1 mb-3">
+            <div className="flex justify-center gap-2 flex-wrap mb-1">
+              <ElementBadge el={affinity} />
+              {relic && relic.id !== "none" && <span className="text-xs font-mono px-1.5 py-0.5 rounded-sm border" style={{ color: RARITY[relic.rarity].color, borderColor: RARITY[relic.rarity].color + "66", background: RARITY[relic.rarity].color + "1A" }}>{relic.name}</span>}
+            </div>
+            <div className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>
+              {previewMage.staffGear?.name} · {hat?.name} · {aura?.name}
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
               {[["skills", "Skills"], ["gear", "Gear"], ["style", "Style"]].map(([k, label]) => (
-                <button key={k} onClick={() => setTab(k)} className="rounded-md border py-2 font-serif"
-                  style={{ borderColor: tab === k ? "#E8B44F" : "#3A3356", background: tab === k ? "#E8B44F1F" : "#1C1833", color: tab === k ? "#E8B44F" : "#B7AE95" }}>
+                <button key={k} onClick={() => setTab(k)} className="rounded-md border py-3 font-serif"
+                  style={{ borderColor: "#3A3356", background: "#1C1833", color: "#B7AE95" }}>
                   {label}
                 </button>
               ))}
             </div>
-
-            {tab === "skills" && (
-              <div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Affinity <span style={{ color: "#B7AE95" }}>(+25% matching dmg)</span></p>
-                <div className="grid grid-cols-4 gap-2 mb-4">
-                  {Object.entries(ELEMENTS).map(([key, e]) => (
-                    <button key={key} onClick={() => setAffinity(key)} className="rounded-md border p-2 text-sm font-mono"
-                      style={{ borderColor: affinity === key ? e.color : "#3A3356", background: affinity === key ? e.color + "26" : "#1C1833", color: e.color, boxShadow: affinity === key ? `0 0 10px ${e.color}44` : "none" }}>
-                      {e.icon}<br />{e.name}
-                    </button>
-                  ))}
-                </div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Skills <span style={{ color: "#B7AE95" }}>({chosen.length}/4)</span></p>
-                <div className="grid grid-cols-1 gap-2">
-                  {SKILLS.map(s => {
-                    const sel = chosen.includes(s.id);
-                    const e = ELEMENTS[s.el];
-                    return (
-                      <button key={s.id} onClick={() => toggleSkill(s.id)} className="rounded-md border p-2 text-left flex items-center justify-between gap-2"
-                        style={{ borderColor: sel ? "#E8B44F" : "#3A3356", background: sel ? "#E8B44F14" : "#1C1833" }}>
-                        <div>
-                          <div className="font-mono text-sm">{s.name} <span style={{ color: e.color }}>{e.icon}</span></div>
-                          <div className="text-xs font-mono" style={{ color: "#B7AE95" }}>{s.desc} · {s.mana} mana</div>
-                        </div>
-                        <span className="font-mono text-lg" style={{ color: sel ? "#E8B44F" : "#3A3356" }}>{sel ? "◉" : "○"}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {tab === "gear" && (
-              <div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Staff <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-                <div className="grid gap-2 mb-4">
-                  {STAFFS.map(s => (
-                    <RarityCard key={s.id} item={s} selected={staffId === s.id} locked={!owned.has(s.id)} onClick={() => owned.has(s.id) && setStaffId(s.id)} />
-                  ))}
-                </div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Relic <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-                <div className="grid gap-2">
-                  {RELICS.map(r => (
-                    <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {tab === "style" && (
-              <div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hat <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {HATS.map(h1 => (
-                    <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " />
-                  ))}
-                </div>
-                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Aura <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
-                <div className="grid grid-cols-2 gap-2">
-                  {AURAS.map(a => (
-                    <RarityCard key={a.id} item={a} selected={auraId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setAuraId(a.id)} subtitle=" " />
-                  ))}
-                </div>
-                <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>Locked items drop from victories. In the full game, they're tradeable with other players.</p>
-              </div>
-            )}
-
-            <div className="fixed bottom-0 left-0 right-0 z-20 p-3 flex justify-center" style={{ background: "linear-gradient(transparent, #0A0814 40%)" }}>
-              <button onClick={startBattle} disabled={chosen.length !== 4}
-                className="w-full max-w-md rounded-md border py-3 font-serif text-xl"
-                style={{ borderColor: "#E8B44F", background: chosen.length === 4 ? "linear-gradient(180deg, #E8B44F, #C9902E)" : "#1C1833", color: chosen.length === 4 ? "#100E1F" : "#3A3356", boxShadow: chosen.length === 4 ? "0 0 20px #E8B44F55" : "none" }}>
-                Begin the Duel
-              </button>
-            </div>
           </div>
         </div>
+
+        <div className="fixed bottom-0 left-0 right-0 z-20 p-3 flex justify-center" style={{ background: "linear-gradient(transparent, #0A0814 40%)" }}>
+          <button onClick={startBattle} disabled={chosen.length !== 4}
+            className="w-full max-w-md rounded-md border py-3 font-serif text-xl"
+            style={{ borderColor: "#E8B44F", background: chosen.length === 4 ? "linear-gradient(180deg, #E8B44F, #C9902E)" : "#1C1833", color: chosen.length === 4 ? "#100E1F" : "#3A3356", boxShadow: chosen.length === 4 ? "0 0 20px #E8B44F55" : "none" }}>
+            Begin the Duel
+          </button>
+        </div>
+
+        {tab && (
+          <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setTab(null)}>
+            <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "80vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+              <div className="flex justify-between items-center mb-3">
+                <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>{panelTitle}</span>
+                <button onClick={() => setTab(null)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+              </div>
+
+              {tab === "skills" && (
+                <div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Affinity <span style={{ color: "#B7AE95" }}>(+25% matching dmg)</span></p>
+                  <div className="grid grid-cols-4 gap-2 mb-4">
+                    {Object.entries(ELEMENTS).map(([key, e]) => (
+                      <button key={key} onClick={() => setAffinity(key)} className="rounded-md border p-2 text-sm font-mono"
+                        style={{ borderColor: affinity === key ? e.color : "#3A3356", background: affinity === key ? e.color + "26" : "#1C1833", color: e.color, boxShadow: affinity === key ? `0 0 10px ${e.color}44` : "none" }}>
+                        {e.icon}<br />{e.name}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Skills <span style={{ color: "#B7AE95" }}>({chosen.length}/4)</span></p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {SKILLS.map(s => {
+                      const sel = chosen.includes(s.id);
+                      const e = ELEMENTS[s.el];
+                      return (
+                        <button key={s.id} onClick={() => toggleSkill(s.id)} className="rounded-md border p-2 text-left flex items-center justify-between gap-2"
+                          style={{ borderColor: sel ? "#E8B44F" : "#3A3356", background: sel ? "#E8B44F14" : "#1C1833" }}>
+                          <div>
+                            <div className="font-mono text-sm">{s.name} <span style={{ color: e.color }}>{e.icon}</span></div>
+                            <div className="text-xs font-mono" style={{ color: "#B7AE95" }}>{s.desc} · {s.mana} mana</div>
+                          </div>
+                          <span className="font-mono text-lg" style={{ color: sel ? "#E8B44F" : "#3A3356" }}>{sel ? "◉" : "○"}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {tab === "gear" && (
+                <div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Staff <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2 mb-4">
+                    {STAFFS.map(s => (
+                      <RarityCard key={s.id} item={s} selected={staffId === s.id} locked={!owned.has(s.id)} onClick={() => owned.has(s.id) && setStaffId(s.id)} />
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Relic <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2">
+                    {RELICS.map(r => (
+                      <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {tab === "style" && (
+                <div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hat <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+                  <div className="grid grid-cols-2 gap-2 mb-4">
+                    {HATS.map(h1 => (
+                      <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " />
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Aura <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {AURAS.map(a => (
+                      <RarityCard key={a.id} item={a} selected={auraId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setAuraId(a.id)} subtitle=" " />
+                    ))}
+                  </div>
+                  <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>Locked items drop from victories. In the full game, they're tradeable with other players.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -824,7 +836,6 @@ export default function MageDuel() {
             const onCd = player.cds[s.id] > 0;
             const noMana = player.mana < s.mana;
             const disabled = busy || onCd || noMana;
-            const eff = s.dmg ? effectiveness(s.el, enemy.affinity) : 1;
             return (
               <button key={s.id} onClick={() => playerAction(s)} disabled={disabled}
                 className="rounded-md border p-2 text-left font-mono text-sm"
@@ -835,7 +846,7 @@ export default function MageDuel() {
                 </div>
                 <div className="text-xs" style={{ color: "#B7AE95" }}>
                   {onCd ? `Cooldown ${player.cds[s.id]}` : noMana && s.mana > 0 ? "Not enough mana" :
-                    s.dmg ? `${s.dmg} dmg · ${s.mana} mana${eff > 1 ? " · strong!" : eff < 1 ? " · weak" : ""}` :
+                    s.dmg ? `${s.dmg} dmg · ${s.mana} mana` :
                     s.shield ? `Shield ${s.shield} · ${s.mana} mana` :
                     s.restore ? `+${s.restore} mana` : ""}
                 </div>
