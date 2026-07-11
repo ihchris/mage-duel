@@ -1563,6 +1563,8 @@ export default function MageDuel() {
               <span className="font-serif">{enemy.name}</span>
               <ElementBadge el={enemy.affinity} />
               <StatusIcons mage={enemy} />
+              <button onClick={() => openChat(enemy)} title="Chat" className="rounded-sm border px-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#14112A" }}>💬</button>
+              <button onClick={() => addFriend(enemy)} disabled={isFriend(enemy)} title={isFriend(enemy) ? "Already a friend" : "Add friend"} className="rounded-sm border px-1.5 font-mono text-xs" style={{ borderColor: isFriend(enemy) ? "#72C063" : "#3A3356", color: isFriend(enemy) ? "#72C063" : "#B7AE95", background: "#14112A" }}>{isFriend(enemy) ? "✓" : "+👤"}</button>
             </div>
             <div className="text-xs font-mono mb-1" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}</div>
             <Bar value={enemy.hp} max={enemy.maxHp} color="#72C063" label="HP" />
@@ -1649,6 +1651,7 @@ export default function MageDuel() {
           )}
         </div>
       </div>
+      {renderChatModal()}
     </div>
   );
 }
