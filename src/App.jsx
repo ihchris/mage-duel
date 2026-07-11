@@ -134,10 +134,10 @@ const ARMORS = [
 ];
 const PETS = [
   { id: "pet_none",   name: "No companion", rarity: "common",    kind: null },
-  { id: "pet_imp",    name: "Ember Imp",    rarity: "rare",      kind: "imp",    color: "#FF6B3D" },
-  { id: "pet_sprite", name: "Frost Sprite", rarity: "rare",      kind: "sprite", color: "#5FC1E8" },
-  { id: "pet_fox",    name: "Leaf Fox",     rarity: "epic",      kind: "fox",    color: "#72C063" },
-  { id: "pet_wisp",   name: "Star Wisp",    rarity: "legendary", kind: "wisp",   color: "#E8B44F" },
+  { id: "pet_imp",    name: "Ember Imp",    rarity: "rare",      kind: "imp",    color: "#FF6B3D", dark: "#C4451D", light: "#FFB27A" },
+  { id: "pet_sprite", name: "Frost Sprite", rarity: "rare",      kind: "sprite", color: "#5FC1E8", dark: "#3A8FBD", light: "#D6F3FF" },
+  { id: "pet_fox",    name: "Leaf Fox",     rarity: "epic",      kind: "fox",    color: "#72C063", dark: "#4F8F45", light: "#DCF0C8" },
+  { id: "pet_wisp",   name: "Star Wisp",    rarity: "legendary", kind: "wisp",   color: "#E8B44F", dark: "#B07FF5", light: "#FFF3C4" },
 ];
 
 const START_OWNED = ["ashwood", "frostbound", "manapearl", "wardsigil", "none", "hat_pointed", "hat_hood", "aura_none", "aura_ember", "cape_none", "cape_travel", "armor_none", "armor_padded", "pet_none", "pet_imp", "robe_classic", "robe_midnight", "wings_none", "offhand_none", "offhand_tome"];
@@ -619,44 +619,94 @@ function ArmorDragon() {
 }
 const ARMOR_COMPONENTS = { armor_padded: ArmorPadded, armor_chain: ArmorChain, armor_void: ArmorVoid, armor_dragon: ArmorDragon };
 
+function PetImp({ color, dark, light }) {
+  return (
+    <g>
+      <path d="M16 20 C 30 22 34 10 28 2 C 34 6 36 18 24 24 Z" fill={color} />
+      <circle cx="29" cy="3" r="4" fill="#FFD75E" />
+      <path d="M-14 6 C -30 0 -34 -14 -26 -22 C -22 -12 -18 -2 -10 4 Z" fill={dark} opacity="0.9" />
+      <path d="M14 6 C 30 0 34 -14 26 -22 C 22 -12 18 -2 10 4 Z" fill={dark} opacity="0.9" />
+      <path d="M-20 10 C -20 -8 -12 -20 0 -20 C 12 -20 20 -8 20 10 C 20 22 12 28 0 28 C -12 28 -20 22 -20 10 Z" fill={color} />
+      <ellipse cx="0" cy="14" rx="11" ry="13" fill={light} opacity="0.55" />
+      <path d="M-8 -18 C -10 -26 -6 -28 -4 -22 Z" fill={dark} />
+      <path d="M8 -18 C 10 -26 6 -28 4 -22 Z" fill={dark} />
+      <circle cx="-6" cy="-2" r="3.4" fill="#2B1B10" />
+      <circle cx="6" cy="-2" r="3.4" fill="#2B1B10" />
+      <circle cx="-6" cy="-2" r="1.6" fill="#FFD75E" />
+      <circle cx="6" cy="-2" r="1.6" fill="#FFD75E" />
+      <path d="M-6 7 C -3 10 3 10 6 7" stroke="#5C2A15" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+    </g>
+  );
+}
+function PetSprite({ color, dark, light }) {
+  return (
+    <g>
+      <circle cx="0" cy="10" r="26" fill={color} opacity="0.18" />
+      <path d="M0 -4 L-22 -14 L-14 4 Z" fill={light} opacity="0.7" />
+      <path d="M0 -4 L22 -14 L14 4 Z" fill={light} opacity="0.7" />
+      <path d="M-16 6 C -16 -10 -8 -20 0 -20 C 8 -20 16 -10 16 6 C 16 20 8 26 0 26 C -8 26 -16 20 -16 6 Z" fill={color} />
+      <ellipse cx="0" cy="10" rx="9" ry="12" fill={light} opacity="0.6" />
+      <path d="M-4 -18 L-6 -28 L-1 -20 Z" fill={light} />
+      <path d="M4 -18 L6 -28 L1 -20 Z" fill={light} />
+      <path d="M0 -20 L0 -30 L2 -21 Z" fill={light} />
+      <circle cx="-5" cy="0" r="3" fill={dark} />
+      <circle cx="5" cy="0" r="3" fill={dark} />
+      <circle cx="-5" cy="-1" r="1" fill="#FFFFFF" />
+      <circle cx="5" cy="-1" r="1" fill="#FFFFFF" />
+      <circle cx="-20" cy="-10" r="1.6" fill={light} />
+      <circle cx="20" cy="-4" r="1.3" fill={light} />
+      <circle cx="14" cy="18" r="1.2" fill={light} />
+    </g>
+  );
+}
+function PetFox({ color, dark, light }) {
+  return (
+    <g>
+      <path d="M14 14 C 30 10 36 -4 28 -12 C 34 -2 32 12 16 20 Z" fill={color} />
+      <path d="M22 -6 C 26 -10 30 -8 28 -3 C 30 -6 30 -10 25 -12 Z" fill={light} />
+      <path d="M-14 -16 C -20 -28 -12 -34 -6 -26 C -10 -22 -12 -18 -12 -12 Z" fill={color} />
+      <path d="M14 -16 C 20 -28 12 -34 6 -26 C 10 -22 12 -18 12 -12 Z" fill={color} />
+      <path d="M-11 -18 C -13 -24 -10 -27 -8 -23" stroke={dark} strokeWidth="1" fill="none" />
+      <path d="M11 -18 C 13 -24 10 -27 8 -23" stroke={dark} strokeWidth="1" fill="none" />
+      <path d="M-18 8 C -18 -8 -10 -18 0 -18 C 10 -18 18 -8 18 8 C 18 22 10 28 0 28 C -10 28 -18 22 -18 8 Z" fill={color} />
+      <ellipse cx="0" cy="14" rx="8" ry="6" fill={light} />
+      <circle cx="0" cy="12" r="1.6" fill="#2B2430" />
+      <circle cx="-6" cy="0" r="3" fill="#2B2430" />
+      <circle cx="6" cy="0" r="3" fill="#2B2430" />
+      <circle cx="-5.3" cy="-1" r="1" fill="#FFF" />
+      <circle cx="6.7" cy="-1" r="1" fill="#FFF" />
+      <path d="M0 -20 C 4 -26 10 -24 8 -18 C 5 -20 2 -20 0 -20 Z" fill="#8FD463" />
+    </g>
+  );
+}
+function PetWisp({ color, dark, light }) {
+  const starPts = "M0 -14 L3.3 -4.3 L13.5 -4.3 L5.5 1.6 L8.5 11 L0 5.1 L-8.5 11 L-5.5 1.6 L-13.5 -4.3 L-3.3 -4.3 Z";
+  return (
+    <g>
+      <circle cx="0" cy="6" r="28" fill={color} opacity="0.15" />
+      <circle cx="0" cy="6" r="20" fill={dark} opacity="0.25" />
+      <path d="M-14 14 C -24 20 -26 30 -18 34" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M14 14 C 24 20 26 30 18 34" stroke={color} strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.7" />
+      <circle cx="0" cy="6" r="14" fill={light} opacity="0.9" />
+      <path transform="translate(0 6)" d={starPts} fill={color} />
+      <circle cx="-20" cy="-6" r="2" fill={light} />
+      <circle cx="18" cy="-10" r="1.5" fill={light} />
+      <circle cx="16" cy="16" r="1.3" fill={light} />
+      <circle cx="-4" cy="4" r="1.8" fill="#2B2430" opacity="0.8" />
+      <circle cx="4" cy="4" r="1.8" fill="#2B2430" opacity="0.8" />
+    </g>
+  );
+}
+const PET_COMPONENTS = { imp: PetImp, sprite: PetSprite, fox: PetFox, wisp: PetWisp };
+
 function Pet({ pet }) {
   if (!pet?.kind) return null;
-  const c = pet.color;
+  const Component = PET_COMPONENTS[pet.kind];
+  if (!Component) return null;
   return (
     <g transform="translate(58 420)">
-      <ellipse cx="0" cy="36" rx="28" ry="7" fill="#000" opacity="0.2" />
-      <circle cx="0" cy="16" r="22" fill={c} />
-      {pet.kind === "imp" && (
-        <>
-          <path d="M-14 -4 L-22 -18 L-5 -10 Z" fill={c} />
-          <path d="M14 -4 L22 -18 L5 -10 Z" fill={c} />
-          <path d="M-4 -26 C -2 -33 4 -33 4 -26 C 2 -29 -2 -29 -4 -26 Z" fill="#FFD75E" />
-        </>
-      )}
-      {pet.kind === "sprite" && (
-        <>
-          <path d="M0 -8 L4 -19 L8 -8 L0 -12 Z" fill="#E4F6FF" />
-          <path d="M0 -8 L-4 -19 L-8 -8 L0 -12 Z" fill="#E4F6FF" />
-        </>
-      )}
-      {pet.kind === "fox" && (
-        <>
-          <path d="M-12 -6 L-19 -20 L-3 -12 Z" fill={c} />
-          <path d="M12 -6 L19 -20 L3 -12 Z" fill={c} />
-          <path d="M14 16 C 26 18 32 12 34 20 C 26 26 14 24 14 16 Z" fill={c} />
-        </>
-      )}
-      {pet.kind === "wisp" && (
-        <>
-          <circle cx="0" cy="16" r="22" fill={c} opacity="0.45" />
-          <circle cx="-6" cy="10" r="2.6" fill="#FFF3C4" />
-          <circle cx="7" cy="6" r="1.8" fill="#FFF3C4" />
-        </>
-      )}
-      <circle cx="-6" cy="14" r="3.1" fill="#2B2430" />
-      <circle cx="6" cy="14" r="3.1" fill="#2B2430" />
-      <circle cx="-5" cy="12.6" r="1" fill="#FFF" />
-      <circle cx="7" cy="12.6" r="1" fill="#FFF" />
+      <ellipse cx="0" cy="32" rx="22" ry="6" fill="#000" opacity="0.2" />
+      <Component color={pet.color} dark={pet.dark} light={pet.light} />
     </g>
   );
 }
