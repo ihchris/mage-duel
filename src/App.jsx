@@ -611,10 +611,12 @@ export default function MageDuel() {
   const [castP, setCastP] = useState(false);
   const [castE, setCastE] = useState(false);
   const [floats, setFloats] = useState([]);
+  const [projectiles, setProjectiles] = useState([]);
   const [result, setResult] = useState(null);
   const [loot, setLoot] = useState(null);
   const logRef = useRef(null);
   const floatId = useRef(0);
+  const projId = useRef(0);
 
   const stars = useMemo(() => Array.from({ length: 45 }, () => ({
     left: Math.random() * 100, top: Math.random() * 100,
@@ -628,6 +630,12 @@ export default function MageDuel() {
     const id = ++floatId.current;
     setFloats(f => [...f, { id, side, text, color, big, left: rand(20, 60) }]);
     setTimeout(() => setFloats(f => f.filter(x => x.id !== id)), 1000);
+  }
+
+  function fireProjectile(el, fromSide) {
+    const id = ++projId.current;
+    setProjectiles(pr => [...pr, { id, el, fromSide }]);
+    setTimeout(() => setProjectiles(pr => pr.filter(x => x.id !== id)), 520);
   }
 
   function toggleSkill(id) {
@@ -756,6 +764,7 @@ export default function MageDuel() {
     let p = player, e = enemy;
 
     setCastP(true); setTimeout(() => setCastP(false), 600);
+    if (skill.dmg > 0) fireProjectile(skill.el, "p");
     const r1 = applySkill(skill, p, e, "p");
     p = r1.a; e = r1.d;
     let delay = 0;
@@ -768,6 +777,7 @@ export default function MageDuel() {
 
       const eSkill = aiChoose(e, p);
       setCastE(true); setTimeout(() => setCastE(false), 600);
+      if (eSkill.dmg > 0) fireProjectile(eSkill.el, "e");
       const r2 = applySkill(eSkill, e, p, "e");
       e = r2.a; p = r2.d;
       let d2 = 0;
@@ -787,20 +797,31 @@ export default function MageDuel() {
   // ================= STYLES / BG =================
   const styles = (
     <style>{`
-      @keyframes shakeAnim { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
-      .shake { animation: shakeAnim 0.45s ease; }
-      @keyframes castAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-      .cast { animation: castAnim 0.55s ease; }
-      @keyframes idleAnim { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
-      .idle { animation: idleAnim 2.4s ease-in-out infinite; }
+      @keyframes shakeAnim { 0%,100%{transform:translate3d(0,0,0)} 20%{transform:translate3d(-7px,0,0)} 40%{transform:translate3d(6px,0,0)} 60%{transform:translate3d(-4px,0,0)} 80%{transform:translate3d(3px,0,0)} }
+      .shake { animation: shakeAnim 0.45s ease; will-change: transform; }
+      @keyframes castAnim { 0%,100%{transform:translate3d(0,0,0)} 50%{transform:translate3d(0,-8px,0)} }
+      .cast { animation: castAnim 0.55s ease; will-change: transform; }
+      @keyframes idleAnim {
+        0% { transform: translate3d(0,0,0); }
+        25% { transform: translate3d(0,-2.2px,0); }
+        50% { transform: translate3d(0,-4px,0); }
+        75% { transform: translate3d(0,-2.2px,0); }
+        100% { transform: translate3d(0,0,0); }
+      }
+      .idle { animation: idleAnim 3.4s ease-in-out infinite; will-change: transform; backface-visibility: hidden; }
       @keyframes auraAnim { 0%,100%{opacity:0.9; transform:scale(1)} 50%{opacity:0.5; transform:scale(1.08)} }
-      .auraPulse { animation: auraAnim 2.2s ease-in-out infinite; }
+      .auraPulse { animation: auraAnim 2.2s ease-in-out infinite; will-change: transform, opacity; }
       @keyframes twinkle { 0%,100%{opacity:0.15} 50%{opacity:0.8} }
-      @keyframes floatUp { 0%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(-34px)} }
-      .dmgFloat { animation: floatUp 0.95s ease-out forwards; }
+      @keyframes floatUp { 0%{opacity:1; transform:translate3d(0,0,0)} 100%{opacity:0; transform:translate3d(0,-34px,0)} }
+      .dmgFloat { animation: floatUp 0.95s ease-out forwards; will-change: transform, opacity; }
       @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
       .lootShine { background: linear-gradient(110deg, transparent 35%, #FFFFFF22 50%, transparent 65%); background-size: 200% 100%; animation: shimmer 2.2s linear infinite; }
-      @media (prefers-reduced-motion: reduce) { .shake,.cast,.idle,.auraPulse,.dmgFloat,.lootShine { animation: none; } }
+      @keyframes projectileUp { 0%{ top:76%; opacity:0; transform:translate3d(-50%,-50%,0) scale(0.5); } 14%{ opacity:1; } 82%{ opacity:1; } 100%{ top:22%; opacity:0; transform:translate3d(-50%,-50%,0) scale(1.2); } }
+      @keyframes projectileDown { 0%{ top:22%; opacity:0; transform:translate3d(-50%,-50%,0) scale(0.5); } 14%{ opacity:1; } 82%{ opacity:1; } 100%{ top:76%; opacity:0; transform:translate3d(-50%,-50%,0) scale(1.2); } }
+      .projectile { position: absolute; left: 50%; width: 20px; height: 20px; border-radius: 50%; z-index: 6; pointer-events: none; will-change: top, transform, opacity; }
+      .projectile-up { animation: projectileUp 0.5s ease-in forwards; }
+      .projectile-down { animation: projectileDown 0.5s ease-in forwards; }
+      @media (prefers-reduced-motion: reduce) { .shake,.cast,.idle,.auraPulse,.dmgFloat,.lootShine,.projectile-up,.projectile-down { animation: none; } }
     `}</style>
   );
 
@@ -1142,6 +1163,7 @@ export default function MageDuel() {
     <div className="min-h-screen relative flex justify-center p-3" style={{ color: "#F2EAD8" }}>
       {styles}{bg}
       <div className="relative z-10 w-full max-w-md flex flex-col">
+        <div className="relative">
         {/* Enemy */}
         <div className="rounded-md border p-3 mb-2 flex gap-3 items-center relative" style={panel}>
           {floats.filter(f => f.side === "e").map(f => (
@@ -1176,6 +1198,15 @@ export default function MageDuel() {
             <Bar value={player.hp} max={player.maxHp} color="#72C063" label="HP" />
             <Bar value={player.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
           </div>
+        </div>
+
+        {projectiles.map(pr => {
+          const c = ELEMENTS[pr.el].color;
+          return (
+            <span key={pr.id} className={`projectile ${pr.fromSide === "p" ? "projectile-up" : "projectile-down"}`}
+              style={{ background: `radial-gradient(circle, #FFFFFF 0%, ${c} 55%, ${c}00 100%)`, boxShadow: `0 0 14px 4px ${c}AA` }} />
+          );
+        })}
         </div>
 
         {/* Log */}
