@@ -137,6 +137,35 @@ function loadSave() {
   }
 }
 
+const FRIENDS_KEY = "mageDuelFriends_v1";
+function loadFriends() {
+  try {
+    const raw = localStorage.getItem(FRIENDS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+const NPC_BIOS = {
+  fire: ["Forged in the ash of a hundred duels.", "Burns bright, fights brighter.", "Never lost a duel it can remember."],
+  ice: ["Cold in battle, colder in conversation.", "Trained in the frostspire academies.", "Patient. Precise. Merciless."],
+  nature: ["Grew up talking to trees, apparently.", "Believes every duel teaches something.", "Rarely angry. Often deadly."],
+  arcane: ["Speaks mostly in riddles.", "Studies magic nobody else will touch.", "Not entirely sure what plane it's from."],
+};
+const PLAYER_LINES = {
+  greet: "Well met! Ready for a duel?",
+  taunt: "You don't scare me, mage.",
+  compliment: "That's a fine staff you've got.",
+  farewell: "Until we meet again.",
+};
+const NPC_REPLIES = {
+  greet: ["Well met, traveler.", "Ah, a challenger approaches.", "Greetings. Shall we begin?", "You have my attention."],
+  taunt: ["We shall see about that.", "Bold words, for now.", "Ha! We'll see who's laughing.", "Big talk from small mana."],
+  compliment: ["Why, thank you.", "I forged it myself, actually.", "You have good taste.", "Flattery won't save you, but thanks."],
+  farewell: ["Farewell, for now.", "Until next time.", "Safe travels, mage.", "May your mana regen swiftly."],
+};
+
 const MAX_HP = 100, MAX_MANA = 60, REGEN = 6, BASE_CRIT = 8;
 const AFFINITY_BONUS = 1.25;
 const ENEMY_NAMES = ["Morwen the Ashen", "Sylra Frostcall", "Bramblewick", "Vex of the Veil", "Ondrel Pyre", "Nissa Thornheart"];
@@ -772,6 +801,41 @@ export default function MageDuel() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
   }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, offhandId, owned]);
 
+  const [friends, setFriends] = useState(() => loadFriends());
+  const [showFriends, setShowFriends] = useState(false);
+  const [chatWith, setChatWith] = useState(null);
+  const [chatLog, setChatLog] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem(FRIENDS_KEY, JSON.stringify(friends));
+  }, [friends]);
+
+  function isFriend(mage) {
+    return mage && friends.some(f => f.name === mage.name);
+  }
+  function addFriend(mage) {
+    if (!mage || isFriend(mage)) return;
+    setFriends(f => [...f, mage]);
+  }
+  function removeFriend(name) {
+    setFriends(f => f.filter(x => x.name !== name));
+  }
+  function openChat(mage) {
+    setChatWith(mage);
+    setChatLog([{ from: "them", text: pick(NPC_REPLIES.greet) }]);
+  }
+  function sendChat(category) {
+    if (!chatWith) return;
+    const reply = pick(NPC_REPLIES[category]);
+    setChatLog(log => [...log, { from: "you", text: PLAYER_LINES[category] }, { from: "them", text: reply }]);
+  }
+  function duelFriend(mage) {
+    const fresh = { ...mage, hp: mage.maxHp, mana: MAX_MANA, shield: mage.relic?.startShield || 0, cds: {}, status: { burn: 0, chill: false }, phoenixUsed: false };
+    setEnemy(fresh);
+    setShowFriends(false);
+    setPhase("scout");
+  }
+
   const [player, setPlayer] = useState(null);
   const [enemy, setEnemy] = useState(null);
   const [log, setLog] = useState([]);
@@ -1268,6 +1332,77 @@ export default function MageDuel() {
     );
   }
 
+  function renderFriendsModal() {
+    if (!showFriends) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setShowFriends(false)}>
+        <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "80vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>Friends</span>
+            <button onClick={() => setShowFriends(false)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+          </div>
+          {friends.length === 0 && (
+            <p className="text-xs font-mono" style={{ color: "#5A5478" }}>No friends yet. Add one from the Scouting Report before a duel.</p>
+          )}
+          <div className="grid gap-2">
+            {friends.map(f => (
+              <div key={f.name} className="rounded-md border p-2" style={{ borderColor: "#3A3356", background: "#1C1833" }}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-serif text-sm">{f.name}</span>
+                  <ElementBadge el={f.affinity} />
+                </div>
+                <div className="text-xs font-mono mb-2" style={{ color: "#5A5478" }}>{f.staffGear?.name}</div>
+                <div className="flex gap-2">
+                  <button onClick={() => openChat(f)} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#14112A" }}>
+                    💬 Chat
+                  </button>
+                  <button onClick={() => duelFriend(f)} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: "#E8B44F", color: "#E8B44F", background: "#14112A" }}>
+                    ⚔ Duel
+                  </button>
+                  <button onClick={() => removeFriend(f.name)} className="rounded-md border px-2 py-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#5A5478", background: "#14112A" }}>
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderChatModal() {
+    if (!chatWith) return null;
+    return (
+      <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setChatWith(null)}>
+        <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630" }} onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-3">
+            <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>{chatWith.name}</span>
+            <button onClick={() => setChatWith(null)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+          </div>
+          <div className="rounded-md border p-3 mb-3 font-mono text-sm overflow-y-auto" style={{ borderColor: "#3A3356", background: "#0B0A16DD", height: "160px" }}>
+            {chatLog.map((m, i) => (
+              <div key={i} className="mb-1" style={{ color: m.from === "you" ? "#E8B44F" : "#B7AE95" }}>
+                <span className="opacity-70">{m.from === "you" ? "You: " : `${chatWith.name}: `}</span>{m.text}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            <button onClick={() => sendChat("greet")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Say hello</button>
+            <button onClick={() => sendChat("compliment")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Compliment</button>
+            <button onClick={() => sendChat("taunt")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Taunt</button>
+            <button onClick={() => sendChat("farewell")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Say goodbye</button>
+          </div>
+          {!isFriend(chatWith) && (
+            <button onClick={() => addFriend(chatWith)} className="w-full rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#72C063", color: "#72C063", background: "#14112A" }}>
+              + Add Friend
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   // ================= LOADOUT =================
   if (phase === "loadout") {
     return (
@@ -1275,7 +1410,12 @@ export default function MageDuel() {
         {styles}{bg}
         <div className="relative z-10 flex-1 flex flex-col items-center px-4 pt-4 pb-28">
           <div className="w-full max-w-md flex-1 flex flex-col">
-            <h1 className="font-serif text-2xl text-center" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>{mageName.trim() || "Mage Duel"}</h1>
+            <div className="relative flex items-center justify-center mb-1">
+              <h1 className="font-serif text-2xl text-center" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>{mageName.trim() || "Mage Duel"}</h1>
+              <button onClick={() => setShowFriends(true)} className="absolute right-0 rounded-md border px-2 py-1 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
+                👥 {friends.length}
+              </button>
+            </div>
             <p className="text-center text-xs font-mono mb-1" style={{ color: "#B7AE95" }}>Spells matching your affinity deal +25% damage</p>
             {renderCharacterPreview(null)}
           </div>
@@ -1290,6 +1430,8 @@ export default function MageDuel() {
         </div>
 
         {renderGearModal()}
+        {renderFriendsModal()}
+        {renderChatModal()}
       </div>
     );
   }
@@ -1297,16 +1439,21 @@ export default function MageDuel() {
   // ================= SCOUT =================
   if (phase === "scout") {
     const foeSkills = enemy.skills;
+    const bios = NPC_BIOS[enemy.affinity] || [];
+    const bioHash = [...enemy.name].reduce((a, c) => a + c.charCodeAt(0), 0);
+    const bio = bios.length ? bios[bioHash % bios.length] : "";
+    const friended = isFriend(enemy);
     const scoutCard = (
       <div className="rounded-md border p-3 mb-3" style={{ borderColor: "#3A3356", background: "#1C1833" }}>
         <div className="flex items-center justify-between mb-1">
           <span className="font-serif" style={{ color: "#FF6B3D" }}>{enemy.name}</span>
           <ElementBadge el={enemy.affinity} />
         </div>
+        <p className="text-xs font-mono mb-2 italic" style={{ color: "#5A5478" }}>"{bio}"</p>
         <div className="text-xs font-mono mb-2" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
           {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}
         </div>
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5 mb-3">
           {foeSkills.map(s => {
             const e = ELEMENTS[s.el];
             return (
@@ -1321,6 +1468,14 @@ export default function MageDuel() {
               </div>
             );
           })}
+        </div>
+        <div className="flex gap-2">
+          <button onClick={() => openChat(enemy)} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#14112A" }}>
+            💬 Chat
+          </button>
+          <button onClick={() => addFriend(enemy)} disabled={friended} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: friended ? "#72C063" : "#3A3356", color: friended ? "#72C063" : "#B7AE95", background: "#14112A" }}>
+            {friended ? "✓ Friend" : "+ Add Friend"}
+          </button>
         </div>
       </div>
     );
@@ -1348,6 +1503,7 @@ export default function MageDuel() {
         </div>
 
         {renderGearModal()}
+        {renderChatModal()}
       </div>
     );
   }
