@@ -450,9 +450,9 @@ function RobeMidnightTrim() {
 function RobeIvoryTrim() {
   return (
     <g stroke="#C9BFA8" strokeWidth="3" fill="none" opacity="0.85">
-      <path d="M155 234 Q200 224 245 234" />
+      <path d="M160 292 Q200 284 240 292" />
       <path d="M122 448 Q200 464 278 448" />
-      <path d="M170 262 L170 418 M230 262 L230 418" strokeWidth="1.5" opacity="0.5" />
+      <path d="M170 300 L170 418 M230 300 L230 418" strokeWidth="1.5" opacity="0.5" />
     </g>
   );
 }
@@ -469,7 +469,7 @@ function RobeGildedTrim() {
   return (
     <g stroke={GOLD} fill="none">
       <path d="M122 448 Q200 466 278 448" strokeWidth="4" />
-      <path d="M152 236 Q200 226 248 236" strokeWidth="3" />
+      <path d="M160 292 Q200 284 240 292" strokeWidth="3" />
       <path d="M188 310 L200 298 L212 310 L200 322 Z" fill="#FFE28A" stroke="none" opacity="0.9" />
     </g>
   );
