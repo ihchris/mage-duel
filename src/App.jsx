@@ -63,7 +63,7 @@ const CAPES = [
   { id: "cape_phoenix",name: "Phoenixwing Cloak", rarity: "legendary", color: "#E85A3D", dark: "#B03D24" },
 ];
 const ARMORS = [
-  { id: "armor_none",   name: "No armor",          rarity: "common",    desc: "—" },
+  { id: "armor_none",   name: "No robe",           rarity: "common",    desc: "—" },
   { id: "armor_padded", name: "Padded Robe",       rarity: "common",    maxHpBonus: 10, desc: "+10 Max HP" },
   { id: "armor_chain",  name: "Chainweave Vest",   rarity: "rare",      dmgReduction: 0.08, desc: "-8% damage taken" },
   { id: "armor_void",   name: "Voidplate Harness", rarity: "epic",      maxHpBonus: 10, dmgReduction: 0.06, desc: "+10 Max HP · -6% damage taken" },
@@ -270,25 +270,36 @@ function Cape({ color, dark }) {
   );
 }
 
+const ARMOR_CHEST = "M176 254 C 176 248 182 244 200 244 C 218 244 224 248 224 254 L 222 292 C 210 296 190 296 178 292 Z";
+const ARMOR_COLLAR = "M178 232 C 186 226 214 226 222 232 L 220 242 C 210 238 190 238 180 242 Z";
+
 function ArmorPadded() {
   return (
     <g>
       <ellipse cx="150" cy="250" rx="25" ry="17" fill="#8B6A45" opacity="0.92" />
       <ellipse cx="250" cy="250" rx="25" ry="17" fill="#8B6A45" opacity="0.92" />
+      <path d={ARMOR_COLLAR} fill="#6E5236" />
+      <path d={ARMOR_CHEST} fill="#8B6A45" />
+      <path d="M188 256 L188 288 M200 254 L200 292 M212 256 L212 288" stroke="#6E5236" strokeWidth="2" opacity="0.8" />
     </g>
   );
 }
 function ArmorChain() {
+  const dots = [];
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 4; col++) {
+      dots.push([185 + col * 12 + (row % 2 === 0 ? 0 : 6), 256 + row * 8]);
+    }
+  }
   return (
     <g>
       <ellipse cx="150" cy="248" rx="27" ry="19" fill="#7C8AA0" />
       <ellipse cx="250" cy="248" rx="27" ry="19" fill="#7C8AA0" />
-      {[...Array(3)].map((_, i) => (
-        <circle key={i} cx={140 + i * 10} cy={246} r="2.6" fill="#B7C4D6" />
-      ))}
-      {[...Array(3)].map((_, i) => (
-        <circle key={i} cx={240 + i * 10} cy={246} r="2.6" fill="#B7C4D6" />
-      ))}
+      {[...Array(3)].map((_, i) => <circle key={`l${i}`} cx={140 + i * 10} cy={246} r="2.6" fill="#B7C4D6" />)}
+      {[...Array(3)].map((_, i) => <circle key={`r${i}`} cx={240 + i * 10} cy={246} r="2.6" fill="#B7C4D6" />)}
+      <path d={ARMOR_COLLAR} fill="#5E6C80" />
+      <path d={ARMOR_CHEST} fill="#7C8AA0" />
+      {dots.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.2" fill="#B7C4D6" opacity="0.85" />)}
     </g>
   );
 }
@@ -299,6 +310,11 @@ function ArmorVoid() {
       <path d="M278 236 L248 222 L218 244 L234 270 L274 264 Z" fill="#332752" />
       <circle cx="152" cy="246" r="3" fill="#B07FF5" />
       <circle cx="248" cy="246" r="3" fill="#B07FF5" />
+      <path d={ARMOR_COLLAR} fill="#241C3D" />
+      <path d={ARMOR_CHEST} fill="#332752" />
+      <rect x="191" y="260" width="18" height="4" rx="1" fill="#B07FF5" opacity="0.9" />
+      <rect x="191" y="272" width="18" height="4" rx="1" fill="#B07FF5" opacity="0.7" />
+      <rect x="191" y="284" width="18" height="4" rx="1" fill="#B07FF5" opacity="0.5" />
     </g>
   );
 }
@@ -309,6 +325,12 @@ function ArmorDragon() {
       <path d="M282 234 L244 216 L214 244 L236 272 L278 264 Z" fill="#A93425" />
       <path d="M148 220 l6 -10 l6 10 z" fill={GOLD} />
       <path d="M252 220 l6 -10 l6 10 z" fill={GOLD} />
+      <path d={ARMOR_COLLAR} fill="#7C2A1C" />
+      <path d={ARMOR_CHEST} fill="#A93425" />
+      {[...Array(4)].map((_, i) => (
+        <path key={i} d={`M${183 + i * 13} 250 l6.5 8 l6.5 -8 z`} fill={GOLD_D} opacity="0.9" />
+      ))}
+      <path d="M178 292 C 190 296 210 296 222 292 L 222 288 C 210 292 190 292 178 288 Z" fill={GOLD} />
     </g>
   );
 }
@@ -881,7 +903,7 @@ export default function MageDuel() {
                       <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
                     ))}
                   </div>
-                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Armor <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
                   <div className="grid gap-2">
                     {ARMORS.map(a => (
                       <RarityCard key={a.id} item={a} selected={armorId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setArmorId(a.id)} />
@@ -896,6 +918,12 @@ export default function MageDuel() {
                   <div className="grid grid-cols-2 gap-2 mb-4">
                     {HATS.map(h1 => (
                       <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " />
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2 mb-4">
+                    {ARMORS.map(a => (
+                      <RarityCard key={a.id} item={a} selected={armorId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setArmorId(a.id)} />
                     ))}
                   </div>
                   <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
