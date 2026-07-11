@@ -88,6 +88,8 @@ const CAPES = [
   { id: "cape_shadow", name: "Shadowweave Drape", rarity: "rare",      color: "#3D3466", dark: "#28223F" },
   { id: "cape_star",   name: "Starweave Mantle",  rarity: "epic",      color: "#8E5FD1", dark: "#5F3F94" },
   { id: "cape_phoenix",name: "Phoenixwing Cloak", rarity: "legendary", color: "#E85A3D", dark: "#B03D24" },
+  { id: "wings_angel", name: "Angel Wings",       rarity: "legendary", color: "#F5F0E6", dark: "#D9CFC0" },
+  { id: "wings_demon", name: "Demon Wings",       rarity: "legendary", color: "#4A1F1F", dark: "#240D0D" },
 ];
 const ROBES = [
   { id: "robe_classic",  name: "Classic Robe",  rarity: "common",    colors: null, desc: "—" },
@@ -95,6 +97,13 @@ const ROBES = [
   { id: "robe_ivory",    name: "Ivory Robe",    rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" } },
   { id: "robe_crimson",  name: "Crimson Robe",  rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" } },
   { id: "robe_gilded",   name: "Gilded Robe",   rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" } },
+];
+const OFFHANDS = [
+  { id: "offhand_none",      name: "Empty Hand",      rarity: "common",    color: null, desc: "—" },
+  { id: "offhand_tome",      name: "Apprentice Tome", rarity: "common",    color: "#8B5A33", crit: 3, desc: "+3% crit chance" },
+  { id: "offhand_grimoire",  name: "Arcane Grimoire", rarity: "rare",      color: "#5F3F94", allDmg: 0.06, desc: "+6% all damage" },
+  { id: "offhand_codex",     name: "Codex of Embers", rarity: "epic",      color: "#B03D24", allDmg: 0.08, crit: 5, desc: "+8% all damage · +5% crit" },
+  { id: "offhand_forbidden", name: "Forbidden Tome",  rarity: "legendary", color: "#241C3D", allDmg: 0.12, crit: 8, desc: "+12% all damage · +8% crit" },
 ];
 const ARMORS = [
   { id: "armor_none",   name: "No armor",          rarity: "common",    desc: "—" },
@@ -111,9 +120,9 @@ const PETS = [
   { id: "pet_wisp",   name: "Star Wisp",    rarity: "legendary", kind: "wisp",   color: "#E8B44F" },
 ];
 
-const START_OWNED = ["ashwood", "frostbound", "manapearl", "wardsigil", "none", "hat_pointed", "hat_hood", "aura_none", "aura_ember", "cape_none", "cape_travel", "armor_none", "armor_padded", "pet_none", "pet_imp", "robe_classic", "robe_midnight"];
-const LOOTABLE = ["verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "aura_frost", "aura_void", "aura_radiant", "cape_shadow", "cape_star", "cape_phoenix", "armor_chain", "armor_void", "armor_dragon", "pet_sprite", "pet_fox", "pet_wisp", "robe_ivory", "robe_crimson", "robe_gilded"];
-const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES];
+const START_OWNED = ["ashwood", "frostbound", "manapearl", "wardsigil", "none", "hat_pointed", "hat_hood", "aura_none", "aura_ember", "cape_none", "cape_travel", "armor_none", "armor_padded", "pet_none", "pet_imp", "robe_classic", "robe_midnight", "wings_none", "offhand_none", "offhand_tome"];
+const LOOTABLE = ["verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "aura_frost", "aura_void", "aura_radiant", "cape_shadow", "cape_star", "cape_phoenix", "wings_angel", "wings_demon", "armor_chain", "armor_void", "armor_dragon", "pet_sprite", "pet_fox", "pet_wisp", "robe_ivory", "robe_crimson", "robe_gilded", "offhand_grimoire", "offhand_codex", "offhand_forbidden"];
+const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS];
 const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
 // DEV: everything unlocked for now so all equipment/cosmetics are viewable. Swap back to START_OWNED before shipping progression.
 const DEV_UNLOCK_ALL = true;
@@ -142,9 +151,10 @@ function computeDamage(skill, atk, def) {
     if (atk.staffGear.el === skill.el && atk.staffGear.elBonus) mult *= 1 + atk.staffGear.elBonus;
     if (atk.staffGear.allDmg) mult *= 1 + atk.staffGear.allDmg;
   }
+  if (atk.offhand?.allDmg) mult *= 1 + atk.offhand.allDmg;
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
-  const critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0);
+  const critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0);
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
   if (def.armor?.dmgReduction) mult *= 1 - def.armor.dmgReduction;
@@ -152,7 +162,7 @@ function computeDamage(skill, atk, def) {
   return { dmg, crit, chilled };
 }
 
-function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look) {
+function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId) {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
   const maxHp = MAX_HP + (armor?.maxHpBonus || 0);
   return {
@@ -161,6 +171,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     relic: RELICS.find(r => r.id === relicId && r.id !== "none") || null,
     armor,
     cape: CAPES.find(c => c.id === capeId && c.id !== "cape_none") || null,
+    offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
     pet: PETS.find(p => p.id === petId && p.id !== "pet_none") || null,
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     skinTone: look?.skinTone || "skin_fair", hairColor: look?.hairColor || "hair_white",
@@ -182,7 +193,8 @@ function makeEnemy() {
     "armor_none", // armor hidden from the game for now
     Math.random() < 0.4 ? pick(PETS.filter(p => p.id !== "pet_none")).id : "pet_none",
     "robe_classic", // keep enemy robe tied to their affinity color so it reads clearly
-    { skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id });
+    { skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id },
+    Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none");
   if (e.relic?.startShield) e.shield = e.relic.startShield;
   return e;
 }
@@ -370,7 +382,66 @@ function CapePhoenix({ color, dark }) {
     </g>
   );
 }
-const CAPE_COMPONENTS = { cape_travel: CapeTravel, cape_shadow: CapeShadow, cape_star: CapeStar, cape_phoenix: CapePhoenix };
+function featherPath(cx, cy, angleDeg, len, width) {
+  const rad = (angleDeg * Math.PI) / 180;
+  const tipX = cx + len * Math.sin(rad), tipY = cy - len * Math.cos(rad);
+  const nx = Math.cos(rad), ny = Math.sin(rad);
+  const midLen = len * 0.55;
+  const midX = cx + midLen * Math.sin(rad), midY = cy - midLen * Math.cos(rad);
+  const leftX = midX - width * nx, leftY = midY + width * ny;
+  const rightX = midX + width * nx, rightY = midY - width * ny;
+  return `M${cx} ${cy} Q${leftX.toFixed(1)} ${leftY.toFixed(1)} ${tipX.toFixed(1)} ${tipY.toFixed(1)} Q${rightX.toFixed(1)} ${rightY.toFixed(1)} ${cx} ${cy} Z`;
+}
+function WingsAngel({ color, dark }) {
+  const feathers = [
+    { a: 100, len: 100, w: 17 },
+    { a: 80,  len: 122, w: 19 },
+    { a: 60,  len: 112, w: 17 },
+    { a: 42,  len: 92,  w: 14 },
+    { a: 25,  len: 68,  w: 11 },
+  ];
+  const wing = (cx, sign, key) => feathers.map((f, i) => (
+    <path key={`${key}${i}`} d={featherPath(cx, 235, sign * f.a, f.len, f.w)} fill={i % 2 ? color : "#FFFFFF"} stroke={dark} strokeWidth="1" opacity="0.97" />
+  ));
+  return <g>{wing(152, -1, "l")}{wing(248, 1, "r")}</g>;
+}
+function batWingPath(cx, cy, sign, angles, lengths) {
+  const pt = (ang, len) => {
+    const rad = (sign * ang * Math.PI) / 180;
+    return [cx + len * Math.sin(rad), cy - len * Math.cos(rad)];
+  };
+  let d = `M${cx} ${cy}`;
+  for (let i = 0; i < angles.length; i++) {
+    const [tx, ty] = pt(angles[i], lengths[i]);
+    d += ` L${tx.toFixed(1)} ${ty.toFixed(1)}`;
+    if (i < angles.length - 1) {
+      const midA = (angles[i] + angles[i + 1]) / 2;
+      const webLen = Math.min(lengths[i], lengths[i + 1]) * 0.52;
+      const [wx, wy] = pt(midA, webLen);
+      d += ` L${wx.toFixed(1)} ${wy.toFixed(1)}`;
+    }
+  }
+  return d + " Z";
+}
+function WingsDemon({ color, dark }) {
+  const angles = [10, 40, 70, 98];
+  const lengths = [140, 162, 142, 100];
+  const strutColor = dark;
+  const strutLine = (cx, sign) => angles.map((a, i) => {
+    const rad = (sign * a * Math.PI) / 180;
+    const x2 = cx + lengths[i] * Math.sin(rad), y2 = 235 - lengths[i] * Math.cos(rad);
+    return <line key={i} x1={cx} y1={235} x2={x2.toFixed(1)} y2={y2.toFixed(1)} stroke={strutColor} strokeWidth="2" opacity="0.6" />;
+  });
+  return (
+    <g opacity="0.97">
+      <path d={batWingPath(150, 235, -1, angles, lengths)} fill={color} stroke={dark} strokeWidth="2.5" />
+      <path d={batWingPath(250, 235, 1, angles, lengths)} fill={color} stroke={dark} strokeWidth="2.5" />
+      {strutLine(150, -1)}
+      {strutLine(250, 1)}
+    </g>
+  );
+}
+const CAPE_COMPONENTS = { cape_travel: CapeTravel, cape_shadow: CapeShadow, cape_star: CapeStar, cape_phoenix: CapePhoenix, wings_angel: WingsAngel, wings_demon: WingsDemon };
 
 function RobeMidnightTrim() {
   const stars = [[168, 270, 2.2], [228, 300, 1.8], [178, 360, 2], [222, 400, 2.4], [196, 330, 1.6], [205, 420, 2]];
@@ -487,6 +558,17 @@ function Pet({ pet }) {
   );
 }
 
+function OffhandBook({ color }) {
+  return (
+    <g transform="translate(131 330)">
+      <rect x="-15" y="-11" width="30" height="22" rx="3" fill={color} />
+      <rect x="-15" y="-11" width="15" height="22" rx="3" fill="#000000" opacity="0.18" />
+      <line x1="0" y1="-11" x2="0" y2="11" stroke="#000000" strokeOpacity="0.35" strokeWidth="1.5" />
+      <circle cx="0" cy="0" r="3.5" fill={GOLD} opacity="0.85" />
+    </g>
+  );
+}
+
 function StaffAshwood() {
   return (
     <g>
@@ -566,6 +648,7 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
   const Armor = mage.armor ? ARMOR_COMPONENTS[mage.armor.id] : null;
   const Cape = mage.cape ? CAPE_COMPONENTS[mage.cape.id] : null;
   const RobeTrim = ROBE_COMPONENTS[mage.robe];
+  const hasOffhand = !!mage.offhand;
   const w = 96 * size, h = 120 * size;
   const floatRef = useRef(null);
 
@@ -602,6 +685,7 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
         {Armor && <Armor />}
         {Staff && <Staff />}
         {Staff && <HandGrip />}
+        {hasOffhand && <OffhandBook color={mage.offhand.color} />}
         {Hat && <Hat p={p} />}
         <Pet pet={mage.pet} />
       </svg>
@@ -680,12 +764,13 @@ export default function MageDuel() {
   const [hairColorId, setHairColorId] = useState(saved?.hairColorId ?? "hair_white");
   const [beardStyleId, setBeardStyleId] = useState(saved?.beardStyleId ?? "beard_long");
   const [eyeColorId, setEyeColorId] = useState(saved?.eyeColorId ?? "eye_dark");
+  const [offhandId, setOffhandId] = useState(saved?.offhandId ?? "offhand_tome");
   const [owned, setOwned] = useState(new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED)));
 
   useEffect(() => {
-    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, owned: [...owned] };
+    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, offhandId, owned: [...owned] };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, owned]);
+  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, beardStyleId, eyeColorId, offhandId, owned]);
 
   const [player, setPlayer] = useState(null);
   const [enemy, setEnemy] = useState(null);
@@ -735,7 +820,7 @@ export default function MageDuel() {
 
   function confirmDuel() {
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
-      { skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId });
+      { skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId }, offhandId);
     if (p.relic?.startShield) p.shield = p.relic.startShield;
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setLog([
@@ -1019,11 +1104,12 @@ export default function MageDuel() {
       armor: ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null,
       cape: CAPES.find(c => c.id === capeId),
       pet: PETS.find(p => p.id === petId),
+      offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
       skinTone: skinToneId, hairColor: hairColorId, beardStyle: beardStyleId, eyeColor: eyeColorId,
       status: {},
     };
     const relic = RELICS.find(r => r.id === relicId);
-    const hat = findItem(hatId), aura = findItem(auraId), robeSkin = findItem(robeId), cape = findItem(capeId), pet = findItem(petId);
+    const hat = findItem(hatId), aura = findItem(auraId), robeSkin = findItem(robeId), cape = findItem(capeId), pet = findItem(petId), offhand = findItem(offhandId);
     return (
       <>
         <div className="flex-1 flex items-center justify-center">
@@ -1035,7 +1121,7 @@ export default function MageDuel() {
           {relic && relic.id !== "none" && <span className="text-xs font-mono px-1.5 py-0.5 rounded-sm border" style={{ color: RARITY[relic.rarity].color, borderColor: RARITY[relic.rarity].color + "66", background: RARITY[relic.rarity].color + "1A" }}>{relic.name}</span>}
         </div>
         <div className="text-center text-xs font-mono" style={{ color: "#B7AE95" }}>
-          {previewMage.staffGear?.name}
+          {previewMage.staffGear?.name} · {offhand?.name}
         </div>
         <div className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>
           {hat?.name} · {robeSkin?.name} · {cape?.name} · {aura?.name} · {pet?.name}
@@ -1109,6 +1195,12 @@ export default function MageDuel() {
               <div className="grid gap-2 mb-4">
                 {RELICS.map(r => (
                   <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
+                ))}
+              </div>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Off-hand <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+              <div className="grid gap-2 mb-4">
+                {OFFHANDS.map(o => (
+                  <RarityCard key={o.id} item={o} selected={offhandId === o.id} locked={!owned.has(o.id)} onClick={() => owned.has(o.id) && setOffhandId(o.id)} />
                 ))}
               </div>
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
@@ -1202,7 +1294,7 @@ export default function MageDuel() {
           <ElementBadge el={enemy.affinity} />
         </div>
         <div className="text-xs font-mono mb-2" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
-          {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}
+          {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {foeSkills.map(s => {
@@ -1306,7 +1398,7 @@ export default function MageDuel() {
               <ElementBadge el={enemy.affinity} />
               <StatusIcons mage={enemy} />
             </div>
-            <div className="text-xs font-mono mb-1" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}</div>
+            <div className="text-xs font-mono mb-1" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}</div>
             <Bar value={enemy.hp} max={enemy.maxHp} color="#72C063" label="HP" />
             <Bar value={enemy.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
           </div>
@@ -1325,7 +1417,7 @@ export default function MageDuel() {
               <ElementBadge el={player.affinity} />
               <StatusIcons mage={player} />
             </div>
-            <div className="text-xs font-mono mb-1" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : "#5A5478" }}>{player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}</div>
+            <div className="text-xs font-mono mb-1" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : "#5A5478" }}>{player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}</div>
             <Bar value={player.hp} max={player.maxHp} color="#72C063" label="HP" />
             <Bar value={player.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
           </div>
