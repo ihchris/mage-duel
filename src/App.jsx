@@ -669,6 +669,10 @@ const ARCHETYPES = {
 const rand = (a, b) => Math.random() * (b - a) + a;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const chance = (pct) => Math.random() * 100 < pct;
+const FANTASY_MAGE_NAMES = [
+  "Ignis", "Zephyr", "Astraea", "Kaelen", "Morrigan", "Solarius", "Valerius",
+  "Lyra", "Eldrin", "Vespera", "Corvus", "Aurelius", "Thalor", "Nyx", "Pyra", "Caelum"
+];
 
 function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   const todayMod = getTodayModifier();
@@ -5591,20 +5595,33 @@ export default function MageDuel() {
       .phase-transition { position: fixed; inset: 0; background: #0B0A16; pointer-events: none; z-index: 120; animation: phaseCircle 0.5s ease-in-out forwards; }
       @keyframes shootingStar { 0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateX(-600px) translateY(600px) rotate(-45deg); opacity: 0; } }
 
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 180, 79, 0.45) rgba(14, 12, 28, 0.7);
+      }
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(232, 180, 79, 0.5) rgba(14, 12, 28, 0.7);
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        scroll-behavior: smooth;
+      }
       .custom-scrollbar::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
+        width: 6px;
+        height: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: #0E0C1CCC;
-        border-radius: 4px;
+        background: rgba(14, 12, 28, 0.75);
+        border-radius: 9999px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #E8B44F66;
-        border-radius: 4px;
+        background: rgba(232, 180, 79, 0.38);
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #E8B44F;
+        box-shadow: 0 0 10px rgba(232, 180, 79, 0.6);
       }
 
       /* ================= DESIGN SYSTEM UI CLASSES ================= */
@@ -5814,110 +5831,610 @@ export default function MageDuel() {
   // ================= CREATE MAGE =================
   if (phase === "create") {
     const previewMage = {
-      affinity, hat: "hat_pointed", aura: "aura_ember", robe: "robe_classic",
-      staffGear: STAFFS.find(s => s.id === "ashwood"), cape: CAPES.find(c => c.id === "cape_travel"), armor: null, pet: PETS.find(p => p.id === "pet_imp"),
-      skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
+      affinity, hat: hatId || "hat_pointed", aura: auraId || "aura_ember", robe: robeId || "robe_classic",
+      staffGear: STAFFS.find(s => s.id === staffId) || STAFFS[0],
+      cape: CAPES.find(c => c.id === capeId) || CAPES.find(c => c.id === "cape_travel"),
+      armor: null, pet: PETS.find(p => p.id === petId) || PETS[0],
+      skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId,
+      beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
       face: faceId, earrings: earringId, noseRing: noseRingId,
+      gloves: glovesId,
       status: {},
     };
     const trimmedName = mageName.trim();
+    const el = ELEMENTS[affinity] || ELEMENTS.fire;
+
+    const rollRandomLook = () => {
+      const isFemale = Math.random() < 0.5;
+      const newGender = isFemale ? "gender_female" : "gender_male";
+      setGenderId(newGender);
+      setSkinToneId(pick(SKIN_TONES).id);
+      setFaceId(pick(FACES).id);
+      setHairColorId(pick(HAIR_COLORS).id);
+      setHairStyleId(pick(HAIR_STYLES).id);
+      setBeardStyleId(isFemale ? "beard_none" : pick(BEARD_STYLES).id);
+      setEyeColorId(pick(EYE_COLORS).id);
+      setGlovesId(pick(GLOVES).id);
+      setEarringId(Math.random() < 0.4 ? pick(EARRINGS.filter(e => e.id !== "earring_none")).id : "earring_none");
+      setNoseRingId(Math.random() < 0.25 ? pick(NOSE_RINGS.filter(n => n.id !== "nosering_none")).id : "nosering_none");
+      setMageName(pick(FANTASY_MAGE_NAMES));
+    };
+
+    const rollRandomName = () => {
+      setMageName(pick(FANTASY_MAGE_NAMES));
+    };
+
+    const QUICK_NAMES = ["Ignis", "Zephyr", "Astraea", "Kaelen", "Morrigan"];
+
+    const ELEMENT_PERKS = {
+      fire:   { role: "Explosão & Queimadura", perk: "+25% Dano de Fogo", badge: "Ataque Contínuo" },
+      ice:    { role: "Controle & Congelamento", perk: "+25% Dano de Gelo", badge: "Paralisia de Turno" },
+      nature: { role: "Cura Vital & Enraizamento", perk: "+25% Dano da Natureza", badge: "Sustentação" },
+      arcane: { role: "Mana & Feitiços Puros", perk: "+25% Dano Arcano", badge: "Dano Mágico Alto" },
+    };
+
+    const desktopTab = (createTab === "identity" ? "body" : createTab);
+
+    const renderIdentitySection = () => (
+      <div className="space-y-4">
+        {/* Name input */}
+        <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>✍️</span><span>Nome do Mago</span>
+            </label>
+            <button
+              onClick={rollRandomName}
+              className="px-2 py-0.5 rounded-full text-[10px] font-mono text-amber-300 hover:text-amber-200 bg-amber-500/15 border border-amber-400/30 flex items-center gap-1 transition-all active:scale-95"
+              title="Gerar nome de fantasia aleatório"
+            >
+              <span>🎲</span><span>Gerar Nome</span>
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              value={mageName}
+              onChange={(e) => setMageName(e.target.value.slice(0, 18))}
+              placeholder="Ex: Ignis, Zephyr, Astraea..."
+              className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9 shadow-inner"
+            />
+            <button
+              onClick={rollRandomName}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-amber-300 transition-colors p-1"
+              title="Sortear nome"
+            >
+              🎲
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+            <span className="text-[10px] font-sans text-zinc-400">Sugestões:</span>
+            {QUICK_NAMES.map(qName => (
+              <button
+                key={qName}
+                onClick={() => setMageName(qName)}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-mono border transition-all ${
+                  mageName === qName
+                    ? "bg-amber-500/30 border-amber-400 text-amber-200 font-bold"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200 hover:border-white/20"
+                }`}
+              >
+                {qName}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Elemental Affinity */}
+        <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>🔮</span><span>Afinidade Elemental</span>
+            </label>
+            <span className="text-[10px] font-mono text-zinc-400">
+              +25% dano correspondente
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(ELEMENTS).map(([key, e]) => {
+              const perkInfo = ELEMENT_PERKS[key];
+              const isSel = affinity === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setAffinity(key)}
+                  className={`rounded-xl p-2.5 text-left font-sans transition-all flex items-center gap-2.5 border active:scale-95 ${
+                    isSel ? "scale-[1.02] shadow-md" : "opacity-80 hover:opacity-100"
+                  }`}
+                  style={{
+                    borderColor: isSel ? e.color : "rgba(255,255,255,0.08)",
+                    backgroundColor: isSel ? `${e.color}1c` : "rgba(15, 23, 42, 0.5)",
+                    boxShadow: isSel ? `0 0 16px ${e.color}44` : "none",
+                  }}
+                >
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-base flex-shrink-0"
+                    style={{ backgroundColor: `${e.color}22`, color: e.color }}
+                  >
+                    {e.icon}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[12px] font-bold truncate flex items-center justify-between" style={{ color: isSel ? e.color : T.textPrimary }}>
+                      <span>{e.name}</span>
+                      {isSel && <span className="text-[10px]">✓</span>}
+                    </div>
+                    <div className="text-[9px] text-zinc-400 truncate mt-0.5">
+                      {perkInfo?.role}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Gender Toggle */}
+        <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
+          <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 mb-2 flex items-center gap-1.5">
+            <span>👤</span><span>Gênero do Personagem</span>
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {GENDERS.map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGenderId(g.id)}
+                className={`py-2 px-3 rounded-xl font-mono text-[12px] font-bold transition-all border flex items-center justify-center gap-2 ${
+                  genderId === g.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <span>{g.id === "gender_female" ? "♀" : "♂"}</span>
+                <span>{g.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    const renderBodySection = () => (
+      <div className="space-y-4">
+        {/* Gender Selector */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>👤</span><span>Gênero</span>
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {GENDERS.map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGenderId(g.id)}
+                className={`py-2 px-3 rounded-xl font-mono text-[12px] font-bold transition-all border flex items-center justify-center gap-2 ${
+                  genderId === g.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <span>{g.id === "gender_female" ? "♀" : "♂"}</span>
+                <span>{g.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Skin Tone */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>🎨</span><span>Tom de Pele</span>
+            </p>
+            <span className="text-[11px] font-mono text-zinc-400">
+              {SKIN_TONES.find(s => s.id === skinToneId)?.name}
+            </span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {SKIN_TONES.map(s => (
+              <button
+                key={s.id}
+                onClick={() => setSkinToneId(s.id)}
+                title={s.name}
+                className="rounded-full transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                style={{
+                  width: 36,
+                  height: 36,
+                  backgroundColor: s.skin,
+                  border: skinToneId === s.id ? `3px solid ${T.gold}` : `2px solid rgba(255,255,255,0.15)`,
+                  boxShadow: skinToneId === s.id ? `0 0 14px ${T.gold}aa` : "0 2px 6px rgba(0,0,0,0.5)",
+                  transform: skinToneId === s.id ? "scale(1.15)" : "none",
+                }}
+              >
+                {skinToneId === s.id && (
+                  <span className="text-[11px] font-bold text-slate-950">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Face Shape */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>🎭</span><span>Formato do Rosto</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {FACES.map(f => (
+              <button
+                key={f.id}
+                onClick={() => setFaceId(f.id)}
+                className={`py-2 px-2.5 rounded-xl font-mono text-[11px] font-bold transition-all border ${
+                  faceId === f.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {f.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Eye Color */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>👁️</span><span>Cor dos Olhos</span>
+            </p>
+            <span className="text-[11px] font-mono text-zinc-400">
+              {EYE_COLORS.find(e => e.id === eyeColorId)?.name}
+            </span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {EYE_COLORS.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEyeColorId(e.id)}
+                title={e.name}
+                className="rounded-full transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                style={{
+                  width: 34,
+                  height: 34,
+                  backgroundColor: e.color,
+                  border: eyeColorId === e.id ? `3px solid ${T.gold}` : `2px solid rgba(255,255,255,0.15)`,
+                  boxShadow: eyeColorId === e.id ? `0 0 14px ${T.gold}aa` : "0 2px 6px rgba(0,0,0,0.5)",
+                  transform: eyeColorId === e.id ? "scale(1.15)" : "none",
+                }}
+              >
+                {eyeColorId === e.id && (
+                  <span className="text-[10px] font-bold text-white">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Gloves */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>🧤</span><span>Luvas & Manoplas</span>
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {GLOVES.map(gl => (
+              <button
+                key={gl.id}
+                onClick={() => setGlovesId(gl.id)}
+                className={`py-2 px-2.5 rounded-xl font-mono text-[11px] text-left transition-all truncate border ${
+                  glovesId === gl.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 font-bold shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {gl.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    const renderHairSection = () => (
+      <div className="space-y-4">
+        {/* Hair Color */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>🎨</span><span>Cor do Cabelo</span>
+            </p>
+            <span className="text-[11px] font-mono text-zinc-400">
+              {HAIR_COLORS.find(h => h.id === hairColorId)?.name}
+            </span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {HAIR_COLORS.map(h => (
+              <button
+                key={h.id}
+                onClick={() => setHairColorId(h.id)}
+                title={h.name}
+                className="rounded-full transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                style={{
+                  width: 34,
+                  height: 34,
+                  backgroundColor: h.hair,
+                  border: hairColorId === h.id ? `3px solid ${T.gold}` : `2px solid rgba(255,255,255,0.15)`,
+                  boxShadow: hairColorId === h.id ? `0 0 14px ${T.gold}aa` : "0 2px 6px rgba(0,0,0,0.5)",
+                  transform: hairColorId === h.id ? "scale(1.15)" : "none",
+                }}
+              >
+                {hairColorId === h.id && (
+                  <span className="text-[10px] font-bold text-slate-950">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Hairstyle */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>✂</span><span>Penteado</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {HAIR_STYLES.map(hs => (
+              <button
+                key={hs.id}
+                onClick={() => setHairStyleId(hs.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  hairStyleId === hs.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {hs.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Beard Style */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>🧔</span><span>Estilo de Barba</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {BEARD_STYLES.map(b => (
+              <button
+                key={b.id}
+                onClick={() => setBeardStyleId(b.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  beardStyleId === b.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {b.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Earrings */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>💎</span><span>Brincos</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {EARRINGS.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEarringId(e.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  earringId === e.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {e.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Nose Rings */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>✨</span><span>Piercing de Nariz</span>
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {NOSE_RINGS.map(n => (
+              <button
+                key={n.id}
+                onClick={() => setNoseRingId(n.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  noseRingId === n.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {n.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
+    const renderDetailsSection = () => (
+      <div className="space-y-4">
+        {/* Eye Color */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
+              <span>👁️</span><span>Cor dos Olhos</span>
+            </p>
+            <span className="text-[11px] font-mono text-zinc-400">
+              {EYE_COLORS.find(e => e.id === eyeColorId)?.name}
+            </span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {EYE_COLORS.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEyeColorId(e.id)}
+                title={e.name}
+                className="rounded-full transition-transform hover:scale-110 active:scale-95 flex items-center justify-center"
+                style={{
+                  width: 34,
+                  height: 34,
+                  backgroundColor: e.color,
+                  border: eyeColorId === e.id ? `3px solid ${T.gold}` : `2px solid rgba(255,255,255,0.15)`,
+                  boxShadow: eyeColorId === e.id ? `0 0 14px ${T.gold}aa` : "0 2px 6px rgba(0,0,0,0.5)",
+                  transform: eyeColorId === e.id ? "scale(1.15)" : "none",
+                }}
+              >
+                {eyeColorId === e.id && (
+                  <span className="text-[10px] font-bold text-white">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Earrings */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>💎</span><span>Brincos</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {EARRINGS.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setEarringId(e.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  earringId === e.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {e.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Nose Rings */}
+        <div>
+          <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
+            <span>✨</span><span>Piercing de Nariz</span>
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {NOSE_RINGS.map(n => (
+              <button
+                key={n.id}
+                onClick={() => setNoseRingId(n.id)}
+                className={`py-2 px-2 rounded-xl font-mono text-[11px] truncate transition-all font-bold border ${
+                  noseRingId === n.id
+                    ? "bg-amber-500/20 border-amber-400/80 text-amber-200 shadow-sm"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                {n.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+
     return (
-      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex items-center justify-center safe-all p-2 sm:p-4 md:p-6" style={{ color: T.textPrimary }}>
+      <div className="fixed inset-0 w-full h-full safe-all flex items-center justify-center p-0 sm:p-4 md:p-6 overflow-hidden select-none" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
+
         <div
-          className="relative z-10 w-full max-w-4xl max-h-[94dvh] flex flex-col landscape:flex-row md:flex-row gap-3 sm:gap-6 rounded-2xl p-3 sm:p-6 panel-base overflow-y-auto landscape:overflow-hidden md:overflow-hidden"
+          className="relative z-10 w-full h-full sm:h-auto sm:max-h-[94dvh] max-w-5xl flex flex-col md:flex-row landscape:flex-row rounded-none sm:rounded-3xl panel-base overflow-hidden border-0 sm:border border-white/10 shadow-2xl"
           style={{
-            borderColor: T.borderDefault,
-            boxShadow: "0 16px 48px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.06)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08)",
           }}
         >
-          {/* Left Column: Studio Preview, Name, Affinity, Launch */}
-          <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col items-center justify-between border-b landscape:border-b-0 md:border-b-0 landscape:border-r md:border-r border-white/10 pb-4 landscape:pb-0 md:pb-0 landscape:pr-4 md:pr-6 flex-shrink-0">
-            <div className="w-full text-center">
-              <h1
-                className="font-serif text-[24px] sm:text-[28px] font-bold text-center text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.3)]"
-              >
-                Crie seu Arquimago
-              </h1>
-              <p className="text-center text-[12px] font-sans text-zinc-400 mt-1">
-                Feitiços de afinidade causam +25% de dano
-              </p>
-            </div>
-
-            <div className="flex justify-center my-2 scale-95 sm:scale-105 landscape:scale-95 md:landscape:scale-105">
-              <MageSprite mage={previewMage} facing="right" size={1.3} />
-            </div>
-
-            <div className="w-full space-y-3">
-              <div>
-                <p className="font-serif text-[12px] font-bold mb-1 text-amber-200">
-                  Nome do Mago
-                </p>
-                <input
-                  value={mageName}
-                  onChange={(e) => setMageName(e.target.value.slice(0, 18))}
-                  placeholder="Digite o nome arcano..."
-                  className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/70 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40"
+          {/* MOBILE PORTRAIT VIEW (< sm and portrait) */}
+          <div className="flex flex-col h-full w-full md:hidden landscape:hidden overflow-hidden">
+            {/* 1. Top Fixed Live Character Preview Stage */}
+            <div className="flex-shrink-0 w-full bg-slate-950/95 border-b border-white/10 p-2.5 relative overflow-hidden flex flex-col items-center">
+              {/* Elemental Radial Glow */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35">
+                <div
+                  className="w-36 h-36 rounded-full blur-2xl transition-all duration-500"
+                  style={{ background: el.color }}
                 />
               </div>
 
-              <div>
-                <p className="font-serif text-[12px] font-bold mb-1.5 text-amber-200">
-                  Afinidade Elemental
-                </p>
-                <div className="grid grid-cols-4 gap-2">
-                  {Object.entries(ELEMENTS).map(([key, e]) => (
-                    <button
-                      key={key}
-                      onClick={() => setAffinity(key)}
-                      className={`card-surface rounded-xl p-2 text-center font-sans text-[12px] transition-all flex flex-col items-center justify-center ${
-                        affinity === key ? "scale-[1.03]" : ""
-                      }`}
-                      style={{
-                        borderColor: affinity === key ? e.color : "rgba(255,255,255,0.08)",
-                        backgroundColor: affinity === key ? `${e.color}1c` : "rgba(15, 23, 42, 0.4)",
-                        color: e.color,
-                        boxShadow: affinity === key ? `0 0 16px ${e.color}44` : "none",
-                      }}
-                    >
-                      <div className="leading-none text-base">{e.icon}</div>
-                      <div className="text-[11px] font-bold mt-1">{e.name}</div>
-                    </button>
-                  ))}
+              {/* Top Controls Row */}
+              <div className="w-full flex items-center justify-between z-10 mb-1">
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border flex items-center gap-1 shadow-sm"
+                    style={{ color: el.color, borderColor: `${el.color}55`, backgroundColor: `${el.color}15` }}
+                  >
+                    <span>{el.icon}</span>
+                    <span>{el.name}</span>
+                  </span>
+                  <span className="text-[10px] font-sans text-zinc-400">
+                    · +25% dano
+                  </span>
                 </div>
+
+                <button
+                  onClick={rollRandomLook}
+                  className="px-2.5 py-1 rounded-full text-[11px] font-sans font-bold bg-amber-500/20 border border-amber-400/40 text-amber-300 hover:bg-amber-500/30 transition-all flex items-center gap-1 shadow-sm active:scale-95"
+                  title="Sortear aparência e nome aleatórios"
+                >
+                  <span>🎲</span>
+                  <span>Aleatório</span>
+                </button>
               </div>
 
-              <button
-                onClick={() => setPhase("loadout")}
-                disabled={!trimmedName}
-                className="btn-king w-full rounded-xl py-3 font-serif text-[16px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
-              >
-                <span>⚔️ Iniciar Jornada</span>
-              </button>
-            </div>
-          </div>
+              {/* Centered Mage Sprite */}
+              <div className="relative z-10 my-0.5 transform scale-95 flex items-center justify-center">
+                <MageSprite mage={previewMage} facing="right" size={1.25} />
+              </div>
 
-          {/* Right Column: Customization with sub-tabs */}
-          <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col min-h-0 flex-1 overflow-hidden">
-            {/* Sub-tabs header */}
-            <div className="grid grid-cols-3 gap-2 mb-3 pb-2 border-b border-[#2A2444]">
+              {/* Ground Shadow & Live Indicator */}
+              <div className="w-full flex items-center justify-between z-10 mt-0.5 px-1">
+                <button
+                  onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
+                  className="px-2 py-0.5 rounded-full text-[10px] font-sans font-medium bg-slate-900 border border-white/15 text-zinc-300 active:scale-95 flex items-center gap-1 shadow-sm"
+                >
+                  <span>{genderId === "gender_female" ? "♀ Feminino" : "♂ Masculino"}</span>
+                </button>
+
+                <div className="flex items-center gap-1">
+                  <span className="flex h-1.5 w-1.5 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 font-bold truncate max-w-[120px]">
+                    {trimmedName || "Novo Mago"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Sub-Tabs Bar */}
+            <div className="flex-shrink-0 grid grid-cols-3 gap-1.5 p-2 bg-slate-900/90 border-b border-white/10 z-10">
               {[
-                ["body", "Corpo & Pele", "👤"],
-                ["hair", "Cabelo & Barba", "✂"],
-                ["details", "Rosto & Piercing", "✨"],
+                ["identity", "Identidade", "⚔️"],
+                ["body", "Rosto & Pele", "🎨"],
+                ["hair", "Cabelo & Estilo", "✂"],
               ].map(([t, label, icon]) => (
                 <button
                   key={t}
                   onClick={() => setCreateTab(t)}
-                  className={`btn-surface rounded-xl py-2 px-1 font-mono text-[12px] flex items-center justify-center gap-1.5 transition-all ${
-                    createTab === t ? "border-[#E8B44F] text-[#E8B44F] font-bold" : ""
+                  className={`py-1.5 px-1 rounded-xl font-mono text-[11px] font-bold flex items-center justify-center gap-1 transition-all border ${
+                    createTab === t
+                      ? "bg-amber-500/20 border-amber-400/60 text-amber-200 shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                      : "bg-slate-950/60 border-white/5 text-zinc-400 hover:text-zinc-200"
                   }`}
-                  style={{
-                    borderColor: createTab === t ? T.gold : T.borderSubtle,
-                    backgroundColor: createTab === t ? `${T.gold}18` : T.bgSurface,
-                    color: createTab === t ? T.gold : T.textSecondary,
-                  }}
                 >
                   <span>{icon}</span>
                   <span className="truncate">{label}</span>
@@ -5925,227 +6442,186 @@ export default function MageDuel() {
               ))}
             </div>
 
-            {/* Customizer tab content */}
-            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
-              {createTab === "body" && (
-                <div className="space-y-4">
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Gênero</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {GENDERS.map(g => (
+            {/* 3. Content Scroll Container (Single, Smooth, Touch Momentum) */}
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 pb-24 overscroll-contain">
+              {createTab === "identity" && renderIdentitySection()}
+              {createTab === "body" && renderBodySection()}
+              {createTab === "hair" && renderHairSection()}
+            </div>
+
+            {/* 4. Bottom Sticky Action Bar */}
+            <div className="flex-shrink-0 w-full p-2.5 sm:p-3 bg-slate-950/95 border-t border-white/10 safe-all z-20 shadow-2xl flex flex-col gap-1">
+              {!trimmedName && (
+                <span className="text-center text-[10px] font-sans text-amber-400/90 font-medium animate-pulse">
+                  ⚠️ Digite o nome do seu mago para iniciar a jornada
+                </span>
+              )}
+              <button
+                onClick={() => trimmedName && setPhase("loadout")}
+                disabled={!trimmedName}
+                className="btn-king w-full rounded-xl py-3 font-serif text-[15px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                <span>⚔️ Iniciar Jornada</span>
+              </button>
+            </div>
+          </div>
+
+          {/* DESKTOP & LANDSCAPE VIEW (md:flex landscape:flex) */}
+          <div className="hidden md:flex landscape:flex w-full h-full flex-row overflow-hidden">
+            {/* Left Column: Studio Sanctuary, Name, Affinity, Launch */}
+            <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col justify-between border-r border-white/10 p-5 md:p-6 bg-slate-950/60 flex-shrink-0">
+              <div className="w-full text-center">
+                <h1 className="font-serif text-[26px] md:text-[28px] font-bold text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.35)]">
+                  Crie seu Arquimago
+                </h1>
+                <p className="text-center text-[12px] font-sans text-zinc-400 mt-1">
+                  Forje seu legado arcano e domine os elementos
+                </p>
+              </div>
+
+              {/* Pedestal with Sprite */}
+              <div className="relative flex flex-col items-center justify-center my-2 select-none group">
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+                  <div
+                    className="w-44 h-44 rounded-full blur-2xl transition-all duration-500"
+                    style={{ background: `radial-gradient(circle, ${el.color}88 0%, transparent 70%)` }}
+                  />
+                </div>
+
+                <div className="transform scale-100 hover:scale-105 transition-transform duration-300">
+                  <MageSprite mage={previewMage} facing="right" size={1.65} />
+                </div>
+
+                <div className="w-36 h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-1" />
+
+                <button
+                  onClick={rollRandomLook}
+                  className="mt-2 px-3 py-1 rounded-full text-[11px] font-sans font-bold bg-slate-900/90 border border-amber-400/40 text-amber-200 hover:bg-amber-400/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+                >
+                  <span>🎲</span>
+                  <span>Sorteio Aleatório</span>
+                </button>
+              </div>
+
+              {/* Name & Affinity */}
+              <div className="w-full space-y-3">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-serif text-[12px] font-bold text-amber-200">
+                      Nome do Mago
+                    </label>
+                    <button
+                      onClick={rollRandomName}
+                      className="text-[11px] font-mono text-amber-400 hover:text-amber-200 flex items-center gap-1 transition-colors"
+                      title="Gerar nome de fantasia aleatório"
+                    >
+                      <span>🎲</span>
+                      <span>Nome Aleatório</span>
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      value={mageName}
+                      onChange={(e) => setMageName(e.target.value.slice(0, 18))}
+                      placeholder="Digite o nome arcano..."
+                      className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9"
+                    />
+                    <button
+                      onClick={rollRandomName}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-amber-300 transition-colors p-1"
+                      title="Sortear nome"
+                    >
+                      🎲
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="font-serif text-[12px] font-bold text-amber-200">
+                      Afinidade Elemental
+                    </label>
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      +25% dano
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {Object.entries(ELEMENTS).map(([key, e]) => {
+                      const perkInfo = ELEMENT_PERKS[key];
+                      const isSel = affinity === key;
+                      return (
                         <button
-                          key={g.id}
-                          onClick={() => setGenderId(g.id)}
-                          className={`btn-surface rounded-xl py-2 font-mono text-[12px] font-bold transition-all ${
-                            genderId === g.id ? "border-[#E8B44F] text-[#E8B44F]" : ""
+                          key={key}
+                          onClick={() => setAffinity(key)}
+                          className={`rounded-xl p-2 text-left font-sans transition-all flex items-center gap-2 border active:scale-95 ${
+                            isSel ? "scale-[1.02]" : "opacity-80 hover:opacity-100"
                           }`}
                           style={{
-                            borderColor: genderId === g.id ? T.gold : T.borderSubtle,
-                            backgroundColor: genderId === g.id ? `${T.gold}18` : T.bgSurface,
-                            color: genderId === g.id ? T.gold : T.textSecondary,
+                            borderColor: isSel ? e.color : "rgba(255,255,255,0.08)",
+                            backgroundColor: isSel ? `${e.color}1c` : "rgba(15, 23, 42, 0.4)",
+                            boxShadow: isSel ? `0 0 16px ${e.color}44` : "none",
                           }}
                         >
-                          {g.name}
+                          <div
+                            className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+                            style={{ backgroundColor: `${e.color}22`, color: e.color }}
+                          >
+                            {e.icon}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[12px] font-bold truncate" style={{ color: isSel ? e.color : T.textPrimary }}>
+                              {e.name}
+                            </div>
+                            <div className="text-[9px] text-zinc-400 truncate">
+                              {perkInfo?.role}
+                            </div>
+                          </div>
                         </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Tom de Pele</p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {SKIN_TONES.map(s => (
-                        <button
-                          key={s.id}
-                          onClick={() => setSkinToneId(s.id)}
-                          title={s.name}
-                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            backgroundColor: s.skin,
-                            border: skinToneId === s.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
-                            boxShadow: skinToneId === s.id ? `0 0 12px ${T.gold}88` : "none",
-                            transform: skinToneId === s.id ? "scale(1.12)" : "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Formato do Rosto</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {FACES.map(f => (
-                        <button
-                          key={f.id}
-                          onClick={() => setFaceId(f.id)}
-                          className="btn-surface rounded-xl py-2 font-mono text-[11px] font-bold transition-all"
-                          style={{
-                            borderColor: faceId === f.id ? T.gold : T.borderSubtle,
-                            backgroundColor: faceId === f.id ? `${T.gold}18` : T.bgSurface,
-                            color: faceId === f.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {f.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Luvas & Mãos</p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {GLOVES.map(gl => (
-                        <button
-                          key={gl.id}
-                          onClick={() => setGlovesId(gl.id)}
-                          className="btn-surface rounded-xl py-2 px-2.5 font-mono text-[12px] text-left transition-all truncate"
-                          style={{
-                            borderColor: glovesId === gl.id ? T.gold : T.borderSubtle,
-                            backgroundColor: glovesId === gl.id ? `${T.gold}18` : T.bgSurface,
-                            color: glovesId === gl.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {gl.name}
-                        </button>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
 
-              {createTab === "hair" && (
-                <div className="space-y-4">
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Cor do Cabelo</p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {HAIR_COLORS.map(h => (
-                        <button
-                          key={h.id}
-                          onClick={() => setHairColorId(h.id)}
-                          title={h.name}
-                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            backgroundColor: h.hair,
-                            border: hairColorId === h.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
-                            boxShadow: hairColorId === h.id ? `0 0 12px ${T.gold}88` : "none",
-                            transform: hairColorId === h.id ? "scale(1.12)" : "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                <button
+                  onClick={() => trimmedName && setPhase("loadout")}
+                  disabled={!trimmedName}
+                  className="btn-king w-full rounded-xl py-3 font-serif text-[16px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
+                >
+                  <span>⚔️ Iniciar Jornada</span>
+                </button>
+              </div>
+            </div>
 
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Penteado</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {HAIR_STYLES.map(hs => (
-                        <button
-                          key={hs.id}
-                          onClick={() => setHairStyleId(hs.id)}
-                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
-                          style={{
-                            borderColor: hairStyleId === hs.id ? T.gold : T.borderSubtle,
-                            backgroundColor: hairStyleId === hs.id ? `${T.gold}18` : T.bgSurface,
-                            color: hairStyleId === hs.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {hs.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+            {/* Right Column: Customizer Workshop */}
+            <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col min-h-0 flex-1 bg-slate-900/30 overflow-hidden">
+              {/* Sub-Tabs Header */}
+              <div className="grid grid-cols-3 gap-2 p-3 sm:p-4 pb-3 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
+                {[
+                  ["body", "Corpo & Pele", "👤"],
+                  ["hair", "Cabelo & Barba", "✂"],
+                  ["details", "Rosto & Joias", "✨"],
+                ].map(([t, label, icon]) => (
+                  <button
+                    key={t}
+                    onClick={() => setCreateTab(t)}
+                    className={`btn-surface rounded-xl py-2 px-1 font-mono text-[12px] flex items-center justify-center gap-1.5 transition-all border ${
+                      desktopTab === t
+                        ? "border-amber-400/80 text-amber-300 font-bold bg-amber-500/15 shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
+                  >
+                    <span>{icon}</span>
+                    <span className="truncate">{label}</span>
+                  </button>
+                ))}
+              </div>
 
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Estilo de Barba</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {BEARD_STYLES.map(b => (
-                        <button
-                          key={b.id}
-                          onClick={() => setBeardStyleId(b.id)}
-                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
-                          style={{
-                            borderColor: beardStyleId === b.id ? T.gold : T.borderSubtle,
-                            backgroundColor: beardStyleId === b.id ? `${T.gold}18` : T.bgSurface,
-                            color: beardStyleId === b.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {b.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {createTab === "details" && (
-                <div className="space-y-4">
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Cor dos Olhos</p>
-                    <div className="flex gap-2.5 flex-wrap">
-                      {EYE_COLORS.map(e => (
-                        <button
-                          key={e.id}
-                          onClick={() => setEyeColorId(e.id)}
-                          title={e.name}
-                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
-                          style={{
-                            width: 32,
-                            height: 32,
-                            backgroundColor: e.color,
-                            border: eyeColorId === e.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
-                            boxShadow: eyeColorId === e.id ? `0 0 12px ${T.gold}88` : "none",
-                            transform: eyeColorId === e.id ? "scale(1.12)" : "none",
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Brincos</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {EARRINGS.map(e => (
-                        <button
-                          key={e.id}
-                          onClick={() => setEarringId(e.id)}
-                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
-                          style={{
-                            borderColor: earringId === e.id ? T.gold : T.borderSubtle,
-                            backgroundColor: earringId === e.id ? `${T.gold}18` : T.bgSurface,
-                            color: earringId === e.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {e.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Piercing de Nariz</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {NOSE_RINGS.map(n => (
-                        <button
-                          key={n.id}
-                          onClick={() => setNoseRingId(n.id)}
-                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
-                          style={{
-                            borderColor: noseRingId === n.id ? T.gold : T.borderSubtle,
-                            backgroundColor: noseRingId === n.id ? `${T.gold}18` : T.bgSurface,
-                            color: noseRingId === n.id ? T.gold : T.textSecondary,
-                          }}
-                        >
-                          {n.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Scrollable Customization Content (Single, Smooth Scroll) */}
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 overscroll-contain pb-12">
+                {desktopTab === "body" && renderBodySection()}
+                {desktopTab === "hair" && renderHairSection()}
+                {desktopTab === "details" && renderDetailsSection()}
+              </div>
             </div>
           </div>
 
@@ -6154,6 +6630,7 @@ export default function MageDuel() {
       </div>
     );
   }
+
 
   // ================= SHARED: character editor + gear modal =================
   function buildPreviewMage() {
@@ -6546,7 +7023,7 @@ export default function MageDuel() {
             </div>
           )}
 
-          <div className="p-3 sm:p-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+          <div className="p-3 sm:p-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar overscroll-contain pb-12">
 
           {tab === "skills" && (
             <div>
@@ -8486,7 +8963,7 @@ export default function MageDuel() {
           </div>
 
           {/* Center Matchup: Face-to-Face Mages & Tactical Loadout */}
-          <div className="flex-1 min-h-0 flex flex-col justify-between gap-2 sm:gap-2.5 my-1 overflow-y-auto custom-scrollbar">
+          <div className="flex-1 min-h-0 flex flex-col justify-between gap-2 sm:gap-2.5 my-1 overflow-y-auto custom-scrollbar overscroll-contain pb-4">
             
             {/* The Duelists Cards Side-by-Side with Central VS Badge */}
             <div className="relative grid grid-cols-2 gap-2 sm:gap-4 w-full items-stretch flex-shrink-0">
@@ -9489,7 +9966,7 @@ export default function MageDuel() {
 
           {/* Skills Deck & Battle Actions */}
           <div className="landscape:col-span-8 md:col-span-8 flex flex-col justify-between min-h-0 flex-1 overflow-hidden">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar p-0.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar overscroll-contain p-0.5 pb-2">
               {menuSkills.map((s, idx) => (
                 <ModernSkillCard
                   key={s.id}

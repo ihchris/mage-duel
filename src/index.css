@@ -219,16 +219,57 @@ html, body, #root {
   transform: none;
 }
 
+/* Universal Smooth Scrolling & Modern Custom Scrollbar */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232, 180, 79, 0.45) rgba(14, 12, 28, 0.7);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(232, 180, 79, 0.5) rgba(14, 12, 28, 0.7);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(14, 12, 28, 0.75);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(232, 180, 79, 0.38);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #E8B44F;
+  box-shadow: 0 0 10px rgba(232, 180, 79, 0.6);
+}
+
+.modal-window {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
 /* Smartphone Specific Performance & Touch Optimizations */
 @media (max-width: 640px) {
   * {
     -webkit-tap-highlight-color: transparent;
   }
-  .modal-window {
+  .modal-window, .custom-scrollbar {
     -webkit-overflow-scrolling: touch;
-  }
-  .custom-scrollbar {
-    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
+
 
