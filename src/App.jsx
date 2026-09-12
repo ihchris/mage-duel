@@ -369,11 +369,12 @@ const ELEMENTS = {
 };
 
 const SKIN_TONES = [
-  { id: "skin_fair",  name: "Fair",  skin: "#F3C79E", skinD: "#DBA97D" },
-  { id: "skin_tan",   name: "Tan",   skin: "#E0A874", skinD: "#C08A55" },
-  { id: "skin_olive", name: "Olive", skin: "#C68642", skinD: "#A66A2E" },
-  { id: "skin_deep",  name: "Deep",  skin: "#8D5524", skinD: "#6E3F16" },
-  { id: "skin_ebony", name: "Ebony", skin: "#5C3A21", skinD: "#432A17" },
+  { id: "skin_fair",     name: "Fair",     name_pt: "Clara",        skin: "#F3C79E", skinD: "#DBA97D" },
+  { id: "skin_tan",      name: "Tan",      name_pt: "Bronzeada",    skin: "#E0A874", skinD: "#C08A55" },
+  { id: "skin_olive",    name: "Olive",    name_pt: "Oliva",        skin: "#C68642", skinD: "#A66A2E" },
+  { id: "skin_deep",     name: "Deep",     name_pt: "Escura",       skin: "#8D5524", skinD: "#6E3F16" },
+  { id: "skin_ebony",    name: "Ebony",    name_pt: "Ébano",        skin: "#5C3A21", skinD: "#432A17" },
+  { id: "skin_obsidian", name: "Obsidian", name_pt: "Ébano Escuro", skin: "#321D12", skinD: "#1F0F08" },
 ];
 const HAIR_COLORS = [
   { id: "hair_white",   name: "White",   hair: "#F4F1EA", hairD: "#D9D2C2" },
@@ -6341,7 +6342,10 @@ export default function MageDuel() {
               <span>🎨</span><span>{t("skinTone")}</span>
             </p>
             <span className="text-[11px] font-mono text-zinc-400">
-              {SKIN_TONES.find(s => s.id === skinToneId)?.name}
+              {(() => {
+                const s = SKIN_TONES.find(x => x.id === skinToneId);
+                return (lang === "pt" && s?.name_pt) ? s.name_pt : (s?.name || "");
+              })()}
             </span>
           </div>
           <div className="flex gap-3 flex-wrap">
@@ -7763,10 +7767,10 @@ export default function MageDuel() {
                 ))}
               </div>
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Skin Tone</p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Tom de Pele" : "Skin Tone"}</p>
               <div className="flex gap-2 mb-4 flex-wrap">
                 {SKIN_TONES.map(s => (
-                  <button key={s.id} onClick={() => setSkinToneId(s.id)} title={s.name}
+                  <button key={s.id} onClick={() => setSkinToneId(s.id)} title={(lang === "pt" && s.name_pt) ? s.name_pt : s.name}
                     className="rounded-full transition-transform"
                     style={{ width: 34, height: 34, background: s.skin, border: skinToneId === s.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: skinToneId === s.id ? "0 0 10px #E8B44F88" : "none", transform: skinToneId === s.id ? "scale(1.1)" : "none" }} />
                 ))}
