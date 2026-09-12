@@ -2087,27 +2087,15 @@ function WingsAngel({ color, dark }) {
       </defs>
 
       {/* Divine Radiant Glow Behind Wings */}
-      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#angelHaloGlow)" opacity={0.4} />
-      <circle cx="200" cy="180" r="95" fill="#FEF08A" opacity="0.12" />
+      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#angelHaloGlow)" opacity={0.35} />
+      <circle cx="200" cy="180" r="90" fill="#FEF08A" opacity="0.08" />
 
-      {/* Radiant Divine Rays of Starlight */}
-      <g stroke="url(#angelGoldQuill)" strokeWidth="1.2" opacity="0.35" strokeDasharray="4 6">
-        <line x1="200" y1="210" x2="60" y2="85" />
-        <line x1="200" y1="210" x2="340" y2="85" />
-        <line x1="200" y1="210" x2="20" y2="175" />
-        <line x1="200" y1="210" x2="380" y2="175" />
-        <line x1="200" y1="210" x2="35" y2="280" />
-        <line x1="200" y1="210" x2="365" y2="280" />
-      </g>
-
-      {/* Left Wing (Anchored at left shoulder X=152 Y=228) */}
+      {/* Left Wing */}
       <g className="angelWingL">{leftWing}</g>
 
-      {/* Right Wing (Anchored at right shoulder X=248 Y=228, cleanly mirrored across X=200) */}
-      <g className="angelWingR">
-        <g transform="translate(400, 0) scale(-1, 1)">
-          {leftWing}
-        </g>
+      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
+        <g className="angelWingL">{leftWing}</g>
       </g>
 
       {/* Floating Sacred Sparkles */}
@@ -2241,18 +2229,15 @@ function WingsDemon({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Abyssal Crimson & Smoldering Glow */}
-      <ellipse cx="200" cy="220" rx="145" ry="115" fill="url(#demonAbyssGlow)" opacity={0.5} />
-      <ellipse cx="200" cy="210" rx="80" ry="60" fill="#991B1B" opacity="0.15" />
+      {/* Abyssal Crimson Glow */}
+      <ellipse cx="200" cy="220" rx="140" ry="110" fill="url(#demonAbyssGlow)" opacity={0.45} />
 
-      {/* Left Wing (Anchored at left shoulder X=152 Y=235) */}
+      {/* Left Wing */}
       <g className="demonWingL">{leftWing}</g>
 
-      {/* Right Wing (Anchored at right shoulder X=248 Y=235, cleanly mirrored across X=200) */}
-      <g className="demonWingR">
-        <g transform="translate(400, 0) scale(-1, 1)">
-          {leftWing}
-        </g>
+      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
+        <g className="demonWingL">{leftWing}</g>
       </g>
 
       {/* Rising Infernal Embers */}
@@ -2355,18 +2340,15 @@ function WingsPhoenix({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Solar Halo & Primal Fire Aura */}
-      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#phoenixSunGlow)" opacity={0.45} />
-      <ellipse cx="200" cy="200" rx="85" ry="65" fill="#F59E0B" opacity="0.12" />
+      {/* Solar Halo Glow */}
+      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#phoenixSunGlow)" opacity={0.4} />
 
-      {/* Left Wing (Anchored at left shoulder X=152 Y=228) */}
+      {/* Left Wing */}
       <g className="phoenixWingL">{leftWing}</g>
 
-      {/* Right Wing (Anchored at right shoulder X=248 Y=228, cleanly mirrored across X=200) */}
-      <g className="phoenixWingR">
-        <g transform="translate(400, 0) scale(-1, 1)">
-          {leftWing}
-        </g>
+      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
+        <g className="phoenixWingL">{leftWing}</g>
       </g>
 
       {/* Floating Solar Flame Embers */}
@@ -2464,18 +2446,15 @@ function WingsFae({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Prismatic Mystical Aurora Aura */}
-      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#faePrismGlow)" opacity={0.5} />
-      <circle cx="200" cy="200" r="85" fill="#38BDF8" opacity="0.1" />
+      {/* Prismatic Fae Aura */}
+      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#faePrismGlow)" opacity={0.45} />
 
-      {/* Left Wing (Anchored at left shoulder X=150 Y=228) */}
+      {/* Left Wing */}
       <g className="faeWingL">{leftWing}</g>
 
-      {/* Right Wing (Anchored at right shoulder X=250 Y=228, cleanly mirrored across X=200) */}
-      <g className="faeWingR">
-        <g transform="translate(400, 0) scale(-1, 1)">
-          {leftWing}
-        </g>
+      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
+        <g className="faeWingL">{leftWing}</g>
       </g>
 
       {/* Shimmering Starlight Sparkles */}
@@ -5642,48 +5621,48 @@ export default function MageDuel() {
 
       @keyframes angelWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(-4.5deg) translateY(-2px) scale(1.02); }
+        50% { transform: rotate(-3.5deg) translateY(-2px) scale(1.015); }
       }
       @keyframes angelWingRight {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(4.5deg) translateY(-2px) scale(1.02); }
+        50% { transform: rotate(3.5deg) translateY(-2px) scale(1.015); }
       }
-      .angelWingL { animation: angelWingLeft 3.6s ease-in-out infinite; transform-origin: 152px 228px; transform-box: view-box; will-change: transform; }
-      .angelWingR { animation: angelWingRight 3.6s ease-in-out infinite; transform-origin: 248px 228px; transform-box: view-box; will-change: transform; }
+      .angelWingL { animation: angelWingLeft 3.6s ease-in-out infinite; transform-origin: 152px 230px; transform-box: view-box; will-change: transform; }
+      .angelWingR { animation: angelWingRight 3.6s ease-in-out infinite; transform-origin: 248px 230px; transform-box: view-box; will-change: transform; }
 
       @keyframes demonWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        42% { transform: rotate(-5deg) translateY(-2px) scale(1.03, 0.98); }
-        75% { transform: rotate(1.2deg) translateY(1px); }
+        42% { transform: rotate(-4.2deg) translateY(-2px) scale(1.02, 0.98); }
+        75% { transform: rotate(1deg) translateY(1px); }
       }
       @keyframes demonWingRight {
         0%, 100% { transform: rotate(0deg); }
-        42% { transform: rotate(5deg) translateY(-2px) scale(1.03, 0.98); }
-        75% { transform: rotate(-1.2deg) translateY(1px); }
+        42% { transform: rotate(4.2deg) translateY(-2px) scale(1.02, 0.98); }
+        75% { transform: rotate(-1deg) translateY(1px); }
       }
       .demonWingL { animation: demonWingLeft 4.2s ease-in-out infinite; transform-origin: 152px 235px; transform-box: view-box; will-change: transform; }
       .demonWingR { animation: demonWingRight 4.2s ease-in-out infinite; transform-origin: 248px 235px; transform-box: view-box; will-change: transform; }
 
       @keyframes phoenixWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(-4.5deg) translateY(-3px) scale(1.03); }
+        50% { transform: rotate(-3.8deg) translateY(-3px) scale(1.025); }
       }
       @keyframes phoenixWingRight {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(4.5deg) translateY(-3px) scale(1.03); }
+        50% { transform: rotate(3.8deg) translateY(-3px) scale(1.025); }
       }
-      .phoenixWingL { animation: phoenixWingLeft 3.2s ease-in-out infinite; transform-origin: 152px 228px; transform-box: view-box; will-change: transform; }
-      .phoenixWingR { animation: phoenixWingRight 3.2s ease-in-out infinite; transform-origin: 248px 228px; transform-box: view-box; will-change: transform; }
+      .phoenixWingL { animation: phoenixWingLeft 3.2s ease-in-out infinite; transform-origin: 152px 230px; transform-box: view-box; will-change: transform; }
+      .phoenixWingR { animation: phoenixWingRight 3.2s ease-in-out infinite; transform-origin: 248px 230px; transform-box: view-box; will-change: transform; }
 
       @keyframes faeWingLeft {
         0%, 100% { transform: rotate(0deg) scaleX(1); }
-        30% { transform: rotate(-3.5deg) scaleX(0.96); }
-        60% { transform: rotate(-6deg) scaleX(1.04); }
+        30% { transform: rotate(-3deg) scaleX(0.97); }
+        60% { transform: rotate(-5deg) scaleX(1.03); }
       }
       @keyframes faeWingRight {
         0%, 100% { transform: rotate(0deg) scaleX(1); }
-        30% { transform: rotate(3.5deg) scaleX(0.96); }
-        60% { transform: rotate(6deg) scaleX(1.04); }
+        30% { transform: rotate(3deg) scaleX(0.97); }
+        60% { transform: rotate(5deg) scaleX(1.03); }
       }
       .faeWingL { animation: faeWingLeft 2.4s ease-in-out infinite; transform-origin: 150px 228px; transform-box: view-box; will-change: transform; }
       .faeWingR { animation: faeWingRight 2.4s ease-in-out infinite; transform-origin: 250px 228px; transform-box: view-box; will-change: transform; }
