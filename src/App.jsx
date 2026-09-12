@@ -4374,6 +4374,7 @@ export default function MageDuel() {
   const [showShardShopModal, setShowShardShopModal] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [shopCategory, setShopCategory] = useState("all");
+  const [scoutView, setScoutView] = useState("both");
   const [adModalOpen, setAdModalOpen] = useState(false);
   const [adTimer, setAdTimer] = useState(3);
   const adIntervalRef = useRef(null);
@@ -8453,6 +8454,7 @@ export default function MageDuel() {
   if (phase === "scout") {
     const previewMage = buildPreviewMage();
     const relic = RELICS.find(r => r.id === relicId);
+    const playerSkills = chosen.map(id => SKILLS.find(s => s.id === id)).filter(Boolean);
     const foeSkills = enemy.skills;
     const bios = NPC_BIOS[enemy.affinity] || [];
     const bioHash = [...enemy.name].reduce((a, c) => a + c.charCodeAt(0), 0);
@@ -8460,14 +8462,15 @@ export default function MageDuel() {
     const friended = isFriend(enemy);
     const playerEl = ELEMENTS[affinity] || ELEMENTS.fire;
     const enemyEl = ELEMENTS[enemy.affinity] || ELEMENTS.fire;
+    const canEnterArena = chosen.length >= 4;
 
     return (
       <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex flex-col items-center justify-between safe-all p-2 sm:p-3 md:p-4" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 w-full max-w-xl md:max-w-2xl lg:max-w-3xl min-h-full sm:h-full flex flex-col justify-between">
+        <div className="relative z-10 w-full max-w-xl md:max-w-3xl lg:max-w-4xl min-h-full sm:h-full flex flex-col justify-between">
           
           {/* Header */}
-          <div className="text-center py-1">
+          <div className="text-center py-1 flex-shrink-0">
             <div
               className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-1 shadow-sm"
               style={{ borderColor: `${T.success}66`, background: `${T.success}18`, color: T.success }}
@@ -8479,11 +8482,11 @@ export default function MageDuel() {
             </h1>
           </div>
 
-          {/* Center Matchup: Face-to-Face Mages */}
-          <div className="flex-1 min-h-0 flex flex-col justify-center gap-2.5 my-1 overflow-hidden">
+          {/* Center Matchup: Face-to-Face Mages & Tactical Loadout */}
+          <div className="flex-1 min-h-0 flex flex-col justify-between gap-2 sm:gap-2.5 my-1 overflow-y-auto custom-scrollbar">
             
             {/* The Duelists Cards Side-by-Side with Central VS Badge */}
-            <div className="relative grid grid-cols-2 gap-2 sm:gap-4 w-full items-stretch">
+            <div className="relative grid grid-cols-2 gap-2 sm:gap-4 w-full items-stretch flex-shrink-0">
               
               {/* Central VS Emblem */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
@@ -8508,7 +8511,7 @@ export default function MageDuel() {
                   </span>
                   <ElementBadge el={affinity} />
                 </div>
-                <div className="my-1 flex justify-center items-center">
+                <div className="my-0.5 flex justify-center items-center">
                   <MageSprite mage={previewMage} facing="right" size={1.15} />
                 </div>
                 <div className="w-full">
@@ -8520,6 +8523,26 @@ export default function MageDuel() {
                       ✦ {relic.name}
                     </div>
                   )}
+                  <div className="flex items-center justify-center gap-1.5 mt-1.5 flex-wrap">
+                    <button
+                      onClick={() => setTab("skills")}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border transition-all hover:scale-105 flex items-center gap-1 shadow-sm"
+                      style={{ borderColor: `${playerEl.color}88`, background: `${playerEl.color}1e`, color: playerEl.color }}
+                      title="Clique para abrir o Grimório e escolher seus feitiços"
+                    >
+                      <span>📖</span>
+                      <span>{playerSkills.length}/{maxSlots} Feitiços</span>
+                      <span className="opacity-70">✏️</span>
+                    </button>
+                    <button
+                      onClick={() => setTab("gear")}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1 shadow-sm"
+                      title="Clique para trocar cajado, relíquia e itens de combate"
+                    >
+                      <span>🛡️</span>
+                      <span className="hidden sm:inline">Equip.</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -8536,15 +8559,16 @@ export default function MageDuel() {
                   </span>
                   <ElementBadge el={enemy.affinity} />
                 </div>
-                <div className="my-1 flex justify-center items-center">
+                <div className="my-0.5 flex justify-center items-center">
                   <MageSprite mage={enemy} facing="left" size={1.15} />
                 </div>
+                <div className="w-full">
                   <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color || T.textSecondary }}>
                     {enemy.staffGear?.name}
                   </div>
                   {enemy.archetype ? (
                     <div
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold mt-1 border"
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold mt-1 border max-w-full truncate"
                       style={{
                         borderColor: `${enemy.archetype.color}66`,
                         backgroundColor: `${enemy.archetype.color}18`,
@@ -8553,7 +8577,7 @@ export default function MageDuel() {
                       title={enemy.archetype.desc}
                     >
                       <span>{enemy.archetype.icon}</span>
-                      <span>{enemy.archetype.name}</span>
+                      <span className="truncate">{enemy.archetype.name}</span>
                       <span className="opacity-80 hidden sm:inline">· {enemy.archetype.tagline}</span>
                     </div>
                   ) : (
@@ -8561,99 +8585,512 @@ export default function MageDuel() {
                       "{bio}"
                     </div>
                   )}
+                  <div className="flex items-center justify-center gap-1.5 mt-1.5 flex-wrap">
+                    <span
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border"
+                      style={{ borderColor: `${enemyEl.color}55`, background: `${enemyEl.color}14`, color: enemyEl.color }}
+                    >
+                      ⚔️ {foeSkills.length} Feitiços
+                    </span>
+                  </div>
+                </div>
               </div>
 
             </div>
 
-            {/* Tactical Intel: Opponent's Spells Preview */}
-            <div className="w-full rounded-2xl panel-base p-2.5 sm:p-3 border shadow-md" style={{ borderColor: T.borderSubtle }}>
-              <div className="flex items-center justify-between mb-2 text-[11px] font-mono">
-                <span className="font-bold flex items-center gap-1.5" style={{ color: T.gold }}>
-                  <span>⚔️</span>
-                  <span>Feitiços do Oponente ({foeSkills.length})</span>
-                </span>
-                <div className="flex gap-2">
+            {/* Tactical Loadout Station: Controls & Panels */}
+            <div className="w-full flex flex-col gap-2">
+              
+              {/* Segmented View Selector & Action Buttons */}
+              <div className="flex items-center justify-between gap-2 flex-wrap flex-shrink-0">
+                <div className="inline-flex items-center bg-slate-900/90 p-0.5 rounded-xl border border-white/10 shadow-inner">
                   <button
-                    onClick={() => openChat(enemy)}
-                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all"
+                    onClick={() => setScoutView("both")}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1 ${
+                      scoutView === "both"
+                        ? "bg-amber-500/25 text-amber-300 border border-amber-500/40 shadow"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
                   >
-                    💬 Conversar
+                    <span>⚔️</span>
+                    <span>Ambos</span>
                   </button>
                   <button
-                    onClick={() => addFriend(enemy)}
-                    disabled={friended}
-                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all font-bold"
-                    style={{
-                      borderColor: friended ? `${T.success}88` : undefined,
-                      color: friended ? T.success : undefined,
-                    }}
+                    onClick={() => setScoutView("player")}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1 ${
+                      scoutView === "player"
+                        ? "bg-amber-500/25 text-amber-300 border border-amber-500/40 shadow"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
                   >
-                    {friended ? "✓ Amigo" : "+ Amigo"}
+                    <span>🧙‍♂️</span>
+                    <span>Seu Loadout ({playerSkills.length}/{maxSlots})</span>
+                  </button>
+                  <button
+                    onClick={() => setScoutView("enemy")}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1 ${
+                      scoutView === "enemy"
+                        ? "bg-amber-500/25 text-amber-300 border border-amber-500/40 shadow"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
+                  >
+                    <span>👁️</span>
+                    <span>Inimigo ({foeSkills.length})</span>
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <button
+                    onClick={() => setTab("skills")}
+                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-amber-300 border border-amber-400/30 hover:border-amber-400/70 hover:bg-amber-400/10 transition-all flex items-center gap-1 shadow-sm"
+                    title="Abrir o Grimório para escolher e equipar feitiços"
+                  >
+                    <span>📖</span>
+                    <span>Grimório</span>
+                  </button>
+                  <button
+                    onClick={() => setTab("gear")}
+                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-zinc-300 hover:text-white transition-all flex items-center gap-1 shadow-sm"
+                    title="Alterar Cajado, Relíquia e Cosméticos"
+                  >
+                    <span>🛡️</span>
+                    <span>Equipamento</span>
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                {foeSkills.map(s => {
-                  const e = ELEMENTS[s.el];
-                  return (
-                    <div
-                      key={s.id}
-                      className="card-surface rounded-xl border p-2 sm:p-2.5 flex flex-col justify-between shadow-sm transition-all"
-                      style={{
-                        borderColor: `${e.color}55`,
-                      }}
-                    >
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="font-serif text-[12px] sm:text-[13px] font-bold text-[#FAF6EE] leading-tight break-words">
-                          {s.name}
+
+              {/* View 1: Both (Side-by-Side Comparison) */}
+              {scoutView === "both" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3 w-full">
+                  
+                  {/* Player Loadout Column */}
+                  <div className="rounded-2xl panel-base p-2.5 sm:p-3 border shadow-md flex flex-col justify-between" style={{ borderColor: `${playerEl.color}44` }}>
+                    <div>
+                      <div className="flex items-center justify-between mb-2 text-[11px] font-mono">
+                        <span className="font-bold flex items-center gap-1.5" style={{ color: playerEl.color }}>
+                          <span>🧙‍♂️</span>
+                          <span>Seu Grimório ({playerSkills.length}/{maxSlots})</span>
                         </span>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <span className="text-[12px]" style={{ color: e.color }}>{e.icon}</span>
-                          <span className="text-[8px] font-mono font-bold px-1 rounded" style={{ background: T.bgBase, color: T.arcane }}>
-                            T{s.tier}
-                          </span>
-                        </div>
+                        <button
+                          onClick={() => setTab("skills")}
+                          className="text-[10px] font-mono text-amber-300/90 hover:text-amber-200 underline font-semibold"
+                        >
+                          + Abrir Grimório
+                        </button>
                       </div>
-                      <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-semibold mt-0.5">
-                        <span style={{ color: T.ice }}>💧{s.mana}</span>
-                        {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
-                        {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
-                        {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
-                        {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
+
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {playerSkills.map(s => {
+                          const e = ELEMENTS[s.el];
+                          return (
+                            <div
+                              key={s.id}
+                              className="card-surface rounded-xl border p-1.5 sm:p-2 flex flex-col justify-between shadow-sm relative group hover:border-amber-400/50 transition-all"
+                              style={{ borderColor: `${e.color}55` }}
+                            >
+                              <div className="flex items-center justify-between gap-1 mb-1">
+                                <span className="font-serif text-[11px] sm:text-[12px] font-bold text-[#FAF6EE] leading-tight truncate">
+                                  {s.name}
+                                </span>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[11px]" style={{ color: e.color }}>{e.icon}</span>
+                                  <button
+                                    onClick={(ev) => {
+                                      ev.stopPropagation();
+                                      if (chosen.length > 1) {
+                                        toggleSkill(s.id);
+                                      }
+                                    }}
+                                    disabled={chosen.length <= 1}
+                                    className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold bg-black/40 hover:bg-rose-500/80 text-zinc-400 hover:text-white transition-all disabled:opacity-30 disabled:pointer-events-none"
+                                    title={chosen.length <= 1 ? "Mínimo 1 feitiço necessário" : "Desequipar feitiço"}
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono font-semibold">
+                                <span style={{ color: T.ice }}>💧{s.mana}</span>
+                                {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
+                                {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
+                                {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
+                                {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                        {/* Empty Slots clickable to open Grimoire */}
+                        {Array.from({ length: Math.max(0, maxSlots - playerSkills.length) }).map((_, idx) => (
+                          <button
+                            key={`empty-slot-${idx}`}
+                            onClick={() => setTab("skills")}
+                            className="rounded-xl border-2 border-dashed border-white/15 hover:border-amber-400/60 p-2 flex flex-col items-center justify-center text-center transition-all bg-white/[0.02] hover:bg-amber-400/[0.05] min-h-[46px]"
+                          >
+                            <span className="text-[10px] font-mono font-bold text-amber-300/80">
+                              + Equipar Feitiço
+                            </span>
+                            <span className="text-[8px] font-mono text-zinc-500">Slot {playerSkills.length + idx + 1}/{maxSlots}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {playerSkills.length < 4 && (
+                      <div className="mt-2 text-[10px] font-mono text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-2 py-1 flex items-center gap-1">
+                        <span>⚠️</span>
+                        <span>Equipe pelo menos 4 feitiços para o duelo ({playerSkills.length}/4).</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Enemy Intel Column */}
+                  <div className="rounded-2xl panel-base p-2.5 sm:p-3 border shadow-md flex flex-col justify-between" style={{ borderColor: `${enemyEl.color}44` }}>
+                    <div>
+                      <div className="flex items-center justify-between mb-2 text-[11px] font-mono">
+                        <span className="font-bold flex items-center gap-1.5" style={{ color: enemyEl.color }}>
+                          <span>⚔️</span>
+                          <span>Feitiços do Oponente ({foeSkills.length})</span>
+                        </span>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={() => openChat(enemy)}
+                            className="btn-surface rounded-lg px-2 py-0.5 text-[10px] font-mono transition-all"
+                          >
+                            💬 Conversar
+                          </button>
+                          <button
+                            onClick={() => addFriend(enemy)}
+                            disabled={friended}
+                            className="btn-surface rounded-lg px-2 py-0.5 text-[10px] font-mono transition-all font-bold"
+                            style={{
+                              borderColor: friended ? `${T.success}88` : undefined,
+                              color: friended ? T.success : undefined,
+                            }}
+                          >
+                            {friended ? "✓ Amigo" : "+ Amigo"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {foeSkills.map(s => {
+                          const e = ELEMENTS[s.el];
+                          return (
+                            <div
+                              key={s.id}
+                              className="card-surface rounded-xl border p-1.5 sm:p-2 flex flex-col justify-between shadow-sm transition-all"
+                              style={{ borderColor: `${e.color}55` }}
+                            >
+                              <div className="flex items-center justify-between gap-1 mb-1">
+                                <span className="font-serif text-[11px] sm:text-[12px] font-bold text-[#FAF6EE] leading-tight truncate">
+                                  {s.name}
+                                </span>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <span className="text-[11px]" style={{ color: e.color }}>{e.icon}</span>
+                                  <span className="text-[8px] font-mono font-bold px-1 rounded" style={{ background: T.bgBase, color: T.arcane }}>
+                                    T{s.tier}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 text-[9px] sm:text-[10px] font-mono font-semibold">
+                                <span style={{ color: T.ice }}>💧{s.mana}</span>
+                                {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
+                                {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
+                                {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
+                                {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {enemy.archetype && (
+                      <div className="mt-2 text-[10px] font-mono text-zinc-400 bg-black/20 border border-white/5 rounded-lg px-2 py-1 flex items-center gap-1.5 truncate">
+                        <span>{enemy.archetype.icon}</span>
+                        <span className="font-bold" style={{ color: enemy.archetype.color }}>{enemy.archetype.name}:</span>
+                        <span className="truncate">{enemy.archetype.desc}</span>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+              {/* View 2: Player Only (Full Tactical Loadout Customization) */}
+              {scoutView === "player" && (
+                <div className="w-full rounded-2xl panel-base p-2.5 sm:p-3.5 border shadow-md flex flex-col gap-2.5" style={{ borderColor: `${playerEl.color}55` }}>
+                  <div className="flex items-center justify-between flex-wrap gap-2 text-[12px] font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold font-serif text-[13px] sm:text-[15px]" style={{ color: T.gold }}>
+                        🧙‍♂️ Seu Grimório & Configuração de Duelo
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border" style={{ borderColor: `${playerEl.color}88`, color: playerEl.color, background: `${playerEl.color}18` }}>
+                        {playerSkills.length}/{maxSlots} Slots Ocupados
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setTab("skills")}
+                        className="btn-surface rounded-xl px-3 py-1 text-[11px] font-mono font-bold text-amber-300 border border-amber-400/40 hover:bg-amber-400/10 transition-all flex items-center gap-1 shadow-sm"
+                      >
+                        <span>📖</span>
+                        <span>Abrir Grimório Completo</span>
+                      </button>
+                      <button
+                        onClick={() => setTab("gear")}
+                        className="btn-surface rounded-xl px-3 py-1 text-[11px] font-mono font-bold text-zinc-300 hover:text-white transition-all flex items-center gap-1 shadow-sm"
+                      >
+                        <span>🛡️</span>
+                        <span>Alterar Equipamentos</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Active Gear summary banner */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-2 rounded-xl bg-black/30 border border-white/5 text-[11px] font-mono">
+                    <div className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded-lg transition-colors" onClick={() => setTab("gear")} title="Clique para trocar cajado">
+                      <span className="text-base">🪄</span>
+                      <div className="truncate">
+                        <div className="text-[9px] text-zinc-400 uppercase tracking-wider">Cajado</div>
+                        <div className="font-bold text-zinc-200 truncate">{previewMage.staffGear?.name}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded-lg transition-colors" onClick={() => setTab("gear")} title="Clique para trocar relíquia">
+                      <span className="text-base">✦</span>
+                      <div className="truncate">
+                        <div className="text-[9px] text-zinc-400 uppercase tracking-wider">Relíquia</div>
+                        <div className="font-bold truncate" style={{ color: relic ? RARITY[relic.rarity]?.color : T.textSecondary }}>
+                          {relic && relic.id !== "none" ? relic.name : "Nenhuma Relíquia"}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded-lg transition-colors" onClick={() => setTab("skills")} title="Clique para trocar afinidade elemental">
+                      <span className="text-base">{playerEl.icon}</span>
+                      <div className="truncate">
+                        <div className="text-[9px] text-zinc-400 uppercase tracking-wider">Afinidade Elemental</div>
+                        <div className="font-bold truncate" style={{ color: playerEl.color }}>{playerEl.name} (+25% Dano)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skills Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {playerSkills.map(s => {
+                      const e = ELEMENTS[s.el];
+                      return (
+                        <div
+                          key={s.id}
+                          className="card-surface rounded-xl border p-2 flex flex-col justify-between shadow-sm relative group hover:border-amber-400/50 transition-all"
+                          style={{ borderColor: `${e.color}55` }}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <span className="font-serif text-[12px] font-bold text-[#FAF6EE] leading-tight truncate">
+                                {s.name}
+                              </span>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <span className="text-[12px]" style={{ color: e.color }}>{e.icon}</span>
+                                <span className="text-[8px] font-mono font-bold px-1 rounded" style={{ background: T.bgBase, color: T.arcane }}>
+                                  T{s.tier}
+                                </span>
+                              </div>
+                            </div>
+                            {s.desc && (
+                              <p className="text-[10px] font-sans text-zinc-400 line-clamp-2 leading-relaxed mb-2">
+                                {s.desc}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold mb-2">
+                              <span style={{ color: T.ice }}>💧{s.mana}</span>
+                              {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
+                              {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
+                              {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
+                              {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
+                            </div>
+                            <button
+                              onClick={() => toggleSkill(s.id)}
+                              disabled={chosen.length <= 1}
+                              className="w-full py-1 rounded-lg text-[10px] font-mono font-bold bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center gap-1"
+                            >
+                              <span>✕</span>
+                              <span>Desequipar</span>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Empty Slots */}
+                    {Array.from({ length: Math.max(0, maxSlots - playerSkills.length) }).map((_, idx) => (
+                      <button
+                        key={`player-empty-${idx}`}
+                        onClick={() => setTab("skills")}
+                        className="rounded-xl border-2 border-dashed border-white/20 hover:border-amber-400/60 p-3 flex flex-col items-center justify-center text-center transition-all bg-white/[0.02] hover:bg-amber-400/[0.05] min-h-[100px]"
+                      >
+                        <span className="text-xl mb-1 text-amber-300/60">+</span>
+                        <span className="text-[11px] font-mono font-bold text-amber-300/80">
+                          Equipar Feitiço
+                        </span>
+                        <span className="text-[9px] font-mono text-zinc-500 mt-0.5">Slot {playerSkills.length + idx + 1}/{maxSlots}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* View 3: Enemy Only (Tactical Dossier) */}
+              {scoutView === "enemy" && (
+                <div className="w-full rounded-2xl panel-base p-2.5 sm:p-3.5 border shadow-md flex flex-col gap-2.5" style={{ borderColor: `${enemyEl.color}55` }}>
+                  <div className="flex items-center justify-between flex-wrap gap-2 text-[12px] font-mono">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold font-serif text-[13px] sm:text-[15px]" style={{ color: enemyEl.color }}>
+                        👁️ Dossiê de Combate: {enemy.name}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold border" style={{ borderColor: `${enemyEl.color}88`, color: enemyEl.color, background: `${enemyEl.color}18` }}>
+                        {enemyEl.icon} Afinidade {enemyEl.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        onClick={() => openChat(enemy)}
+                        className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all flex items-center gap-1"
+                      >
+                        💬 Conversar
+                      </button>
+                      <button
+                        onClick={() => addFriend(enemy)}
+                        disabled={friended}
+                        className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all font-bold"
+                        style={{
+                          borderColor: friended ? `${T.success}88` : undefined,
+                          color: friended ? T.success : undefined,
+                        }}
+                      >
+                        {friended ? "✓ Amigo" : "+ Amigo"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Enemy Archetype and Lore */}
+                  <div className="p-2.5 rounded-xl bg-black/30 border border-white/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px] font-mono">
+                    {enemy.archetype ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{enemy.archetype.icon}</span>
+                        <div>
+                          <div className="font-bold" style={{ color: enemy.archetype.color }}>
+                            {enemy.archetype.name} · <span className="opacity-80">{enemy.archetype.tagline}</span>
+                          </div>
+                          <div className="text-[10px] text-zinc-400">{enemy.archetype.desc}</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="italic text-zinc-400">"{bio || "Um mago misterioso pronto para o confronto."}"</div>
+                    )}
+                    <div className="text-[10px] font-mono text-zinc-400 sm:text-right flex-shrink-0">
+                      Cajado: <span className="text-zinc-200 font-bold">{enemy.staffGear?.name}</span>
+                    </div>
+                  </div>
+
+                  {/* Enemy Spells Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                    {foeSkills.map(s => {
+                      const e = ELEMENTS[s.el];
+                      return (
+                        <div
+                          key={s.id}
+                          className="card-surface rounded-xl border p-2 flex flex-col justify-between shadow-sm transition-all"
+                          style={{ borderColor: `${e.color}55` }}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <span className="font-serif text-[12px] font-bold text-[#FAF6EE] leading-tight truncate">
+                                {s.name}
+                              </span>
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <span className="text-[12px]" style={{ color: e.color }}>{e.icon}</span>
+                                <span className="text-[8px] font-mono font-bold px-1 rounded" style={{ background: T.bgBase, color: T.arcane }}>
+                                  T{s.tier}
+                                </span>
+                              </div>
+                            </div>
+                            {s.desc && (
+                              <p className="text-[10px] font-sans text-zinc-400 line-clamp-2 leading-relaxed mb-2">
+                                {s.desc}
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[10px] font-mono font-semibold">
+                            <span style={{ color: T.ice }}>💧{s.mana}</span>
+                            {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
+                            {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
+                            {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
+                            {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
             </div>
 
           </div>
 
           {/* Bottom Action Bar */}
-          <div className="w-full flex gap-2.5 pt-1.5 pb-0.5">
+          <div className="w-full flex flex-wrap sm:flex-nowrap gap-2 pt-1.5 pb-0.5 flex-shrink-0">
             <button
               onClick={() => setPhase("loadout")}
-              className="btn-surface rounded-xl px-4 py-3 font-serif text-[12px] sm:text-[14px] font-bold transition-all"
+              className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1"
+              title="Voltar para a tela inicial do personagem"
             >
-              ← Grimório
+              ← Hub
+            </button>
+            <button
+              onClick={() => setTab("skills")}
+              className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all text-amber-300 border-amber-500/30 flex items-center justify-center gap-1 shadow-sm"
+              title="Abrir o Grimório para equipar ou desequipar feitiços"
+            >
+              <span>📖</span>
+              <span>Grimório</span>
+            </button>
+            <button
+              onClick={() => setTab("gear")}
+              className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all text-zinc-300 hover:text-white flex items-center justify-center gap-1 shadow-sm"
+              title="Trocar cajado, relíquia e equipamentos"
+            >
+              <span>🛡️</span>
+              <span>Equipamento</span>
             </button>
             <button
               onClick={findOpponent}
-              className="btn-surface flex-1 rounded-xl py-3 font-serif text-[12px] sm:text-[14px] font-bold transition-all"
+              className="btn-surface flex-1 rounded-xl py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1"
             >
-              🔄 Novo Oponente
+              <span>🔄</span>
+              <span>Novo Oponente</span>
             </button>
             <button
               onClick={confirmDuel}
-              className="btn-gold flex-2 rounded-xl py-3 px-5 sm:px-7 font-serif text-[15px] sm:text-[17px] font-black shadow-xl"
+              disabled={!canEnterArena}
+              className={`btn-gold flex-2 rounded-xl py-2.5 px-4 sm:px-6 font-serif text-[14px] sm:text-[16px] font-black shadow-xl transition-all ${
+                !canEnterArena ? "opacity-50 cursor-not-allowed filter grayscale" : "hover:brightness-110"
+              }`}
+              title={!canEnterArena ? "Equipe ao menos 4 feitiços para iniciar o duelo" : "Entrar na arena de combate"}
             >
               ⚔️ ENTRAR NA ARENA
             </button>
           </div>
         </div>
 
+        {renderGearModal()}
         {renderMatchmakingModal()}
         {renderChatModal()}
+        {renderShardShopModal()}
+        {renderRewardedAdModal()}
       </div>
     );
   }
