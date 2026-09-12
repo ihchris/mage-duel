@@ -218,3 +218,17 @@ html, body, #root {
   box-shadow: none;
   transform: none;
 }
+
+/* Smartphone Specific Performance & Touch Optimizations */
+@media (max-width: 640px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .modal-window {
+    -webkit-overflow-scrolling: touch;
+  }
+  .custom-scrollbar {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+

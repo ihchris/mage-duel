@@ -4064,40 +4064,6 @@ function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1
       )}
       <StatusFXOverlay mage={mage} />
       <svg width={w} height={h} viewBox="0 0 400 500" style={{ position: "relative", transform: facing === "left" ? "scaleX(-1)" : "none", filter: casting ? "brightness(1.25)" : "none" }}>
-        <defs>
-          {/* Global SVG Filters for magical effects */}
-          <filter id="magicGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feMerge>
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter id="epicGlow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feColorMatrix type="matrix" values="1 0 0 0 0.7  0 1 0 0 0.4  0 0 1 0 1  0 0 0 1.5 0" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="blur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter id="legendaryAura" x="-60%" y="-60%" width="220%" height="220%">
-            <feGaussianBlur stdDeviation="8" result="blur1" />
-            <feGaussianBlur stdDeviation="3" result="blur2" />
-            <feColorMatrix type="matrix" values="1 0 0 0 0.95  0 1 0 0 0.75  0 0 1 0 0.2  0 0 0 2 0" result="goldGlow" />
-            <feMerge>
-              <feMergeNode in="goldGlow" />
-              <feMergeNode in="blur2" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter id="organicWarp" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
-          </filter>
-        </defs>
-
         {/* Floor Ground Shadow - stays anchored to the ground plane */}
         <ellipse cx="200" cy="466" rx="68" ry="13" fill="#000000" className="groundShadow" />
         {Staff && <ellipse cx="317" cy="466" rx="15" ry="4.5" fill="#000000" className="groundShadow" opacity="0.35" />}
@@ -5610,12 +5576,12 @@ export default function MageDuel() {
 
       /* Arena Ambiance: Dust, Mist, Rune Circle, Phase transition */
       @keyframes dustFloat {
-        0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+        0% { transform: translate3d(0px, 100vh, 0); opacity: 0; }
         10% { opacity: 0.45; }
         90% { opacity: 0.45; }
-        100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+        100% { transform: translate3d(40px, -10vh, 0); opacity: 0; }
       }
-      @keyframes scrollMist { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+      @keyframes scrollMist { 0% { transform: translate3d(-50%, 0, 0); } 100% { transform: translate3d(0%, 0, 0); } }
       @keyframes rotateRune { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       @keyframes phaseCircle { 0% { clip-path: circle(0% at 50% 50%); opacity: 1; } 50% { clip-path: circle(100% at 50% 50%); opacity: 1; } 100% { clip-path: circle(100% at 50% 50%); opacity: 0; } }
       .phase-transition { position: fixed; inset: 0; background: #0B0A16; pointer-events: none; z-index: 120; animation: phaseCircle 0.5s ease-in-out forwards; }
@@ -5807,16 +5773,16 @@ export default function MageDuel() {
   const bg = (
     <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -20%, #1E1B4B 0%, #0F172A 45%, #020617 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
       {stars.map((s, i) => (
-        <div key={i} style={{
+        <div key={i} className={i >= 8 ? "hidden sm:block" : ""} style={{
           position: "absolute", left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size,
           borderRadius: "50%", background: "#EFE7D2",
           animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
           willChange: "opacity",
         }} />
       ))}
-      {/* Subtle floating arena dust particles */}
+      {/* Floating arena dust particles - hidden on mobile for 60fps performance */}
       {dustParticles.map((d, i) => (
-        <div key={`d-${i}`} style={{
+        <div key={`d-${i}`} className="hidden sm:block" style={{
           position: "absolute", left: `${d.left}%`, width: d.size, height: d.size,
           borderRadius: "50%", background: "#E8B44F",
           animation: `dustFloat ${d.dur}s linear ${d.delay}s infinite`,
@@ -5824,8 +5790,8 @@ export default function MageDuel() {
           willChange: "transform",
         }} />
       ))}
-      {/* Horizontal scrolling mist layer */}
-      <div style={{
+      {/* Horizontal scrolling mist layer - hidden on mobile for 60fps performance */}
+      <div className="hidden sm:block" style={{
         position: "absolute", bottom: 0, left: 0, width: "200%", height: "35%",
         background: "linear-gradient(to top, #02061799 0%, transparent 100%)",
         animation: "scrollMist 25s linear infinite",
@@ -6224,74 +6190,149 @@ export default function MageDuel() {
     ];
 
     return (
-      <div className="flex-1 min-h-0 flex flex-col landscape:flex-row md:flex-row items-center justify-between gap-2 sm:gap-4 md:gap-5 w-full my-1">
-        {/* Left: Floating Mage & Translucent Badges */}
-        <div className="flex-1 min-h-0 flex flex-col items-center justify-center w-full landscape:w-5/12 md:w-5/12 relative py-1">
-          <div
-            className="flex flex-col items-center justify-center cursor-pointer group relative py-1 sm:py-2 select-none"
-            onClick={() => setTab("appearance")}
-            title="Clique para customizar aparência"
-          >
-            {/* Atmospheric Ambient Glow behind mage */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
-              <div
-                className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl transition-all duration-500"
-                style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
-              />
+      <div className="w-full flex flex-col landscape:flex-row md:flex-row items-center justify-between gap-2.5 sm:gap-4 md:gap-5 my-1 flex-shrink-0">
+        {/* Left / Top Character Stage: Self-contained Card on Mobile Portrait, Floating Mage on Desktop/Landscape */}
+        <div className="w-full landscape:w-5/12 md:w-5/12 flex-shrink-0">
+          {/* Mobile Portrait Hero Card (< sm and portrait) */}
+          <div className="flex sm:hidden landscape:hidden items-center justify-between gap-3 p-2.5 rounded-2xl glass-panel w-full shadow-lg border border-white/10">
+            {/* Mage Avatar with Glow */}
+            <div
+              className="relative flex items-center justify-center cursor-pointer group flex-shrink-0 pl-1"
+              onClick={() => setTab("appearance")}
+              title="Toque para personalizar aparência"
+            >
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+                <div
+                  className="w-24 h-24 rounded-full blur-lg"
+                  style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
+                />
+              </div>
+              <div className="scale-90 transform origin-center transition-transform group-hover:scale-95">
+                <MageSprite mage={previewMage} facing="right" size={1.15} />
+              </div>
             </div>
 
-            {/* Floating Mage Character Sprite */}
-            <div className="scale-85 xs:scale-95 sm:scale-105 landscape:scale-80 md:landscape:scale-105 md:scale-115 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
-              <MageSprite mage={previewMage} facing="right" size={1.65} />
-            </div>
+            {/* Badges & Character Summary on the Right */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className="font-serif text-[13px] font-bold text-amber-200 truncate">
+                  {mageName.trim() || "Mago Arcano"}
+                </span>
+                <button
+                  onClick={() => setTab("appearance")}
+                  className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium bg-slate-900 border border-amber-400/40 text-amber-200 flex items-center gap-1 shadow-sm flex-shrink-0"
+                >
+                  <span>👤</span><span>Editar</span>
+                </button>
+              </div>
 
-            {/* Soft Ambient Ground Shadow (no rigid box or pedestal) */}
-            <div className="w-24 sm:w-36 h-2.5 sm:h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
+              {/* Badges row: Element, Gender, Relic */}
+              <div className="flex items-center gap-1 flex-wrap">
+                <span
+                  className="px-2 py-0.5 rounded-full text-[9px] font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
+                  style={{ color: el.color, borderColor: `${el.color}44` }}
+                >
+                  <span>{el.icon}</span>
+                  <span>{el.name}</span>
+                </span>
 
-            <div className="mt-1 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
-              <span>👤</span><span>Personalizar</span>
+                <button
+                  onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
+                  title="Alternar gênero"
+                  className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 flex items-center gap-1 shadow-sm"
+                >
+                  <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
+                  <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
+                </button>
+
+                {relic && relic.id !== "none" && (
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[9px] font-sans font-semibold bg-slate-900/90 border shadow-sm truncate max-w-[110px]"
+                    style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}44` }}
+                  >
+                    ✦ {relic.name}
+                  </span>
+                )}
+              </div>
+
+              {/* Equipment line */}
+              <div className="text-[10px] font-sans text-zinc-400 truncate mt-1">
+                <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
+                  🪄 {previewMage.staffGear?.name || "Sem cajado"}
+                </span>
+                {offhand && <span> · 🛡️ {offhand.name}</span>}
+              </div>
             </div>
           </div>
 
-          {/* Translucent Rounded Attribute Badges */}
-          <div className="flex justify-center gap-1 sm:gap-1.5 items-center flex-wrap mt-0.5 z-10">
-            <span
-              className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
-              style={{ color: el.color, borderColor: `${el.color}44` }}
+          {/* Tablet / Desktop / Landscape layout */}
+          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-1">
+            <div
+              className="flex flex-col items-center justify-center cursor-pointer group relative py-1 sm:py-2 select-none"
+              onClick={() => setTab("appearance")}
+              title="Clique para customizar aparência"
             >
-              <span>{el.icon}</span>
-              <span>{el.name}</span>
-            </span>
+              {/* Atmospheric Ambient Glow behind mage */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+                <div
+                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-xl transition-all duration-500"
+                  style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
+                />
+              </div>
 
-            <button
-              onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
-              title="Alternar gênero"
-              className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
-            >
-              <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
-              <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
-            </button>
+              {/* Floating Mage Character Sprite */}
+              <div className="scale-95 sm:scale-105 landscape:scale-85 md:landscape:scale-105 md:scale-115 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
+                <MageSprite mage={previewMage} facing="right" size={1.65} />
+              </div>
 
-            {relic && relic.id !== "none" && (
+              {/* Soft Ambient Ground Shadow */}
+              <div className="w-24 sm:w-36 h-2.5 sm:h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
+
+              <div className="mt-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
+                <span>👤</span><span>Personalizar</span>
+              </div>
+            </div>
+
+            {/* Badges on desktop/landscape */}
+            <div className="flex justify-center gap-1.5 items-center flex-wrap mt-1">
               <span
-                className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-semibold bg-slate-900/90 border shadow-sm"
-                style={{ color: RARITY[relic.rarity].color, borderColor: `${RARITY[relic.rarity].color}44` }}
+                className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
+                style={{ color: el.color, borderColor: `${el.color}44` }}
               >
-                ✦ {relic.name}
+                <span>{el.icon}</span>
+                <span>{el.name}</span>
               </span>
-            )}
-          </div>
 
-          <div className="text-center text-[9px] sm:text-[11px] font-sans text-zinc-400/90 truncate max-w-xs z-10 mt-0.5">
-            <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity].color : undefined }}>
-              {previewMage.staffGear?.name}
-            </span>
-            {offhand && <span> · {offhand.name}</span>}
+              <button
+                onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
+                title="Alternar gênero"
+                className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
+              >
+                <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
+                <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
+              </button>
+
+              {relic && relic.id !== "none" && (
+                <span
+                  className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-semibold bg-slate-900/90 border shadow-sm"
+                  style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}44` }}
+                >
+                  ✦ {relic.name}
+                </span>
+              )}
+            </div>
+
+            <div className="text-center text-[10px] sm:text-[11px] font-sans text-zinc-400/90 truncate max-w-xs mt-1">
+              <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
+                {previewMage.staffGear?.name}
+              </span>
+              {offhand && <span> · {offhand.name}</span>}
+            </div>
           </div>
         </div>
 
         {/* Right: Modern 6 Hub Portals (3x2 grid on mobile & desktop for compact height) */}
-        <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col justify-center">
+        <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col justify-center flex-shrink-0">
           {extra}
 
           <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 sm:gap-2.5 md:gap-3 w-full">
@@ -6410,15 +6451,15 @@ export default function MageDuel() {
 
   function renderGearModal() {
     if (!tab) return null;
-    const panelTitle = { skills: "Skills", gear: "Gear", style: "Style", appearance: "Aparência", shop: "Loja de Cosméticos", pass: "Passe de Batalha: Season of Embers" }[tab];
+    const panelTitle = { skills: "Grimório de Feitiços", gear: "Equipamentos de Combate", style: "Cosméticos & Estilo", appearance: "Aparência do Mago", shop: "Loja Arcana", pass: "Passe de Batalha: Season of Embers" }[tab];
     const previewMage = buildPreviewMage();
+    const el = ELEMENTS[affinity] || ELEMENTS.fire;
+    const relic = RELICS.find(r => r.id === relicId);
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center safe-all p-2 sm:p-4 modal-backdrop" onClick={() => setTab(null)}>
         <div className="w-full max-w-md md:max-w-2xl lg:max-w-3xl modal-window max-h-[92dvh] md:max-h-[86vh] flex flex-col overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-3 p-3 sm:p-4 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
-            <div className="hidden sm:block landscape:hidden md:landscape:block -my-2 flex-shrink-0">
-              <MageSprite mage={previewMage} facing="right" size={0.95} />
-            </div>
             <span className="font-serif text-[18px] sm:text-[20px] flex-1 truncate font-bold text-amber-200">
               {panelTitle}
             </span>
@@ -6429,6 +6470,78 @@ export default function MageDuel() {
               ✕
             </button>
           </div>
+
+          {/* Sticky Live Character Preview Stage for Customization (Mobile & Desktop) */}
+          {(tab === "gear" || tab === "style" || tab === "appearance" || tab === "shop") && (
+            <div className="flex-shrink-0 w-full bg-slate-950/95 border-b border-white/10 p-2 sm:p-2.5 flex items-center justify-between gap-2.5 relative overflow-hidden shadow-inner">
+              {/* Ambient Aura Glow matching affinity */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
+                <div
+                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full blur-xl transition-all duration-300"
+                  style={{ background: el.color }}
+                />
+              </div>
+
+              {/* Left: Live Mage Character Sprite */}
+              <div className="relative z-10 flex items-center justify-center flex-shrink-0 pl-1 sm:pl-2">
+                <div className="scale-85 xs:scale-95 sm:scale-100 transform origin-center transition-transform">
+                  <MageSprite mage={previewMage} facing="right" size={1.05} />
+                </div>
+              </div>
+
+              {/* Right: Live Summary & Real-time Indicator */}
+              <div className="relative z-10 flex-1 min-w-0 flex flex-col justify-center pr-1 sm:pr-2">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="flex h-2 w-2 relative">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_#10B981]"></span>
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-emerald-300">
+                    Prévia em Tempo Real
+                  </span>
+                  <span className="text-[9px] font-mono text-zinc-400 hidden xs:inline sm:inline">
+                    · Toque para equipar
+                  </span>
+                </div>
+
+                {/* Badges of current equipped items */}
+                <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                  {previewMage.staffGear && (
+                    <span
+                      className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono font-bold border truncate max-w-[120px] sm:max-w-[160px]"
+                      style={{
+                        borderColor: `${RARITY[previewMage.staffGear.rarity]?.color || T.gold}55`,
+                        backgroundColor: `${RARITY[previewMage.staffGear.rarity]?.color || T.gold}18`,
+                        color: RARITY[previewMage.staffGear.rarity]?.color || T.gold,
+                      }}
+                    >
+                      🪄 {previewMage.staffGear.name}
+                    </span>
+                  )}
+                  {previewMage.hat && previewMage.hat !== "none" && (
+                    <span className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono text-zinc-200 bg-slate-900/80 border border-white/10 truncate max-w-[110px]">
+                      🎩 {HATS.find(h => h.id === previewMage.hat)?.name || "Chapéu"}
+                    </span>
+                  )}
+                  {previewMage.cape && (
+                    <span className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono text-purple-300 bg-slate-900/80 border border-purple-500/20 truncate max-w-[100px] hidden xs:inline-block">
+                      🧣 {previewMage.cape.name}
+                    </span>
+                  )}
+                  {relic && relic.id !== "none" && (
+                    <span className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-mono text-amber-300 bg-slate-900/80 border border-amber-500/20 truncate max-w-[110px]">
+                      ✦ {relic.name}
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-[9px] font-sans text-zinc-400 truncate mt-0.5">
+                  {tab === "gear" ? "Cajados, relíquias e itens secundários" : tab === "style" ? "Chapéus, capas, auras e pets" : tab === "appearance" ? "Rosto, tom de pele, cabelo e barba" : "Itens e cosméticos da Loja"}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="p-3 sm:p-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
 
           {tab === "skills" && (
