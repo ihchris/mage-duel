@@ -647,18 +647,18 @@ const AURAS = [
   { id: "aura_bloodmoon", name: "Bloodmoon Eclipse",      rarity: "legendary", color: "#DC2626", desc: "Crescent eclipse dripping drops of crimson mana" },
 ];
 const CAPES = [
-  { id: "cape_none",   name: "No cape",           rarity: "common",    color: null, desc: "—" },
-  { id: "cape_travel", name: "Traveler's Cloak",  rarity: "rare",      color: "#7A6A52", dark: "#5E5140" },
-  { id: "cape_shadow", name: "Shadowweave Drape", rarity: "rare",      color: "#3D3466", dark: "#28223F" },
-  { id: "cape_star",   name: "Starweave Mantle",  rarity: "epic",      color: "#8E5FD1", dark: "#5F3F94" },
-  { id: "cape_phoenix",name: "Phoenixwing Cloak", rarity: "legendary", color: "#E85A3D", dark: "#B03D24" },
-  { id: "wings_angel", name: "Angel Wings",       rarity: "legendary", color: "#F5F0E6", dark: "#D9CFC0", desc: "Seraphic plumage radiating divine starlight" },
-  { id: "wings_demon", name: "Demon Wings",       rarity: "legendary", color: "#4A1F1F", dark: "#240D0D", desc: "Draconic bone and leathery infernal membranes" },
-  { id: "wings_phoenix",name: "Phoenix Wings",    rarity: "legendary", color: "#FF5722", dark: "#991B1B", desc: "Blazing solar plumage forged in primal fire" },
-  { id: "wings_fae",   name: "Prismatic Fae Wings", rarity: "legendary", color: "#38BDF8", dark: "#7C3AED", desc: "Gossamer crystal wings humming with wild magic" },
-  { id: "cape_banner", name: "Battle Standard",   rarity: "rare",      color: "#854D0E", dark: "#54330A", desc: "Torn heraldic war banner slung over shoulder" },
-  { id: "cape_fur",    name: "Frostwolf Cloak",   rarity: "epic",      color: "#CBD5E1", dark: "#64748B", desc: "Thick arctic wolf pelt with fierce cowl" },
-  { id: "cape_void",   name: "Void Tear Mantle",  rarity: "legendary", color: "#581C87", dark: "#2E1065", desc: "Ripped cosmic void with gazing astral eyes" },
+  { id: "cape_none",   name: "No cape",           name_pt: "Sem capa",            rarity: "common",    color: null, desc: "—", desc_pt: "—" },
+  { id: "cape_travel", name: "Traveler's Cloak",  name_pt: "Manto do Andarilho",   rarity: "rare",      color: "#7A6A52", dark: "#5E5140", desc: "Worn traveling cloak with brass clasp", desc_pt: "Manto de viagem com fecho de latão" },
+  { id: "cape_shadow", name: "Shadowweave Drape", name_pt: "Manto das Sombras",   rarity: "rare",      color: "#3D3466", dark: "#28223F", desc: "Woven from twilight dusk threads", desc_pt: "Tecido com fios do crepúsculo" },
+  { id: "cape_star",   name: "Starweave Mantle",  name_pt: "Manto Estelar",       rarity: "epic",      color: "#8E5FD1", dark: "#5F3F94", desc: "Glimmering with cosmic nebula dust", desc_pt: "Resplandecente com poeira de nebulosas" },
+  { id: "cape_phoenix",name: "Phoenixwing Cloak", name_pt: "Capa da Fênix",       rarity: "legendary", color: "#E85A3D", dark: "#B03D24", desc: "Warm fiery cloak lined with embers", desc_pt: "Manto flamejante com brasas vivas" },
+  { id: "wings_angel", name: "Angel Wings",       name_pt: "Asas Angelicais",     rarity: "legendary", color: "#F5F0E6", dark: "#D9CFC0", desc: "Seraphic plumage radiating divine starlight", desc_pt: "Plumagem seráfica irradiando luz estelar divina" },
+  { id: "wings_demon", name: "Demon Wings",       name_pt: "Asas Demoníacas",     rarity: "legendary", color: "#4A1F1F", dark: "#240D0D", desc: "Draconic bone and leathery infernal membranes", desc_pt: "Ossos draconianos e membranas infernais cor de sangue" },
+  { id: "wings_phoenix",name: "Phoenix Wings",    name_pt: "Asas da Fênix",       rarity: "legendary", color: "#FF5722", dark: "#991B1B", desc: "Blazing solar plumage forged in primal fire", desc_pt: "Plumagem solar flamejante forjada no fogo primordial" },
+  { id: "wings_fae",   name: "Prismatic Fae Wings", name_pt: "Asas Feéricas",     rarity: "legendary", color: "#38BDF8", dark: "#7C3AED", desc: "Gossamer crystal wings humming with wild magic", desc_pt: "Asas de cristal diáfano pulsando com magia ancestral" },
+  { id: "cape_banner", name: "Battle Standard",   name_pt: "Estandarte de Guerra", rarity: "rare",      color: "#854D0E", dark: "#54330A", desc: "Torn heraldic war banner slung over shoulder", desc_pt: "Estandarte de guerra heráldico sobre o ombro" },
+  { id: "cape_fur",    name: "Frostwolf Cloak",   name_pt: "Manto do Lobo Ártico", rarity: "epic",      color: "#CBD5E1", dark: "#64748B", desc: "Thick arctic wolf pelt with fierce cowl", desc_pt: "Pele grossa de lobo ártico com capuz feroz" },
+  { id: "cape_void",   name: "Void Tear Mantle",  name_pt: "Rasgão do Vazio",      rarity: "legendary", color: "#581C87", dark: "#2E1065", desc: "Ripped cosmic void with gazing astral eyes", desc_pt: "Fenda cósmica ondulante com olhos astrais" },
 ];
 const ROBES = [
   { id: "robe_classic",   name: "Classic Robe",       rarity: "common",    colors: null, desc: "—" },
@@ -2087,15 +2087,27 @@ function WingsAngel({ color, dark }) {
       </defs>
 
       {/* Divine Radiant Glow Behind Wings */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#angelHaloGlow)" opacity={0.35} />
-      <circle cx="200" cy="180" r="90" fill="#FEF08A" opacity="0.08" />
+      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#angelHaloGlow)" opacity={0.4} />
+      <circle cx="200" cy="180" r="95" fill="#FEF08A" opacity="0.12" />
 
-      {/* Left Wing */}
+      {/* Radiant Divine Rays of Starlight */}
+      <g stroke="url(#angelGoldQuill)" strokeWidth="1.2" opacity="0.35" strokeDasharray="4 6">
+        <line x1="200" y1="210" x2="60" y2="85" />
+        <line x1="200" y1="210" x2="340" y2="85" />
+        <line x1="200" y1="210" x2="20" y2="175" />
+        <line x1="200" y1="210" x2="380" y2="175" />
+        <line x1="200" y1="210" x2="35" y2="280" />
+        <line x1="200" y1="210" x2="365" y2="280" />
+      </g>
+
+      {/* Left Wing (Anchored at left shoulder X=152 Y=228) */}
       <g className="angelWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
-      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
-        <g className="angelWingL">{leftWing}</g>
+      {/* Right Wing (Anchored at right shoulder X=248 Y=228, cleanly mirrored across X=200) */}
+      <g className="angelWingR">
+        <g transform="translate(400, 0) scale(-1, 1)">
+          {leftWing}
+        </g>
       </g>
 
       {/* Floating Sacred Sparkles */}
@@ -2229,15 +2241,18 @@ function WingsDemon({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Abyssal Crimson Glow */}
-      <ellipse cx="200" cy="220" rx="140" ry="110" fill="url(#demonAbyssGlow)" opacity={0.45} />
+      {/* Abyssal Crimson & Smoldering Glow */}
+      <ellipse cx="200" cy="220" rx="145" ry="115" fill="url(#demonAbyssGlow)" opacity={0.5} />
+      <ellipse cx="200" cy="210" rx="80" ry="60" fill="#991B1B" opacity="0.15" />
 
-      {/* Left Wing */}
+      {/* Left Wing (Anchored at left shoulder X=152 Y=235) */}
       <g className="demonWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
-      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
-        <g className="demonWingL">{leftWing}</g>
+      {/* Right Wing (Anchored at right shoulder X=248 Y=235, cleanly mirrored across X=200) */}
+      <g className="demonWingR">
+        <g transform="translate(400, 0) scale(-1, 1)">
+          {leftWing}
+        </g>
       </g>
 
       {/* Rising Infernal Embers */}
@@ -2340,15 +2355,18 @@ function WingsPhoenix({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Solar Halo Glow */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#phoenixSunGlow)" opacity={0.4} />
+      {/* Solar Halo & Primal Fire Aura */}
+      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#phoenixSunGlow)" opacity={0.45} />
+      <ellipse cx="200" cy="200" rx="85" ry="65" fill="#F59E0B" opacity="0.12" />
 
-      {/* Left Wing */}
+      {/* Left Wing (Anchored at left shoulder X=152 Y=228) */}
       <g className="phoenixWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
-      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
-        <g className="phoenixWingL">{leftWing}</g>
+      {/* Right Wing (Anchored at right shoulder X=248 Y=228, cleanly mirrored across X=200) */}
+      <g className="phoenixWingR">
+        <g transform="translate(400, 0) scale(-1, 1)">
+          {leftWing}
+        </g>
       </g>
 
       {/* Floating Solar Flame Embers */}
@@ -2446,15 +2464,18 @@ function WingsFae({ color, dark }) {
         </linearGradient>
       </defs>
 
-      {/* Prismatic Fae Aura */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#faePrismGlow)" opacity={0.45} />
+      {/* Prismatic Mystical Aurora Aura */}
+      <ellipse cx="200" cy="210" rx="145" ry="115" fill="url(#faePrismGlow)" opacity={0.5} />
+      <circle cx="200" cy="200" r="85" fill="#38BDF8" opacity="0.1" />
 
-      {/* Left Wing */}
+      {/* Left Wing (Anchored at left shoulder X=150 Y=228) */}
       <g className="faeWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
-      <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
-        <g className="faeWingL">{leftWing}</g>
+      {/* Right Wing (Anchored at right shoulder X=250 Y=228, cleanly mirrored across X=200) */}
+      <g className="faeWingR">
+        <g transform="translate(400, 0) scale(-1, 1)">
+          {leftWing}
+        </g>
       </g>
 
       {/* Shimmering Starlight Sparkles */}
@@ -4416,8 +4437,12 @@ function StatusIcons({ mage }) {
   );
 }
 
-function RarityCard({ item, selected, locked, onClick, subtitle }) {
+function RarityCard({ item, selected, locked, onClick, subtitle, lang = "pt" }) {
   const r = RARITY[item.rarity] || { color: T.common, label: "Comum" };
+  const displayName = (lang === "pt" && item.name_pt) ? item.name_pt : item.name;
+  const displayDesc = locked
+    ? (lang === "pt" ? "Desbloqueie vencendo duelos ou na Loja Arcana." : "Unlock by winning duels or in the Arcane Shop.")
+    : (subtitle || ((lang === "pt" && item.desc_pt) ? item.desc_pt : item.desc) || "");
   return (
     <button
       onClick={onClick}
@@ -4449,7 +4474,7 @@ function RarityCard({ item, selected, locked, onClick, subtitle }) {
           style={{ color: T.textPrimary }}
         >
           {locked && <span className="text-[12px] opacity-70">🔒</span>}
-          <span>{item.name}</span>
+          <span>{displayName}</span>
         </span>
         <span
           className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border flex-shrink-0"
@@ -4466,7 +4491,7 @@ function RarityCard({ item, selected, locked, onClick, subtitle }) {
         className="text-[11px] sm:text-[12px] font-mono leading-relaxed"
         style={{ color: T.textSecondary }}
       >
-        {locked ? "Desbloqueie vencendo duelos ou na Loja Arcana." : subtitle || item.desc || ""}
+        {displayDesc}
       </div>
     </button>
   );
@@ -4487,7 +4512,7 @@ export default function MageDuel() {
   const [relicId, setRelicId] = useState(saved?.relicId ?? "wardsigil");
   const [hatId, setHatId] = useState(saved?.hatId ?? "hat_pointed");
   const [auraId, setAuraId] = useState(saved?.auraId ?? "aura_ember");
-  const [capeId, setCapeId] = useState(saved?.capeId ?? "cape_travel");
+  const [capeId, setCapeId] = useState(saved?.capeId ?? "wings_angel");
   const armorId = "armor_none"; // armor UI hidden for now, kept dormant for later
   const [petId, setPetId] = useState(saved?.petId ?? "pet_imp");
   const [robeId, setRobeId] = useState(saved?.robeId ?? "robe_midnight");
@@ -5617,48 +5642,48 @@ export default function MageDuel() {
 
       @keyframes angelWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(-3.5deg) translateY(-2px) scale(1.015); }
+        50% { transform: rotate(-4.5deg) translateY(-2px) scale(1.02); }
       }
       @keyframes angelWingRight {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(3.5deg) translateY(-2px) scale(1.015); }
+        50% { transform: rotate(4.5deg) translateY(-2px) scale(1.02); }
       }
-      .angelWingL { animation: angelWingLeft 3.6s ease-in-out infinite; transform-origin: 152px 230px; transform-box: view-box; will-change: transform; }
-      .angelWingR { animation: angelWingRight 3.6s ease-in-out infinite; transform-origin: 248px 230px; transform-box: view-box; will-change: transform; }
+      .angelWingL { animation: angelWingLeft 3.6s ease-in-out infinite; transform-origin: 152px 228px; transform-box: view-box; will-change: transform; }
+      .angelWingR { animation: angelWingRight 3.6s ease-in-out infinite; transform-origin: 248px 228px; transform-box: view-box; will-change: transform; }
 
       @keyframes demonWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        42% { transform: rotate(-4.2deg) translateY(-2px) scale(1.02, 0.98); }
-        75% { transform: rotate(1deg) translateY(1px); }
+        42% { transform: rotate(-5deg) translateY(-2px) scale(1.03, 0.98); }
+        75% { transform: rotate(1.2deg) translateY(1px); }
       }
       @keyframes demonWingRight {
         0%, 100% { transform: rotate(0deg); }
-        42% { transform: rotate(4.2deg) translateY(-2px) scale(1.02, 0.98); }
-        75% { transform: rotate(-1deg) translateY(1px); }
+        42% { transform: rotate(5deg) translateY(-2px) scale(1.03, 0.98); }
+        75% { transform: rotate(-1.2deg) translateY(1px); }
       }
       .demonWingL { animation: demonWingLeft 4.2s ease-in-out infinite; transform-origin: 152px 235px; transform-box: view-box; will-change: transform; }
       .demonWingR { animation: demonWingRight 4.2s ease-in-out infinite; transform-origin: 248px 235px; transform-box: view-box; will-change: transform; }
 
       @keyframes phoenixWingLeft {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(-3.8deg) translateY(-3px) scale(1.025); }
+        50% { transform: rotate(-4.5deg) translateY(-3px) scale(1.03); }
       }
       @keyframes phoenixWingRight {
         0%, 100% { transform: rotate(0deg); }
-        50% { transform: rotate(3.8deg) translateY(-3px) scale(1.025); }
+        50% { transform: rotate(4.5deg) translateY(-3px) scale(1.03); }
       }
-      .phoenixWingL { animation: phoenixWingLeft 3.2s ease-in-out infinite; transform-origin: 152px 230px; transform-box: view-box; will-change: transform; }
-      .phoenixWingR { animation: phoenixWingRight 3.2s ease-in-out infinite; transform-origin: 248px 230px; transform-box: view-box; will-change: transform; }
+      .phoenixWingL { animation: phoenixWingLeft 3.2s ease-in-out infinite; transform-origin: 152px 228px; transform-box: view-box; will-change: transform; }
+      .phoenixWingR { animation: phoenixWingRight 3.2s ease-in-out infinite; transform-origin: 248px 228px; transform-box: view-box; will-change: transform; }
 
       @keyframes faeWingLeft {
         0%, 100% { transform: rotate(0deg) scaleX(1); }
-        30% { transform: rotate(-3deg) scaleX(0.97); }
-        60% { transform: rotate(-5deg) scaleX(1.03); }
+        30% { transform: rotate(-3.5deg) scaleX(0.96); }
+        60% { transform: rotate(-6deg) scaleX(1.04); }
       }
       @keyframes faeWingRight {
         0%, 100% { transform: rotate(0deg) scaleX(1); }
-        30% { transform: rotate(3deg) scaleX(0.97); }
-        60% { transform: rotate(5deg) scaleX(1.03); }
+        30% { transform: rotate(3.5deg) scaleX(0.96); }
+        60% { transform: rotate(6deg) scaleX(1.04); }
       }
       .faeWingL { animation: faeWingLeft 2.4s ease-in-out infinite; transform-origin: 150px 228px; transform-box: view-box; will-change: transform; }
       .faeWingR { animation: faeWingRight 2.4s ease-in-out infinite; transform-origin: 250px 228px; transform-box: view-box; will-change: transform; }
@@ -6121,7 +6146,7 @@ export default function MageDuel() {
     const previewMage = {
       affinity, hat: hatId || "hat_pointed", aura: auraId || "aura_ember", robe: robeId || "robe_classic",
       staffGear: STAFFS.find(s => s.id === staffId) || STAFFS[0],
-      cape: CAPES.find(c => c.id === capeId) || CAPES.find(c => c.id === "cape_travel"),
+      cape: CAPES.find(c => c.id === capeId) || CAPES.find(c => c.id === "wings_angel") || CAPES[0],
       armor: null, pet: PETS.find(p => p.id === petId) || PETS[0],
       skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId,
       beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
@@ -6143,6 +6168,7 @@ export default function MageDuel() {
       setBeardStyleId(isFemale ? "beard_none" : pick(BEARD_STYLES).id);
       setEyeColorId(pick(EYE_COLORS).id);
       setGlovesId(pick(GLOVES).id);
+      setCapeId(pick(["wings_angel", "wings_demon", "wings_phoenix", "wings_fae", "cape_travel", "cape_star", "cape_phoenix"]));
       setEarringId(Math.random() < 0.4 ? pick(EARRINGS.filter(e => e.id !== "earring_none")).id : "earring_none");
       setNoseRingId(Math.random() < 0.25 ? pick(NOSE_RINGS.filter(n => n.id !== "nosering_none")).id : "nosering_none");
       setMageName(pick(FANTASY_MAGE_NAMES));
@@ -6634,6 +6660,61 @@ export default function MageDuel() {
       </div>
     );
 
+    const renderWingsSection = () => (
+      <div className="space-y-4">
+        <div>
+          <p className="font-serif text-[12px] sm:text-[13px] font-bold mb-1 text-amber-200 flex items-center gap-1.5">
+            <span>🪽</span><span>{lang === "pt" ? "Asas Lendárias & Capas" : "Legendary Wings & Capes"}</span>
+          </p>
+          <p className="text-[11px] font-sans text-zinc-400">
+            {lang === "pt"
+              ? "Asas míticas com plumagem reluzente, ossos dracônicos e animação de voo graciosa."
+              : "Mythic wings with shimmering plumage, draconic bone, and graceful flight flap."}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {CAPES.map(c => {
+            const isSel = capeId === c.id;
+            const r = RARITY[c.rarity] || { color: T.common, label: "Comum" };
+            const displayName = (lang === "pt" && c.name_pt) ? c.name_pt : c.name;
+            const displayDesc = (lang === "pt" && c.desc_pt) ? c.desc_pt : (c.desc || "");
+            return (
+              <button
+                key={c.id}
+                onClick={() => setCapeId(c.id)}
+                className={`p-2.5 rounded-xl text-left border transition-all flex flex-col justify-between gap-1 active:scale-95 ${
+                  isSel ? "scale-[1.02] shadow-md" : "opacity-80 hover:opacity-100"
+                }`}
+                style={{
+                  borderColor: isSel ? r.color : "rgba(255,255,255,0.08)",
+                  backgroundColor: isSel ? `${r.color}1c` : "rgba(15, 23, 42, 0.4)",
+                  boxShadow: isSel ? `0 0 16px ${r.color}44` : "none",
+                }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-serif text-[12px] font-bold truncate flex items-center gap-1" style={{ color: isSel ? r.color : T.textPrimary }}>
+                    {c.id.startsWith("wings_") && <span>🪽</span>}
+                    <span>{displayName}</span>
+                    {isSel && <span className="text-[10px] ml-1">✓</span>}
+                  </span>
+                  <span
+                    className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full border flex-shrink-0"
+                    style={{ borderColor: `${r.color}66`, backgroundColor: `${r.color}18`, color: r.color }}
+                  >
+                    {r.label}
+                  </span>
+                </div>
+                <div className="text-[10px] text-zinc-400 leading-snug line-clamp-2">
+                  {displayDesc}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+
     return (
       <div className="fixed inset-0 w-full h-full safe-all flex items-center justify-center p-0 sm:p-4 md:p-6 overflow-hidden select-none" style={{ color: T.textPrimary }}>
         {styles}{bg}
@@ -6718,11 +6799,12 @@ export default function MageDuel() {
             </div>
 
             {/* 2. Sub-Tabs Bar */}
-            <div className="flex-shrink-0 grid grid-cols-3 gap-1.5 p-2 bg-slate-900/90 border-b border-white/10 z-10">
+            <div className="flex-shrink-0 grid grid-cols-4 gap-1.5 p-2 bg-slate-900/90 border-b border-white/10 z-10">
               {[
                 ["identity", t("tabIdentity"), "⚔️"],
                 ["body", t("tabBody"), "🎨"],
                 ["hair", t("tabHair"), "✂"],
+                ["wings", lang === "pt" ? "Asas" : "Wings", "🪽"],
               ].map(([tKey, label, icon]) => (
                 <button
                   key={tKey}
@@ -6744,6 +6826,7 @@ export default function MageDuel() {
               {createTab === "identity" && renderIdentitySection()}
               {createTab === "body" && renderBodySection()}
               {createTab === "hair" && renderHairSection()}
+              {createTab === "wings" && renderWingsSection()}
             </div>
 
             {/* 4. Bottom Sticky Action Bar */}
@@ -6909,11 +6992,12 @@ export default function MageDuel() {
             {/* Right Column: Customizer Workshop */}
             <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col min-h-0 flex-1 bg-slate-900/30 overflow-hidden">
               {/* Sub-Tabs Header */}
-              <div className="grid grid-cols-3 gap-2 p-3 sm:p-4 pb-3 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
+              <div className="grid grid-cols-4 gap-2 p-3 sm:p-4 pb-3 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
                 {[
                   ["body", t("tabBodySkin"), "👤"],
                   ["hair", t("tabHairBeard"), "✂"],
                   ["details", t("tabFaceJewelry"), "✨"],
+                  ["wings", lang === "pt" ? "Asas" : "Wings", "🪽"],
                 ].map(([tKey, label, icon]) => (
                   <button
                     key={tKey}
@@ -6935,6 +7019,7 @@ export default function MageDuel() {
                 {desktopTab === "body" && renderBodySection()}
                 {desktopTab === "hair" && renderHairSection()}
                 {desktopTab === "details" && renderDetailsSection()}
+                {desktopTab === "wings" && renderWingsSection()}
               </div>
             </div>
           </div>
@@ -7624,43 +7709,43 @@ export default function MageDuel() {
                   ))}
                 </div>
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hat <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Chapéu" : "Hat"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {HATS.map(h1 => (
-                  <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " />
+                  <RarityCard key={h1.id} item={h1} selected={hatId === h1.id} locked={!owned.has(h1.id)} onClick={() => owned.has(h1.id) && setHatId(h1.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Robe Skin <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Vestimenta / Robe" : "Robe Skin"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
               <div className="grid gap-2 mb-4">
                 {ROBES.map(r => (
-                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " />
+                  <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cape & Wings <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
-              <div className="grid gap-2 mb-4">
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Asas Lendárias & Capas" : "Legendary Wings & Capes"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
                 {CAPES.map(c => (
-                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} subtitle=" " />
+                  <RarityCard key={c.id} item={c} selected={capeId === c.id} locked={!owned.has(c.id)} onClick={() => owned.has(c.id) && setCapeId(c.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Aura <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Aura Mística" : "Aura"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {AURAS.map(a => (
-                  <RarityCard key={a.id} item={a} selected={auraId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setAuraId(a.id)} subtitle=" " />
+                  <RarityCard key={a.id} item={a} selected={auraId === a.id} locked={!owned.has(a.id)} onClick={() => owned.has(a.id) && setAuraId(a.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Gloves & Gauntlets <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Luvas & Manoplas" : "Gloves & Gauntlets"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {GLOVES.map(gl => (
-                  <RarityCard key={gl.id} item={gl} selected={glovesId === gl.id} locked={!owned.has(gl.id)} onClick={() => owned.has(gl.id) && setGlovesId(gl.id)} subtitle=" " />
+                  <RarityCard key={gl.id} item={gl} selected={glovesId === gl.id} locked={!owned.has(gl.id)} onClick={() => owned.has(gl.id) && setGlovesId(gl.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Companion <span style={{ color: "#B7AE95" }}>(cosmetic)</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
               <div className="grid grid-cols-2 gap-2">
                 {PETS.map(pt => (
-                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} subtitle=" " />
+                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>Locked items drop from victories. In the full game, they're tradeable with other players.</p>
+              <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>{lang === "pt" ? "Itens bloqueados caem como recompensa de duelos e chefes." : "Locked items drop from victories. In the full game, they're tradeable with other players."}</p>
             </div>
           )}
 
