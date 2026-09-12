@@ -1,11 +1,87 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import {
+  StaffStormcaller,
+  StaffBloodpact,
+  StaffCoralScepter,
+  HatWarlord,
+  HatLaurel,
+  HatJester,
+  CapeBanner,
+  CapeFur,
+  CapeVoid,
+  RobeSunburstTrim,
+  RobeFrostveilTrim,
+  RobeVerdantTrim,
+  OffhandBuckler,
+  OffhandSkull,
+  OffhandPrism,
+  PetDragon,
+  PetOwl,
+  PetMushroom,
+} from "./ItemsExtra.jsx";
+
+import {
+  TurnCountdownBar,
+  CombatBar,
+  StatusFXOverlay,
+  SpellProjectile,
+  ImpactFX,
+  SelfCastFX,
+  ModernSkillCard,
+  ArcaneChronicle,
+  SurrenderModal,
+} from "./BattleFX.jsx";
+
+// ================= DESIGN SYSTEM TOKENS =================
+export const T = {
+  // Backgrounds (hierarquia de profundidade)
+  bgDeep:     "#08060F",   // fundo do jogo
+  bgBase:     "#0F0C1F",   // painéis principais
+  bgSurface:  "#1A1630",   // cards
+  bgElevated: "#242043",   // cards destacados / hover
+  bgOverlay:  "#0A0814EE", // modais
+
+  // Borders
+  borderSubtle:  "#2A2444",
+  borderDefault: "#3A3356",
+  borderStrong:  "#4A4270",
+
+  // Text
+  textPrimary:   "#F2EAD8",
+  textSecondary: "#B7AE95",
+  textTertiary:  "#8E87A5",
+  textMuted:     "#5A5478",
+
+  // Brand
+  gold:      "#E8B44F",
+  goldDark:  "#C08A2E",
+  goldLight: "#FFE28A",
+
+  // Feedback
+  success: "#72C063",
+  danger:  "#EF4444",
+  warning: "#F59E0B",
+  info:    "#5FC1E8",
+
+  // Elementos (mantém os atuais)
+  fire:   "#FF6B3D",
+  ice:    "#5FC1E8",
+  nature: "#72C063",
+  arcane: "#B07FF5",
+
+  // Raridades (mantém os atuais)
+  common:    "#9AA0B4",
+  rare:      "#4FA3E8",
+  epic:      "#B07FF5",
+  legendary: "#E8B44F",
+};
 
 // ================= GAME DATA =================
 const ELEMENTS = {
-  fire:   { name: "Fire",   color: "#FF6B3D", icon: "▲" },
-  ice:    { name: "Ice",    color: "#5FC1E8", icon: "◆" },
-  nature: { name: "Nature", color: "#72C063", icon: "❋" },
-  arcane: { name: "Arcane", color: "#B07FF5", icon: "✶" },
+  fire:   { name: "Fire",   color: T.fire,   icon: "▲" },
+  ice:    { name: "Ice",    color: T.ice,    icon: "◆" },
+  nature: { name: "Nature", color: T.nature, icon: "❋" },
+  arcane: { name: "Arcane", color: T.arcane, icon: "✶" },
 };
 
 const SKIN_TONES = [
@@ -80,24 +156,182 @@ const RARITY = {
 };
 
 const SKILLS = [
-  { id: "fireball",  name: "Fireball",    el: "fire",   dmg: 26, mana: 18, cd: 0, desc: "Heavy. May Burn." },
-  { id: "emberjab",  name: "Ember Jab",   el: "fire",   dmg: 13, mana: 8,  cd: 0, desc: "Cheap fire strike." },
-  { id: "frostlance",name: "Frost Lance", el: "ice",    dmg: 26, mana: 18, cd: 0, desc: "Heavy. May Chill." },
-  { id: "iceshard",  name: "Ice Shard",   el: "ice",    dmg: 13, mana: 8,  cd: 0, desc: "Cheap ice strike." },
-  { id: "thorns",    name: "Wild Thorns", el: "nature", dmg: 26, mana: 18, cd: 0, desc: "Heavy. May Entangle." },
-  { id: "saplife",   name: "Sap Life",    el: "nature", dmg: 12, mana: 14, cd: 0, heal: 12, desc: "Drain 12 HP, heal 12." },
-  { id: "bolt",      name: "Arcane Bolt", el: "arcane", dmg: 17, mana: 10, cd: 0, desc: "Reliable neutral hit." },
-  { id: "ward",      name: "Runic Ward",  el: "arcane", dmg: 0,  mana: 12, cd: 3, shield: 22, desc: "Shield 22 dmg. CD 3." },
-  { id: "surge",     name: "Mana Surge",  el: "arcane", dmg: 0,  mana: 0,  cd: 3, restore: 26, desc: "Restore 26 mana. CD 3." },
+  // FIRE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
+  { id: "emberjab",       name: "Ember Jab",       el: "fire", tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap fire strike.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "fireball",       name: "Fireball",        el: "fire", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Detonates Burn combos.", effect: { status: "burn", duration: 3, chance: 35 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "cauterize",      name: "Cauterize",       el: "fire", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 2, heal: 16, desc: "Heal 16 HP with flame. CD 2.", upgradeOf: null, unlock: { type: "level", value: 2 } },
+  { id: "scorch",         name: "Scorch",          el: "fire", tier: 2, role: "attack",  dmg: 22, mana: 12, cd: 0, desc: "Ignite foe. 100% burn (2t).", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "level", value: 6 } },
+  { id: "firewall",       name: "Fire Wall",       el: "fire", tier: 2, role: "control", dmg: 14, mana: 13, cd: 2, shield: 14, desc: "Barricade: 14 dmg & 14 shield. CD 2.", effect: { status: "shield", amount: 14 }, upgradeOf: null, unlock: { type: "tome", value: "tome_firewall" } },
+  { id: "combustion",     name: "Combustion",      el: "fire", tier: 2, role: "support", dmg: 20, mana: 10, cd: 1, desc: "Quick spark: 20 dmg. CD 1.", upgradeOf: "emberjab", unlock: { type: "mastery", value: "emberjab", casts: 8 } },
+  { id: "inferno",        name: "Inferno",         el: "fire", tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Raging blaze: 38 dmg + 3t burn. CD 2.", effect: { status: "burn", duration: 3, chance: 75 }, upgradeOf: "fireball", unlock: { type: "mastery", value: "fireball", casts: 10 } },
+  { id: "sunburst",       name: "Sunburst",        el: "fire", tier: 3, role: "control", dmg: 34, mana: 16, cd: 2, desc: "Solar flare: 34 dmg + Chills foe. CD 2.", effect: { status: "chill", chance: 80 }, upgradeOf: null, unlock: { type: "tome", value: "tome_sunburst" } },
+  { id: "phoenix_flame",  name: "Phoenix Flame",   el: "fire", tier: 3, role: "support", dmg: 24, mana: 16, cd: 3, heal: 22, desc: "Sacred fire: 24 dmg + 22 HP heal. CD 3.", effect: { status: "drain", amount: 22 }, upgradeOf: null, unlock: { type: "boss", value: "Ignis the Pyromancer" } },
+
+  // ICE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
+  { id: "iceshard",       name: "Ice Shard",       el: "ice",  tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap ice strike.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "frostlance",     name: "Frost Lance",     el: "ice",  tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Shatters chilled foes.", effect: { status: "chill", chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "glaze",          name: "Glaze",           el: "ice",  tier: 1, role: "support", dmg: 0,  mana: 8,  cd: 2, shield: 16, desc: "Frost coat: +16 shield. CD 2.", effect: { status: "shield", amount: 16 }, upgradeOf: null, unlock: { type: "level", value: 3 } },
+  { id: "frostbite",      name: "Frostbite",       el: "ice",  tier: 2, role: "attack",  dmg: 20, mana: 11, cd: 0, desc: "Piercing cold: 20 dmg. 60% chill.", effect: { status: "chill", chance: 60 }, upgradeOf: null, unlock: { type: "level", value: 7 } },
+  { id: "blizzard",       name: "Blizzard",        el: "ice",  tier: 2, role: "control", dmg: 28, mana: 14, cd: 2, desc: "Howling storm: 28 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_blizzard" } },
+  { id: "permafrost",     name: "Permafrost",      el: "ice",  tier: 2, role: "support", dmg: 18, mana: 10, cd: 1, shield: 10, desc: "Glacial strike: 18 dmg + 10 shield. CD 1.", effect: { status: "shield", amount: 10 }, upgradeOf: "iceshard", unlock: { type: "mastery", value: "iceshard", casts: 8 } },
+  { id: "glacial_spike",  name: "Glacial Spike",   el: "ice",  tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Pillar of ice: 38 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: "frostlance", unlock: { type: "mastery", value: "frostlance", casts: 10 } },
+  { id: "absolute_zero",  name: "Absolute Zero",   el: "ice",  tier: 3, role: "control", dmg: 32, mana: 16, cd: 3, desc: "Deep freeze: 32 dmg, chills foe. CD 3.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_absolute_zero" } },
+  { id: "ice_barrier",    name: "Ice Barrier",     el: "ice",  tier: 3, role: "support", dmg: 0,  mana: 15, cd: 3, shield: 35, desc: "Glacial fortress: +35 shield. CD 3.", effect: { status: "shield", amount: 35 }, upgradeOf: null, unlock: { type: "boss", value: "Kael the Frostweaver" } },
+
+  // NATURE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
+  { id: "saplife",        name: "Sap Life",        el: "nature", tier: 1, role: "attack",  dmg: 12, mana: 10, cd: 0, heal: 12, desc: "Drain 12 HP, heal 12.", effect: { status: "drain", amount: 12 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "thorns",         name: "Wild Thorns",     el: "nature", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Entangles & pierces roots.", effect: { status: "entangle", amount: 8, chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "soothing_bloom", name: "Soothing Bloom",  el: "nature", tier: 1, role: "support", dmg: 0,  mana: 7,  cd: 2, heal: 15, desc: "Floral restorative: +15 HP. CD 2.", effect: { status: "heal", amount: 15 }, upgradeOf: null, unlock: { type: "level", value: 2 } },
+  { id: "venom_strike",   name: "Venom Strike",    el: "nature", tier: 2, role: "attack",  dmg: 18, mana: 11, cd: 0, desc: "Poison thorn: 18 dmg + 2t poison.", effect: { status: "burn", duration: 2, chance: 75 }, upgradeOf: null, unlock: { type: "level", value: 8 } },
+  { id: "bramble_wrap",   name: "Bramble Wrap",    el: "nature", tier: 2, role: "control", dmg: 20, mana: 12, cd: 2, desc: "Vines: 20 dmg + roots foe (2t). CD 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_bramble_wrap" } },
+  { id: "barkskin",       name: "Barkskin",        el: "nature", tier: 2, role: "support", dmg: 16, mana: 12, cd: 1, heal: 14, shield: 10, desc: "Sylvan armor: 16 dmg, drain 14, +10 shield. CD 1.", effect: { status: "drain", amount: 14 }, upgradeOf: "saplife", unlock: { type: "mastery", value: "saplife", casts: 8 } },
+  { id: "wrath_of_nature",name: "Wrath of Nature", el: "nature", tier: 3, role: "attack",  dmg: 36, mana: 18, cd: 2, desc: "Primal fury: 36 dmg + roots foe. CD 2.", effect: { status: "entangle", amount: 12, chance: 100 }, upgradeOf: "thorns", unlock: { type: "mastery", value: "thorns", casts: 10 } },
+  { id: "spore_cloud",    name: "Spore Cloud",     el: "nature", tier: 3, role: "control", dmg: 28, mana: 15, cd: 2, desc: "Toxic spores: 28 dmg + 2t poison. CD 2.", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_spore_cloud" } },
+  { id: "world_tree_grace",name:"World Tree Grace",el: "nature", tier: 3, role: "support", dmg: 0,  mana: 14, cd: 3, heal: 28, shield: 16, desc: "Ancient blessing: +28 HP, +16 shield. CD 3.", effect: { status: "heal", amount: 28 }, upgradeOf: null, unlock: { type: "boss", value: "Sylva the Archdruid" } },
+
+  // ARCANE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
+  { id: "bolt",           name: "Arcane Bolt",     el: "arcane", tier: 1, role: "attack",  dmg: 17, mana: 7,  cd: 0, desc: "Reliable neutral hit.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "mind_sear",      name: "Mind Sear",       el: "arcane", tier: 1, role: "control", dmg: 15, mana: 9,  cd: 0, desc: "Disarray: 15 dmg, 50% drain 6 mana.", effect: { status: "entangle", amount: 6, chance: 50 }, upgradeOf: null, unlock: { type: "level", value: 4 } },
+  { id: "ward",           name: "Runic Ward",      el: "arcane", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 3, shield: 22, desc: "Shield 22 dmg (+20% atk power). CD 3.", effect: { status: "shield", amount: 22 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "aether_lance",   name: "Aether Lance",    el: "arcane", tier: 2, role: "attack",  dmg: 28, mana: 14, cd: 1, desc: "Pure mana spear: 28 dmg. CD 1.", upgradeOf: null, unlock: { type: "level", value: 9 } },
+  { id: "time_dilation",  name: "Time Dilation",   el: "arcane", tier: 2, role: "control", dmg: 18, mana: 12, cd: 2, desc: "Slow time: 18 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_time_dilation" } },
+  { id: "surge",          name: "Mana Surge",      el: "arcane", tier: 2, role: "support", dmg: 0,  mana: 0,  cd: 3, restore: 18, desc: "Restore 18 mana. CD 3.", effect: { status: "restore", amount: 18 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "supernova",      name: "Supernova",       el: "arcane", tier: 3, role: "attack",  dmg: 40, mana: 18, cd: 2, desc: "Cosmic blast: 40 neutral dmg. CD 2.", upgradeOf: "bolt", unlock: { type: "mastery", value: "bolt", casts: 10 } },
+  { id: "void_rift",      name: "Void Rift",       el: "arcane", tier: 3, role: "control", dmg: 32, mana: 15, cd: 2, desc: "Void tear: 32 dmg + drain 10 mana. CD 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_void_rift" } },
+  { id: "astral_projection",name:"Astral Projection",el: "arcane",tier: 3, role: "support", dmg: 0,  mana: 5,  cd: 3, shield: 26, restore: 14, desc: "Shift planes: +26 shield & +14 mana. CD 3.", effect: { status: "shield", amount: 26 }, upgradeOf: null, unlock: { type: "boss", value: "Vaelin the Chronomancer" } },
 ];
-const FOCUS = { id: "focus", name: "Focus", el: "arcane", dmg: 0, mana: 0, cd: 0, restore: 14, desc: "Recover 14 mana." };
+
+const FOCUS = { id: "focus", name: "Focus", el: "arcane", tier: 1, role: "support", dmg: 0, mana: 0, cd: 0, restore: 10, desc: "Recover 10 mana." };
+
+const START_SKILLS = ["fireball", "emberjab", "frostlance", "iceshard", "thorns", "saplife", "bolt", "ward", "surge"];
+
+const TOMES = [
+  { id: "tome_firewall", skillId: "firewall", name: "Grimoire of Fire Wall", el: "fire", rarity: "rare", desc: "Unlocks the Fire Wall spell." },
+  { id: "tome_sunburst", skillId: "sunburst", name: "Tome of the Blazing Sun", el: "fire", rarity: "legendary", desc: "Unlocks the Sunburst spell." },
+  { id: "tome_blizzard", skillId: "blizzard", name: "Codex of the Blizzard", el: "ice", rarity: "rare", desc: "Unlocks the Blizzard spell." },
+  { id: "tome_absolute_zero", skillId: "absolute_zero", name: "Scroll of Absolute Zero", el: "ice", rarity: "legendary", desc: "Unlocks the Absolute Zero spell." },
+  { id: "tome_bramble_wrap", skillId: "bramble_wrap", name: "Leaves of Bramble Wrap", el: "nature", rarity: "rare", desc: "Unlocks the Bramble Wrap spell." },
+  { id: "tome_spore_cloud", skillId: "spore_cloud", name: "Tome of the Spore Cloud", el: "nature", rarity: "epic", desc: "Unlocks the Spore Cloud spell." },
+  { id: "tome_time_dilation", skillId: "time_dilation", name: "Chronos Parchment", el: "arcane", rarity: "rare", desc: "Unlocks the Time Dilation spell." },
+  { id: "tome_void_rift", skillId: "void_rift", name: "Grimoire of Void Rift", el: "arcane", rarity: "legendary", desc: "Unlocks the Void Rift spell." },
+];
+
+const ARCHMAGE_BOSSES = [
+  {
+    id: "boss_ignis",
+    name: "Ignis the Pyromancer",
+    title: "Grand Magister of the Flame",
+    affinity: "fire",
+    hp: 135,
+    rewardSkillId: "phoenix_flame",
+    skills: ["inferno", "scorch", "firewall", "phoenix_flame"],
+    staffId: "sunfire",
+    relicId: "phoenix",
+    hatId: "hat_crown",
+    auraId: "aura_ember",
+    capeId: "cape_phoenix",
+    look: { skinTone: "skin_tan", hairColor: "hair_crimson", hairStyle: "hair_wild", beardStyle: "beard_long", eyeColor: "eye_ruby", gender: "gender_male", face: "face_sharp" },
+    dialogue: "You dare step into my crucible? Let us see if your spirit burns or turns to ash!",
+  },
+  {
+    id: "boss_kael",
+    name: "Kael the Frostweaver",
+    title: "Sovereign of the Frozen Wastes",
+    affinity: "ice",
+    hp: 135,
+    rewardSkillId: "ice_barrier",
+    skills: ["glacial_spike", "blizzard", "frostbite", "ice_barrier"],
+    staffId: "frostbound",
+    relicId: "wardsigil",
+    hatId: "hat_wide",
+    auraId: "aura_frost",
+    capeId: "cape_fur",
+    look: { skinTone: "skin_pale", hairColor: "hair_cyan", hairStyle: "hair_tied", beardStyle: "beard_braid", eyeColor: "eye_cyan", gender: "gender_male", face: "face_round" },
+    dialogue: "Winter's chill cares nothing for mortal pride. Freeze and be forgotten.",
+  },
+  {
+    id: "boss_sylva",
+    name: "Sylva the Archdruid",
+    title: "Guardian of the Ancient Leyline",
+    affinity: "nature",
+    hp: 140,
+    rewardSkillId: "world_tree_grace",
+    skills: ["wrath_of_nature", "spore_cloud", "bramble_wrap", "world_tree_grace"],
+    staffId: "verdant",
+    relicId: "soulstone",
+    hatId: "hat_circlet",
+    auraId: "aura_starlight",
+    capeId: "cape_travel",
+    look: { skinTone: "skin_warm", hairColor: "hair_emerald", hairStyle: "hair_long", beardStyle: "beard_clean", eyeColor: "eye_emerald", gender: "gender_female", face: "face_soft" },
+    dialogue: "The roots remember every trespasser. The earth will reclaim your fleeting magic.",
+  },
+  {
+    id: "boss_vaelin",
+    name: "Vaelin the Chronomancer",
+    title: "Lord of the Astral Void",
+    affinity: "arcane",
+    hp: 140,
+    rewardSkillId: "astral_projection",
+    skills: ["supernova", "void_rift", "time_dilation", "astral_projection"],
+    staffId: "voidglass",
+    relicId: "chronoloop",
+    hatId: "hat_laurel",
+    auraId: "aura_void",
+    capeId: "cape_void",
+    look: { skinTone: "skin_fair", hairColor: "hair_silver", hairStyle: "hair_spiky", beardStyle: "beard_short", eyeColor: "eye_violet", gender: "gender_male", face: "face_sharp" },
+    dialogue: "I have already seen every turn of this duel. Your defeat was woven into eternity.",
+  },
+];
+
+const MAX_MAGE_LEVEL = 30;
+
+function getMageLevel(xp = 0) {
+  let lvl = 1;
+  let accumulated = 0;
+  while (lvl < MAX_MAGE_LEVEL) {
+    const needed = 50 + lvl * 20;
+    if (xp < accumulated + needed) break;
+    accumulated += needed;
+    lvl++;
+  }
+  return lvl;
+}
+
+function getMageXpInfo(xp = 0) {
+  let lvl = 1;
+  let accumulated = 0;
+  while (lvl < MAX_MAGE_LEVEL) {
+    const needed = 50 + lvl * 20;
+    if (xp < accumulated + needed) {
+      return {
+        level: lvl,
+        currentInLevel: xp - accumulated,
+        neededForNext: needed,
+        percent: Math.min(100, Math.floor(((xp - accumulated) / needed) * 100)),
+      };
+    }
+    accumulated += needed;
+    lvl++;
+  }
+  return { level: MAX_MAGE_LEVEL, currentInLevel: 0, neededForNext: 0, percent: 100 };
+}
+
+function getMaxSlots(level = 1) {
+  if (level >= 30) return 7;
+  if (level >= 20) return 6;
+  if (level >= 10) return 5;
+  return 4;
+}
 
 const STAFFS = [
-  { id: "ashwood",    name: "Ashwood Staff",     rarity: "common",    el: "fire",   elBonus: 0.12, desc: "+12% Fire damage" },
-  { id: "frostbound", name: "Frostbound Rod",    rarity: "rare",      el: "ice",    elBonus: 0.15, regen: 2, desc: "+15% Ice dmg · +2 mana/turn" },
-  { id: "verdant",    name: "Verdant Branch",    rarity: "rare",      el: "nature", elBonus: 0.12, healBonus: 0.35, desc: "+12% Nature dmg · +35% healing" },
-  { id: "voidglass",  name: "Voidglass Scepter", rarity: "epic",      el: "arcane", allDmg: 0.10, crit: 8, desc: "+10% all damage · +8% crit" },
-  { id: "sunfire",    name: "Sunfire Relicstaff",rarity: "legendary", el: "fire",   elBonus: 0.22, burnChance: 25, desc: "+22% Fire dmg · +25% Burn chance" },
+  { id: "ashwood",      name: "Ashwood Staff",     rarity: "common",    el: "fire",   elBonus: 0.12, desc: "+12% Fire damage" },
+  { id: "frostbound",   name: "Frostbound Rod",    rarity: "rare",      el: "ice",    elBonus: 0.15, regen: 2, desc: "+15% Ice dmg · +2 mana/turn" },
+  { id: "verdant",      name: "Verdant Branch",    rarity: "rare",      el: "nature", elBonus: 0.12, healBonus: 0.35, desc: "+12% Nature dmg · +35% healing" },
+  { id: "voidglass",    name: "Voidglass Scepter", rarity: "epic",      el: "arcane", allDmg: 0.10, crit: 8, desc: "+10% all damage · +8% crit" },
+  { id: "sunfire",      name: "Sunfire Relicstaff",rarity: "legendary", el: "fire",   elBonus: 0.22, burnChance: 25, desc: "+22% Fire dmg · +25% Burn chance" },
+  { id: "stormcaller",  name: "Stormcaller",       rarity: "rare",      el: "ice",    allDmg: 0.10, chillChance: 10, desc: "+10% all damage · 10% chill chance" },
+  { id: "bloodpact",    name: "Bloodpact Spike",   rarity: "epic",      el: "fire",   elBonus: 0.20, maxHpPenalty: 8, desc: "+20% Fire dmg · -8 Max HP tradeoff" },
+  { id: "coral_scepter",name: "Coral Scepter",     rarity: "rare",      el: "ice",    elBonus: 0.15, regen: 2, desc: "+15% Ice dmg · +2 mana/turn" },
 ];
 const RELICS = [
   { id: "none",      name: "No relic",       rarity: "common", desc: "—" },
@@ -105,6 +339,9 @@ const RELICS = [
   { id: "foxcharm",  name: "Foxfire Charm",  rarity: "rare",      crit: 10, desc: "+10% critical chance" },
   { id: "wardsigil", name: "Ward Sigil",     rarity: "rare",      startShield: 12, desc: "Begin duels with a 12 shield" },
   { id: "phoenix",   name: "Phoenix Feather",rarity: "legendary", revive: true, desc: "Survive a fatal blow once (20 HP)" },
+  { id: "soulstone", name: "Soulstone",      rarity: "rare",      healOnKill: 8, desc: "Heal 8 HP upon defeating an opponent" },
+  { id: "chronoloop",name: "Chronoloop",     rarity: "epic",      cdReduction: 1, desc: "-1 turn cooldown on all abilities" },
+  { id: "twinfang",  name: "Twinfang Relic", rarity: "legendary", offAffinityBonus: 0.15, desc: "+15% damage with off-affinity spells" },
 ];
 const HATS = [
   { id: "hat_pointed", name: "Pointed Hat",       rarity: "common" },
@@ -112,13 +349,18 @@ const HATS = [
   { id: "hat_wide",    name: "Starfall Brim",     rarity: "epic" },
   { id: "hat_crown",   name: "Archon Crown",      rarity: "legendary" },
   { id: "hat_circlet", name: "Enchanted Circlet", rarity: "rare" },
+  { id: "hat_warlord", name: "Warlord Helm",      rarity: "epic",      desc: "Horned battle helm forged for dread sorcerers" },
+  { id: "hat_laurel",  name: "Archon Laurel",     rarity: "legendary", desc: "Golden circlet crowned by 4 orbiting elemental gems" },
+  { id: "hat_jester",  name: "Chaos Jester Cap",  rarity: "rare",      desc: "Mischievous split hood with jingling bells" },
 ];
 const AURAS = [
-  { id: "aura_none",    name: "No aura",       rarity: "common",    color: null },
-  { id: "aura_ember",   name: "Ember Aura",    rarity: "rare",      color: "#FF6B3D" },
-  { id: "aura_frost",   name: "Frost Aura",    rarity: "rare",      color: "#5FC1E8" },
-  { id: "aura_void",    name: "Void Aura",     rarity: "epic",      color: "#B07FF5" },
-  { id: "aura_radiant", name: "Radiant Aura",  rarity: "legendary", color: "#E8B44F" },
+  { id: "aura_none",      name: "No aura",                rarity: "common",    color: null },
+  { id: "aura_ember",     name: "Ember Aura",             rarity: "rare",      color: "#FF6B3D" },
+  { id: "aura_frost",     name: "Frost Aura",             rarity: "rare",      color: "#5FC1E8" },
+  { id: "aura_void",      name: "Void Aura",              rarity: "epic",      color: "#B07FF5" },
+  { id: "aura_radiant",   name: "Radiant Aura",           rarity: "legendary", color: "#E8B44F" },
+  { id: "aura_starlight", name: "Starlight Constellation",rarity: "epic",      color: "#93C5FD", desc: "Twinkling star cluster and celestial geometries" },
+  { id: "aura_bloodmoon", name: "Bloodmoon Eclipse",      rarity: "legendary", color: "#DC2626", desc: "Crescent eclipse dripping drops of crimson mana" },
 ];
 const CAPES = [
   { id: "cape_none",   name: "No cape",           rarity: "common",    color: null, desc: "—" },
@@ -130,14 +372,20 @@ const CAPES = [
   { id: "wings_demon", name: "Demon Wings",       rarity: "legendary", color: "#4A1F1F", dark: "#240D0D", desc: "Draconic bone and leathery infernal membranes" },
   { id: "wings_phoenix",name: "Phoenix Wings",    rarity: "legendary", color: "#FF5722", dark: "#991B1B", desc: "Blazing solar plumage forged in primal fire" },
   { id: "wings_fae",   name: "Prismatic Fae Wings", rarity: "legendary", color: "#38BDF8", dark: "#7C3AED", desc: "Gossamer crystal wings humming with wild magic" },
+  { id: "cape_banner", name: "Battle Standard",   rarity: "rare",      color: "#854D0E", dark: "#54330A", desc: "Torn heraldic war banner slung over shoulder" },
+  { id: "cape_fur",    name: "Frostwolf Cloak",   rarity: "epic",      color: "#CBD5E1", dark: "#64748B", desc: "Thick arctic wolf pelt with fierce cowl" },
+  { id: "cape_void",   name: "Void Tear Mantle",  rarity: "legendary", color: "#581C87", dark: "#2E1065", desc: "Ripped cosmic void with gazing astral eyes" },
 ];
 const ROBES = [
-  { id: "robe_classic",  name: "Classic Robe",  rarity: "common",    colors: null, desc: "—" },
-  { id: "robe_midnight", name: "Midnight Robe", rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" } },
-  { id: "robe_ivory",    name: "Ivory Robe",    rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" } },
-  { id: "robe_crimson",  name: "Crimson Robe",  rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" } },
-  { id: "robe_gilded",   name: "Gilded Robe",   rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" } },
-  { id: "robe_celestial", name: "Celestial Robe", rarity: "legendary", colors: { robe: "#181B34", dark: "#0F1224", light: "#2C3259" } },
+  { id: "robe_classic",   name: "Classic Robe",       rarity: "common",    colors: null, desc: "—" },
+  { id: "robe_midnight",  name: "Midnight Robe",      rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" } },
+  { id: "robe_ivory",     name: "Ivory Robe",         rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" } },
+  { id: "robe_crimson",   name: "Crimson Robe",       rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" } },
+  { id: "robe_gilded",    name: "Gilded Robe",        rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" } },
+  { id: "robe_celestial", name: "Celestial Robe",     rarity: "legendary", colors: { robe: "#181B34", dark: "#0F1224", light: "#2C3259" } },
+  { id: "robe_sunburst",  name: "Sunburst Vestments", rarity: "epic",      colors: { robe: "#D97706", dark: "#92400E", light: "#FDE68A" }, desc: "Radiant solar silks with flared golden trim" },
+  { id: "robe_frostveil", name: "Frostveil Shroud",   rarity: "epic",      colors: { robe: "#1E3A8A", dark: "#0F172A", light: "#93C5FD" }, desc: "Glacial weave embroidered with rime patterns" },
+  { id: "robe_verdant",   name: "Verdant Regalia",    rarity: "rare",      colors: { robe: "#166534", dark: "#052E16", light: "#86EFAC" }, desc: "Living leafweave lined with floral filigree" },
 ];
 const OFFHANDS = [
   { id: "offhand_none",      name: "Empty Hand",      rarity: "common",    color: null, desc: "—" },
@@ -146,6 +394,9 @@ const OFFHANDS = [
   { id: "offhand_codex",     name: "Codex of Embers", rarity: "epic",      color: "#B03D24", allDmg: 0.08, crit: 5, desc: "+8% all damage · +5% crit · Volcanic dragonhide" },
   { id: "offhand_orb",       name: "Celestial Orb",   rarity: "epic",      color: "#38BDF8", allDmg: 0.05, crit: 6, desc: "+5% all damage · +6% crit · Levitating starlight sphere" },
   { id: "offhand_forbidden", name: "Forbidden Tome",  rarity: "legendary", color: "#241C3D", allDmg: 0.12, crit: 8, desc: "+12% all damage · +8% crit · Eldritch void chains" },
+  { id: "offhand_buckler",   name: "Arcane Buckler",  rarity: "rare",      color: "#475569", dmgReduction: 0.05, desc: "-5% damage taken · Runic steel parrying shield" },
+  { id: "offhand_skull",     name: "Lich Skull",      rarity: "epic",      color: "#334155", allDmg: 0.08, crit: -5, desc: "+8% all damage · -5% crit · Whispering necrotic focus" },
+  { id: "offhand_prism",     name: "Prismatic Prism", rarity: "legendary", color: "#A855F7", echoChance: 15, desc: "15% chance to echo 50% spell damage · Floating crystal" },
 ];
 const ARMORS = [
   { id: "armor_none",   name: "No armor",          rarity: "common",    desc: "—" },
@@ -155,11 +406,14 @@ const ARMORS = [
   { id: "armor_dragon", name: "Dragonscale Plate", rarity: "legendary", dmgReduction: 0.15, desc: "-15% damage taken" },
 ];
 const PETS = [
-  { id: "pet_none",   name: "No companion", rarity: "common",    kind: null },
-  { id: "pet_imp",    name: "Ember Imp",    rarity: "rare",      kind: "imp",    color: "#FF6B3D", dark: "#C4451D", light: "#FFB27A" },
-  { id: "pet_sprite", name: "Frost Sprite", rarity: "rare",      kind: "sprite", color: "#5FC1E8", dark: "#3A8FBD", light: "#D6F3FF" },
-  { id: "pet_fox",    name: "Leaf Fox",     rarity: "epic",      kind: "fox",    color: "#72C063", dark: "#4F8F45", light: "#DCF0C8" },
-  { id: "pet_wisp",   name: "Star Wisp",    rarity: "legendary", kind: "wisp",   color: "#E8B44F", dark: "#B07FF5", light: "#FFF3C4" },
+  { id: "pet_none",     name: "No companion",    rarity: "common",    kind: null },
+  { id: "pet_imp",      name: "Ember Imp",       rarity: "rare",      kind: "imp",      color: "#FF6B3D", dark: "#C4451D", light: "#FFB27A" },
+  { id: "pet_sprite",   name: "Frost Sprite",    rarity: "rare",      kind: "sprite",   color: "#5FC1E8", dark: "#3A8FBD", light: "#D6F3FF" },
+  { id: "pet_fox",      name: "Leaf Fox",        rarity: "epic",      kind: "fox",      color: "#72C063", dark: "#4F8F45", light: "#DCF0C8" },
+  { id: "pet_wisp",     name: "Star Wisp",       rarity: "legendary", kind: "wisp",     color: "#E8B44F", dark: "#B07FF5", light: "#FFF3C4" },
+  { id: "pet_dragon",   name: "Wyrmling",        rarity: "legendary", kind: "dragon",   color: "#EF4444", dark: "#991B1B", light: "#FCA5A5", desc: "Baby red dragon hovering playfully" },
+  { id: "pet_owl",      name: "Arcane Familiar", rarity: "epic",      kind: "owl",      color: "#6366F1", dark: "#3730A3", light: "#C7D2FE", desc: "Mystic horned owl perched with ancient book" },
+  { id: "pet_mushroom", name: "Sporeling",       rarity: "rare",      kind: "mushroom", color: "#10B981", dark: "#047857", light: "#A7F3D0", desc: "Bouncy fungus sprout trailing spores" },
 ];
 
 const GLOVES = [
@@ -169,12 +423,151 @@ const GLOVES = [
   { id: "gloves_bare",    name: "Stylized Mage Hands", rarity: "common",   desc: "Clean minimalist hands without glove armor" },
 ];
 
-const START_OWNED = ["ashwood", "frostbound", "manapearl", "wardsigil", "none", "hat_pointed", "hat_hood", "hat_circlet", "aura_none", "aura_ember", "cape_none", "cape_travel", "wings_angel", "wings_demon", "wings_phoenix", "wings_fae", "armor_none", "armor_padded", "pet_none", "pet_imp", "robe_classic", "robe_midnight", "wings_none", "offhand_none", "offhand_tome", "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare"];
-const LOOTABLE = ["verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "hat_circlet", "aura_frost", "aura_void", "aura_radiant", "cape_shadow", "cape_star", "cape_phoenix", "wings_angel", "wings_demon", "wings_phoenix", "wings_fae", "armor_chain", "armor_void", "armor_dragon", "pet_sprite", "pet_fox", "pet_wisp", "robe_ivory", "robe_crimson", "robe_gilded", "robe_celestial", "offhand_grimoire", "offhand_codex", "offhand_orb", "offhand_forbidden"];
+const START_OWNED = [
+  "ashwood", "frostbound", "manapearl", "wardsigil", "none",
+  "hat_pointed", "hat_hood", "hat_circlet",
+  "aura_none", "aura_ember",
+  "cape_none", "cape_travel",
+  "armor_none", "armor_padded",
+  "pet_none", "pet_imp",
+  "robe_classic", "robe_midnight",
+  "wings_none",
+  "offhand_none", "offhand_tome",
+  "gloves_leather", "gloves_bare"
+];
+const LOOTABLE = [
+  "verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "hat_circlet",
+  "aura_frost", "aura_void", "aura_radiant", "cape_shadow", "cape_star", "cape_phoenix",
+  "wings_angel", "wings_demon", "wings_phoenix", "wings_fae", "armor_chain", "armor_void", "armor_dragon",
+  "pet_sprite", "pet_fox", "pet_wisp", "robe_ivory", "robe_crimson", "robe_gilded", "robe_celestial",
+  "offhand_grimoire", "offhand_codex", "offhand_orb", "offhand_forbidden",
+  // 23 Novos Itens
+  "stormcaller", "bloodpact", "coral_scepter", "soulstone", "chronoloop", "twinfang",
+  "hat_warlord", "hat_laurel", "hat_jester", "cape_banner", "cape_fur", "cape_void",
+  "robe_sunburst", "robe_frostveil", "robe_verdant", "offhand_buckler", "offhand_skull", "offhand_prism",
+  "pet_dragon", "pet_owl", "pet_mushroom", "aura_starlight", "aura_bloodmoon"
+];
 const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES];
 const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
+
+// ================= TABELA DE ITENS DA LOJA (100% COSMÉTICO) =================
+// Preços em Arcane Shards (✦). Todos os itens são puramente cosméticos (zero stats de combate).
+const SHOP_ITEMS = [
+  { id: "hair_violet",    price: 80,  category: "hair" },
+  { id: "hair_crimson",   price: 80,  category: "hair" },
+  { id: "hair_blonde",    price: 60,  category: "hair" },
+  { id: "eye_ruby",       price: 60,  category: "eyes" },
+  { id: "eye_violet",     price: 60,  category: "eyes" },
+  { id: "earring_ruby",   price: 100, category: "jewelry" },
+  { id: "earring_silver", price: 80,  category: "jewelry" },
+  { id: "nosering_silver",price: 60,  category: "jewelry" },
+  { id: "gloves_arcane",  price: 150, category: "gloves" },
+  { id: "gloves_wraps",   price: 120, category: "gloves" },
+  { id: "robe_crimson",   price: 400, category: "robe" },
+  { id: "robe_gilded",    price: 700, category: "robe" },
+  { id: "robe_celestial", price: 700, category: "robe" },
+  { id: "cape_star",      price: 400, category: "cape" },
+  { id: "cape_phoenix",   price: 700, category: "cape" },
+  { id: "wings_angel",    price: 800, category: "wings" },
+  { id: "wings_demon",    price: 800, category: "wings" },
+  { id: "wings_phoenix",  price: 900, category: "wings" },
+  { id: "wings_fae",      price: 900, category: "wings" },
+  { id: "pet_wisp",       price: 600, category: "pet" },
+  { id: "pet_fox",        price: 500, category: "pet" },
+  // Novos Cosméticos na Loja (ZERO status de combate)
+  { id: "hat_jester",     price: 200, category: "hat" },
+  { id: "hat_warlord",    price: 400, category: "hat" },
+  { id: "hat_laurel",     price: 700, category: "hat" },
+  { id: "aura_starlight", price: 450, category: "aura" },
+  { id: "aura_bloodmoon", price: 800, category: "aura" },
+  { id: "cape_banner",    price: 250, category: "cape" },
+  { id: "cape_fur",       price: 450, category: "cape" },
+  { id: "cape_void",      price: 850, category: "cape" },
+  { id: "robe_verdant",   price: 250, category: "robe" },
+  { id: "robe_sunburst",  price: 450, category: "robe" },
+  { id: "robe_frostveil", price: 450, category: "robe" },
+  { id: "pet_mushroom",   price: 300, category: "pet" },
+  { id: "pet_owl",        price: 500, category: "pet" },
+  { id: "pet_dragon",     price: 900, category: "pet" },
+];
+
+// Helper para obter os dados completos de exibição para o RarityCard
+function resolveShopItem(entry) {
+  let base = findItem(entry.id);
+  if (!base) {
+    base = [...HAIR_COLORS, ...EYE_COLORS, ...EARRINGS, ...NOSE_RINGS].find(i => i.id === entry.id);
+  }
+  let rarity = base?.rarity;
+  if (!rarity) {
+    if (entry.price >= 700) rarity = "legendary";
+    else if (entry.price >= 200) rarity = "epic";
+    else if (entry.price >= 80) rarity = "rare";
+    else rarity = "common";
+  }
+  let displayName = base?.name || entry.id;
+  if (entry.category === "hair" && !displayName.toLowerCase().includes("hair")) {
+    displayName = `${displayName} Hair`;
+  } else if (entry.category === "eyes" && !displayName.toLowerCase().includes("eyes")) {
+    displayName = `${displayName} Eyes`;
+  }
+  return {
+    ...base,
+    id: entry.id,
+    name: displayName,
+    rarity,
+    desc: base?.desc || `${entry.category.toUpperCase()} Cosmético`,
+    price: entry.price,
+    category: entry.category,
+  };
+}
+
 // DEV: everything unlocked for now so all equipment/cosmetics are viewable. Swap back to START_OWNED before shipping progression.
-const DEV_UNLOCK_ALL = true;
+
+// ================= BATTLE PASS (SEASON OF EMBERS) =================
+const SEASON = {
+  id: "s1_2026_spring",
+  name: "Season of Embers",
+  startDate: "2026-03-01T00:00:00Z",
+  endDate: "2026-05-31T23:59:59Z",
+  premiumCost: 500, // ✦ Arcane Shards
+  maxLevel: 30,
+  xpPerLevel: 100,
+};
+
+const BATTLE_PASS_REWARDS = [
+  { level: 1,  free: { type: "shards", amount: 15, name: "15 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "robe_verdant", name: "Verdant Regalia", icon: "👘" } },
+  { level: 2,  free: null, premium: { type: "shards", amount: 30, name: "30 Arcane Shards", icon: "✦" } },
+  { level: 3,  free: { type: "shards", amount: 20, name: "20 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "earring_silver", name: "Silver Hoops", icon: "💍" } },
+  { level: 4,  free: null, premium: { type: "shards", amount: 35, name: "35 Arcane Shards", icon: "✦" } },
+  { level: 5,  free: { type: "shards", amount: 25, name: "Cofre de Shards (25✦)", icon: "🎁" }, premium: { type: "item", id: "hat_jester", name: "Chaos Jester Cap", icon: "🎭" } },
+  { level: 6,  free: null, premium: { type: "shards", amount: 40, name: "40 Arcane Shards", icon: "✦" } },
+  { level: 7,  free: { type: "shards", amount: 20, name: "20 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "cape_banner", name: "Battle Standard", icon: "🚩" } },
+  { level: 8,  free: null, premium: { type: "shards", amount: 45, name: "45 Arcane Shards", icon: "✦" } },
+  { level: 9,  free: { type: "shards", amount: 25, name: "25 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "nosering_silver", name: "Silver Ring", icon: "✨" } },
+  { level: 10, free: { type: "item", id: "pet_mushroom", name: "Sporeling", icon: "🍄" }, premium: { type: "item", id: "gloves_wraps", name: "Runic Handwraps", icon: "🧤" } },
+  { level: 11, free: null, premium: { type: "shards", amount: 50, name: "50 Arcane Shards", icon: "✦" } },
+  { level: 12, free: { type: "shards", amount: 30, name: "30 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "hair_crimson", name: "Crimson Dye", icon: "💇" } },
+  { level: 13, free: null, premium: { type: "shards", amount: 55, name: "55 Arcane Shards", icon: "✦" } },
+  { level: 14, free: { type: "shards", amount: 30, name: "30 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "cape_fur", name: "Frostwolf Cloak", icon: "🐺" } },
+  { level: 15, free: { type: "shards", amount: 50, name: "Cofre Mágico (50✦)", icon: "🎁" }, premium: { type: "item", id: "robe_frostveil", name: "Frostveil Shroud", icon: "❄️" } },
+  { level: 16, free: null, premium: { type: "shards", amount: 60, name: "60 Arcane Shards", icon: "✦" } },
+  { level: 17, free: { type: "shards", amount: 35, name: "35 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "eye_ruby", name: "Ruby Gaze", icon: "👁️" } },
+  { level: 18, free: null, premium: { type: "shards", amount: 65, name: "65 Arcane Shards", icon: "✦" } },
+  { level: 19, free: { type: "shards", amount: 40, name: "40 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "earring_ruby", name: "Ruby Drops", icon: "💎" } },
+  { level: 20, free: { type: "item", id: "hat_warlord", name: "Warlord Helm", icon: "🪖" }, premium: { type: "item", id: "pet_owl", name: "Arcane Familiar", icon: "🦉" } },
+  { level: 21, free: null, premium: { type: "shards", amount: 70, name: "70 Arcane Shards", icon: "✦" } },
+  { level: 22, free: { type: "shards", amount: 45, name: "45 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "gloves_arcane", name: "Arcane Spellweaver", icon: "🧤" } },
+  { level: 23, free: null, premium: { type: "shards", amount: 75, name: "75 Arcane Shards", icon: "✦" } },
+  { level: 24, free: { type: "shards", amount: 50, name: "50 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "robe_sunburst", name: "Sunburst Vestments", icon: "☀️" } },
+  { level: 25, free: { type: "shards", amount: 80, name: "Tesouro Arcano (80✦)", icon: "👑" }, premium: { type: "item", id: "aura_starlight", name: "Starlight Constellation", icon: "🌌" } },
+  { level: 26, free: null, premium: { type: "shards", amount: 90, name: "90 Arcane Shards", icon: "✦" } },
+  { level: 27, free: { type: "shards", amount: 60, name: "60 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "cape_void", name: "Void Tear Mantle", icon: "🕳️" } },
+  { level: 28, free: null, premium: { type: "shards", amount: 100, name: "100 Arcane Shards", icon: "✦" } },
+  { level: 29, free: { type: "shards", amount: 70, name: "70 Arcane Shards", icon: "✦" }, premium: { type: "item", id: "aura_bloodmoon", name: "Bloodmoon Eclipse", icon: "🩸" } },
+  { level: 30, free: { type: "item", id: "hat_laurel", name: "Archon Laurel", icon: "🌿" }, premium: { type: "item", id: "pet_dragon", name: "Wyrmling Familiar", icon: "🐉" } },
+];
+
+const DEV_UNLOCK_ALL = false;
 
 const SAVE_KEY = "mageDuelSave_v1";
 function loadSave() {
@@ -215,16 +608,82 @@ const NPC_REPLIES = {
   farewell: ["Farewell, for now.", "Until next time.", "Safe travels, mage.", "May your mana regen swiftly."],
 };
 
-const MAX_HP = 100, MAX_MANA = 60, REGEN = 6, BASE_CRIT = 8;
+const MAX_HP = 100, MAX_MANA = 40, REGEN = 3, BASE_CRIT = 8;
 const AFFINITY_BONUS = 1.25;
 const ENEMY_NAMES = ["Morwen the Ashen", "Sylra Frostcall", "Bramblewick", "Vex of the Veil", "Ondrel Pyre", "Nissa Thornheart"];
+
+const DAILY_MODIFIERS = [
+  { day: 0, id: "arcane_surge", name: "Surto Celestial", icon: "✨", desc: "Regen de Mana +2 por turno e magias arcanas causam +25% de dano.", shortDesc: "Regen +2 · Arcano +25%" },
+  { day: 1, id: "elemental_fury", name: "Fúria Elemental", icon: "🔥", desc: "Bônus de afinidade elemental aumentado de +25% para +50%!", shortDesc: "Afinidade +50%" },
+  { day: 2, id: "blood_rite", name: "Rito de Sangue", icon: "🩸", desc: "Todos os feitiços causam +20% de dano, mas custam 3 de HP ao conjurar.", shortDesc: "Dano +20% · Custo em Vida" },
+  { day: 3, id: "critical_overload", name: "Sobrecarga Crítica", icon: "⚡", desc: "Chance de acerto crítico base aumentada em +20% para todos os magos.", shortDesc: "Chance Crítica +20%" },
+  { day: 4, id: "swift_duels", name: "Duelos Velozes", icon: "⏱️", desc: "Tempo de turno reduzido para 8s e recargas de feitiço reduzidas em 1.", shortDesc: "Tempo 8s · Recargas -1" },
+  { day: 5, id: "status_storm", name: "Tempestade de Efeitos", icon: "🌪️", desc: "Efeitos de Queimadura duram +1 turno e combos causam dano extra!", shortDesc: "Status +1 Turno" },
+  { day: 6, id: "runic_bulwark", name: "Baluarte Rúnico", icon: "🛡️", desc: "Todos os escudos e barreiras mágicas absorvem +40% de dano.", shortDesc: "Barreiras +40%" },
+];
+
+function getTodayModifier() {
+  const day = new Date().getDay();
+  return DAILY_MODIFIERS.find(m => m.day === day) || DAILY_MODIFIERS[0];
+}
+
+const ARCHETYPES = {
+  berserker: {
+    id: "berserker",
+    name: "Berserker",
+    icon: "⚔️",
+    color: "#E05252",
+    desc: "Agressivo e voraz. Prioriza dano máximo a qualquer custo e ignora defesas.",
+    tagline: "Ataque Furioso",
+  },
+  tactician: {
+    id: "tactician",
+    name: "Tático",
+    icon: "🧠",
+    color: "#38BDF8",
+    desc: "Calculista magistral. Planeja sinergias elementais, defende na hora certa e busca combos.",
+    tagline: "Combos & Controle",
+  },
+  controller: {
+    id: "controller",
+    name: "Controlador",
+    icon: "🌪️",
+    color: "#A78BFA",
+    desc: "Manipulador implacável. Focado em congelar, queimar e esgotar a mana do adversário.",
+    tagline: "Debuffs Contínuos",
+  },
+  gambler: {
+    id: "gambler",
+    name: "Apostador",
+    icon: "🎲",
+    color: "#FBBF24",
+    desc: "Ousado e caótico. Arrisca feitiços de alto calibre em busca de acertos críticos devastadores.",
+    tagline: "Alto Risco & Crítico",
+  },
+  turtle: {
+    id: "turtle",
+    name: "Baluarte",
+    icon: "🛡️",
+    color: "#34D399",
+    desc: "Fortaleza intransponível. Ergue escudos continuamente e desgasta o rival até a exaustão.",
+    tagline: "Defesa Inabalável",
+  },
+};
 
 const rand = (a, b) => Math.random() * (b - a) + a;
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const chance = (pct) => Math.random() * 100 < pct;
 
-function computeDamage(skill, atk, def) {
-  let mult = skill.el === atk.affinity ? AFFINITY_BONUS : 1;
+function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
+  const todayMod = getTodayModifier();
+  const affinityBonus = todayMod.id === "elemental_fury" ? 1.50 : AFFINITY_BONUS;
+  let mult = skill.el === atk.affinity ? affinityBonus : 1;
+  if (todayMod.id === "arcane_surge" && skill.el === "arcane") mult *= 1.25;
+  if (todayMod.id === "blood_rite") mult *= 1.20;
+  // Twinfang relic: +15% damage when casting off-affinity spells
+  if (atk.relic?.id === "twinfang" && skill.el !== atk.affinity && skill.dmg > 0) {
+    mult *= 1 + (atk.relic.offAffinityBonus || 0.15);
+  }
   if (atk.staffGear) {
     if (atk.staffGear.el === skill.el && atk.staffGear.elBonus) mult *= 1 + atk.staffGear.elBonus;
     if (atk.staffGear.allDmg) mult *= 1 + atk.staffGear.allDmg;
@@ -232,17 +691,23 @@ function computeDamage(skill, atk, def) {
   if (atk.offhand?.allDmg) mult *= 1 + atk.offhand.allDmg;
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
-  const critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0);
+  let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0);
+  if (todayMod.id === "critical_overload") critChance += 20;
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
+  mult *= comboMult;
   if (def.armor?.dmgReduction) mult *= 1 - def.armor.dmgReduction;
-  const dmg = Math.round(skill.dmg * mult * rand(0.92, 1.08));
+  // Offhand Buckler: 5% damage reduction
+  if (def.offhand?.dmgReduction) mult *= (1 - def.offhand.dmgReduction);
+  const dmg = Math.max(1, Math.round(skill.dmg * mult * rand(0.92, 1.08)) + bonusFlat);
   return { dmg, crit, chilled };
 }
 
 function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId) {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
-  const maxHp = MAX_HP + (armor?.maxHpBonus || 0);
+  let maxHp = MAX_HP + (armor?.maxHpBonus || 0);
+  // Bloodpact Spike tradeoff: -8 Max HP
+  if (staffId === "bloodpact") maxHp -= 8;
   return {
     name, affinity, skills,
     staffGear: STAFFS.find(s => s.id === staffId) || null,
@@ -259,7 +724,8 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     gender: look?.gender || "gender_male",
     face: look?.face || "face_round", earrings: look?.earrings || "earring_none", noseRing: look?.noseRing || "nosering_none",
     maxHp, hp: maxHp, mana: MAX_MANA, shield: 0, cds: {},
-    status: { burn: 0, chill: false }, phoenixUsed: false,
+    status: { burn: 0, chill: false, entangled: 0 }, phoenixUsed: false,
+    archetype: null,
   };
 }
 
@@ -283,6 +749,8 @@ function makeEnemy() {
     Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none",
     pick(["gloves_arcane", "gloves_leather", "gloves_wraps"]));
   if (e.relic?.startShield) e.shield = e.relic.startShield;
+  const archKeys = Object.keys(ARCHETYPES);
+  e.archetype = ARCHETYPES[pick(archKeys)];
   return e;
 }
 
@@ -363,7 +831,7 @@ function Beard({ style, hair, hairD }) {
   }
   // Default: beard_long (Elder Long Wizard Beard)
   return (
-    <g>
+    <g className="beard-sway">
       <path d="M146 178 C 140 236 154 274 196 298 C 198 300 202 300 204 298 C 246 274 260 236 254 178 C 238 198 222 206 200 206 C 178 206 162 198 146 178 Z" fill={hair} />
       <path d="M200 298 C 236 282 250 250 254 212 C 248 258 228 282 200 290 Z" fill={hairD} />
       <path d="M146 178 C 156 230 172 268 200 292 C 174 264 160 228 152 186 Z" fill={hairD} opacity="0.25" />
@@ -671,7 +1139,8 @@ function getGloveColors(gloves = "gloves_arcane", look, affinity = "arcane") {
   };
 }
 
-function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hatId = "", robeTrim = null, armor = null, hasOffhand = false, gloves = "gloves_arcane" }) {
+function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hatId = "", robeTrim = null, armor = null, hasOffhand = false, gloves = "gloves_arcane", casting = false, easterEgg = null }) {
+  const eyeShiftX = casting ? 1.5 : 0;
   const { skin, skinD, hair, hairD, eye } = look;
   const beardStyle = look.beardStyle || "beard_long";
   const hairStyle = look.hairStyle || (look.gender === "gender_female" ? "hair_long" : "hair_wavy");
@@ -813,13 +1282,15 @@ function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hat
 
       {/* Left eye */}
       <g>
-        <path d="M167 167 C 170 159 186 159 189 167 C 186 173 170 173 167 167 Z" fill="#FCFAF5" />
-        <path d="M167 167 C 170 161 186 161 189 167 C 187 164 169 164 167 167 Z" fill="#000000" opacity="0.14" />
-        <circle cx="178" cy="166.5" r={eyeR * 0.72} fill={eye} />
-        <path d="M174 168 A 4 4 0 0 0 182 168" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.45" />
-        <circle cx="178" cy="166.5" r={eyeR * 0.42} fill="#120E18" />
-        <circle cx="180.2" cy="164.5" r="1.8" fill="#FFFFFF" />
-        <circle cx="176.2" cy="168" r="0.9" fill="#FFFFFF" opacity="0.75" />
+        <g className="eye-blink-l">
+          <path d="M167 167 C 170 159 186 159 189 167 C 186 173 170 173 167 167 Z" fill="#FCFAF5" />
+          <path d="M167 167 C 170 161 186 161 189 167 C 187 164 169 164 167 167 Z" fill="#000000" opacity="0.14" />
+          <circle cx={178 + eyeShiftX} cy="166.5" r={eyeR * 0.72} fill={easterEgg === "golden_eyes" ? "#F59E0B" : eye} />
+          <path d={`M${174 + eyeShiftX} 168 A 4 4 0 0 0 ${182 + eyeShiftX} 168`} stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.45" />
+          <circle cx={178 + eyeShiftX} cy="166.5" r={eyeR * 0.42} fill="#120E18" />
+          <circle cx={180.2 + eyeShiftX} cy="164.5" r="1.8" fill="#FFFFFF" />
+          <circle cx={176.2 + eyeShiftX} cy="168" r="0.9" fill="#FFFFFF" opacity="0.75" />
+        </g>
         <path d="M166 167 C 170 158 186 158 190 167" stroke="#1C1424" strokeWidth={isFemale ? "2.6" : "2"} fill="none" strokeLinecap="round" />
         <path d="M169 158 Q178 155 187 158" stroke={skinD} strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.5" />
         {isFemale && <path d="M167 167 Q163 164 160 163" stroke="#1C1424" strokeWidth="1.8" fill="none" strokeLinecap="round" />}
@@ -827,13 +1298,15 @@ function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hat
 
       {/* Right eye */}
       <g>
-        <path d="M211 167 C 214 159 230 159 233 167 C 230 173 214 173 211 167 Z" fill="#FCFAF5" />
-        <path d="M211 167 C 214 161 230 161 233 167 C 231 164 213 164 211 167 Z" fill="#000000" opacity="0.14" />
-        <circle cx="222" cy="166.5" r={eyeR * 0.72} fill={eye} />
-        <path d="M218 168 A 4 4 0 0 0 226 168" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.45" />
-        <circle cx="222" cy="166.5" r={eyeR * 0.42} fill="#120E18" />
-        <circle cx="224.2" cy="164.5" r="1.8" fill="#FFFFFF" />
-        <circle cx="220.2" cy="168" r="0.9" fill="#FFFFFF" opacity="0.75" />
+        <g className="eye-blink-r">
+          <path d="M211 167 C 214 159 230 159 233 167 C 230 173 214 173 211 167 Z" fill="#FCFAF5" />
+          <path d="M211 167 C 214 161 230 161 233 167 C 231 164 213 164 211 167 Z" fill="#000000" opacity="0.14" />
+          <circle cx={222 + eyeShiftX} cy="166.5" r={eyeR * 0.72} fill={easterEgg === "golden_eyes" ? "#F59E0B" : eye} />
+          <path d={`M${218 + eyeShiftX} 168 A 4 4 0 0 0 ${226 + eyeShiftX} 168`} stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.45" />
+          <circle cx={222 + eyeShiftX} cy="166.5" r={eyeR * 0.42} fill="#120E18" />
+          <circle cx={224.2 + eyeShiftX} cy="164.5" r="1.8" fill="#FFFFFF" />
+          <circle cx={220.2 + eyeShiftX} cy="168" r="0.9" fill="#FFFFFF" opacity="0.75" />
+        </g>
         <path d="M210 167 C 214 158 230 158 234 167" stroke="#1C1424" strokeWidth={isFemale ? "2.6" : "2"} fill="none" strokeLinecap="round" />
         <path d="M213 158 Q222 155 231 158" stroke={skinD} strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.5" />
         {isFemale && <path d="M233 167 Q237 164 240 163" stroke="#1C1424" strokeWidth="1.8" fill="none" strokeLinecap="round" />}
@@ -1722,6 +2195,9 @@ const CAPE_COMPONENTS = {
   wings_demon: WingsDemon,
   wings_phoenix: WingsPhoenix,
   wings_fae: WingsFae,
+  cape_banner: CapeBanner,
+  cape_fur: CapeFur,
+  cape_void: CapeVoid,
 };
 
 function RobeMidnightTrim() {
@@ -1867,7 +2343,16 @@ function RobeCelestialTrim() {
     </g>
   );
 }
-const ROBE_COMPONENTS = { robe_midnight: RobeMidnightTrim, robe_ivory: RobeIvoryTrim, robe_crimson: RobeCrimsonTrim, robe_gilded: RobeGildedTrim, robe_celestial: RobeCelestialTrim };
+const ROBE_COMPONENTS = {
+  robe_midnight: RobeMidnightTrim,
+  robe_ivory: RobeIvoryTrim,
+  robe_crimson: RobeCrimsonTrim,
+  robe_gilded: RobeGildedTrim,
+  robe_celestial: RobeCelestialTrim,
+  robe_sunburst: RobeSunburstTrim,
+  robe_frostveil: RobeFrostveilTrim,
+  robe_verdant: RobeVerdantTrim,
+};
 
 function ArmorPadded() {
   return (
@@ -2313,14 +2798,22 @@ function PetWisp({ color, dark, light }) {
   );
 }
 
-const PET_COMPONENTS = { imp: PetImp, sprite: PetSprite, fox: PetFox, wisp: PetWisp };
+const PET_COMPONENTS = {
+  imp: PetImp,
+  sprite: PetSprite,
+  fox: PetFox,
+  wisp: PetWisp,
+  dragon: PetDragon,
+  owl: PetOwl,
+  mushroom: PetMushroom,
+};
 
 function Pet({ pet }) {
   if (!pet?.kind) return null;
   const Component = PET_COMPONENTS[pet.kind];
   if (!Component) return null;
 
-  const isGround = pet.kind === "fox";
+  const isGround = pet.kind === "fox" || pet.kind === "mushroom";
 
   return isGround ? (
     <g transform="translate(82 414) scale(1.28)">
@@ -2604,6 +3097,9 @@ const OFFHAND_COMPONENTS = {
   offhand_codex: OffhandCodex,
   offhand_forbidden: OffhandForbidden,
   offhand_orb: OffhandOrb,
+  offhand_buckler: OffhandBuckler,
+  offhand_skull: OffhandSkull,
+  offhand_prism: OffhandPrism,
 };
 
 function StaffAshwood() {
@@ -3465,13 +3961,69 @@ function AuraVisual({ aura }) {
     );
   }
 
+  if (aura.id === "aura_starlight") {
+    return (
+      <g className="auraPulse">
+        {/* Constellation lines */}
+        <path d="M110 370 L135 280 L200 130 L265 280 L290 370" stroke="#93C5FD" strokeWidth="1" strokeDasharray="3 3" opacity="0.6" fill="none" />
+        <path d="M135 280 L265 280" stroke="#60A5FA" strokeWidth="0.8" strokeDasharray="2 4" opacity="0.5" fill="none" />
+        {/* Twinkling star clusters */}
+        {[[110, 370, 4.5], [135, 280, 5], [200, 130, 6], [265, 280, 5], [290, 370, 4.5], [160, 210, 3.5], [240, 210, 3.5], [200, 70, 5.5]].map(([cx, cy, s], i) => (
+          <g key={i}>
+            <line x1={cx - s} y1={cy} x2={cx + s} y2={cy} stroke="#BFDBFE" strokeWidth="1.2" strokeLinecap="round" />
+            <line x1={cx} y1={cy - s} x2={cx} y2={cy + s} stroke="#BFDBFE" strokeWidth="1.2" strokeLinecap="round" />
+            <circle cx={cx} cy={cy} r={1.5} fill="#FFFFFF" />
+          </g>
+        ))}
+        <ellipse cx="200" cy="420" rx="100" ry="14" stroke="#93C5FD" strokeWidth="1" fill="none" strokeDasharray="4 6" opacity="0.4" />
+      </g>
+    );
+  }
+
+  if (aura.id === "aura_bloodmoon") {
+    return (
+      <g className="auraPulse">
+        {/* Crescent blood moon over head */}
+        <path d="M190 60 A 18 18 0 1 0 215 85 A 14 14 0 1 1 190 60 Z" fill="#DC2626" opacity="0.9" />
+        <circle cx="200" cy="72" r="1.2" fill="#FCA5A5" />
+        {/* Dripping blood orbs and crimson mist */}
+        {[[115, 380, 3.5], [285, 370, 4], [108, 290, 3], [292, 260, 3.5], [125, 200, 2.5], [275, 180, 3], [195, 120, 2.8], [205, 150, 2]].map(([cx, cy, r], i) => (
+          <g key={i}>
+            <circle cx={cx} cy={cy} r={r} fill="#B91C1C" opacity="0.85" />
+            <circle cx={cx - r * 0.3} cy={cy - r * 0.3} r={r * 0.35} fill="#EF4444" />
+          </g>
+        ))}
+        {/* Dark crimson orbit */}
+        <ellipse cx="200" cy="430" rx="112" ry="16" stroke="#991B1B" strokeWidth="1.4" fill="none" strokeDasharray="6 8" opacity="0.7" />
+      </g>
+    );
+  }
+
   return null;
 }
 
-const HAT_COMPONENTS = { hat_pointed: HatPointed, hat_hood: HatHood, hat_wide: HatWide, hat_crown: HatCrown, hat_circlet: HatCirclet };
-const STAFF_COMPONENTS = { ashwood: StaffAshwood, frostbound: StaffFrostbound, verdant: StaffVerdant, voidglass: StaffVoidglass, sunfire: StaffSunfire };
+const HAT_COMPONENTS = {
+  hat_pointed: HatPointed,
+  hat_hood: HatHood,
+  hat_wide: HatWide,
+  hat_crown: HatCrown,
+  hat_circlet: HatCirclet,
+  hat_warlord: HatWarlord,
+  hat_laurel: HatLaurel,
+  hat_jester: HatJester,
+};
+const STAFF_COMPONENTS = {
+  ashwood: StaffAshwood,
+  frostbound: StaffFrostbound,
+  verdant: StaffVerdant,
+  voidglass: StaffVoidglass,
+  sunfire: StaffSunfire,
+  stormcaller: StaffStormcaller,
+  bloodpact: StaffBloodpact,
+  coral_scepter: StaffCoralScepter,
+};
 
-function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
+function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1, easterEgg = null }) {
   const robeSkin = ROBES.find(r => r.id === mage.robe);
   const p = robeSkin?.colors || ART[mage.affinity];
   const skinTone = SKIN_TONES.find(s => s.id === mage.skinTone) || SKIN_TONES[0];
@@ -3497,15 +4049,55 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
   const Offhand = mage.offhand ? (OFFHAND_COMPONENTS[mage.offhand.id] || OffhandGeneric) : null;
   const w = 96 * size, h = 120 * size;
 
+  const isLowHp = mage.hp != null && mage.maxHp != null && mage.hp < mage.maxHp * 0.25;
+
   return (
-    <div className={hurt ? "shake" : casting ? "cast" : ""} style={{ position: "relative", width: w, height: h, flexShrink: 0 }}>
+    <div
+      className={`${hurt ? "shake" : casting ? "cast" : ""} ${damageFlash ? "damage-flash" : ""} ${isLowHp ? "low-hp-pulse" : ""}`}
+      style={{ position: "relative", width: w, height: h, flexShrink: 0 }}
+    >
       {aura?.color && (
         <div className="auraPulse" style={{
           position: "absolute", inset: `${4 * size}px`, borderRadius: "50%",
           background: `radial-gradient(circle, ${aura.color}66 0%, ${aura.color}22 55%, transparent 75%)`,
         }} />
       )}
+      <StatusFXOverlay mage={mage} />
       <svg width={w} height={h} viewBox="0 0 400 500" style={{ position: "relative", transform: facing === "left" ? "scaleX(-1)" : "none", filter: casting ? "brightness(1.25)" : "none" }}>
+        <defs>
+          {/* Global SVG Filters for magical effects */}
+          <filter id="magicGlow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="epicGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="6" result="blur" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0.7  0 1 0 0 0.4  0 0 1 0 1  0 0 0 1.5 0" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="legendaryAura" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="8" result="blur1" />
+            <feGaussianBlur stdDeviation="3" result="blur2" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0.95  0 1 0 0 0.75  0 0 1 0 0.2  0 0 0 2 0" result="goldGlow" />
+            <feMerge>
+              <feMergeNode in="goldGlow" />
+              <feMergeNode in="blur2" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="organicWarp" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+
         {/* Floor Ground Shadow - stays anchored to the ground plane */}
         <ellipse cx="200" cy="466" rx="68" ry="13" fill="#000000" className="groundShadow" />
         {Staff && <ellipse cx="317" cy="466" rx="15" ry="4.5" fill="#000000" className="groundShadow" opacity="0.35" />}
@@ -3515,7 +4107,7 @@ function MageSprite({ mage, facing, hurt, casting, size = 1 }) {
         <g className={hurt || casting ? "" : "mageFloatGroup"}>
           <AuraVisual aura={aura} />
           {Cape && mage.cape?.color && <Cape color={mage.cape.color} dark={mage.cape.dark} />}
-          <Base p={p} look={look} hasHat={!!Hat} affinity={mage.affinity} hatId={mage.hat} robeTrim={RobeTrim && <RobeTrim />} armor={Armor && <Armor />} gloves={mage.gloves} hasOffhand={!!Offhand} />
+          <Base p={p} look={look} hasHat={!!Hat} affinity={mage.affinity} hatId={mage.hat} robeTrim={RobeTrim && <RobeTrim />} armor={Armor && <Armor />} gloves={mage.gloves} hasOffhand={!!Offhand} casting={casting} easterEgg={easterEgg} />
           {Staff && (
             <g className="staffFloat">
               {/* Telekinetic Levitation Seal beneath hovering staff */}
@@ -3565,30 +4157,67 @@ function ElementBadge({ el }) {
 function StatusIcons({ mage }) {
   return (
     <span className="flex gap-1 text-xs font-mono">
-      {mage.shield > 0 && <span title="Shield" style={{ color: "#5FC1E8" }}>🛡{mage.shield}</span>}
-      {mage.status.burn > 0 && <span title="Burning" style={{ color: "#FF6B3D" }}>🔥{mage.status.burn}</span>}
-      {mage.status.chill && <span title="Chilled: -30% next attack" style={{ color: "#5FC1E8" }}>❄</span>}
-      {mage.relic?.revive && !mage.phoenixUsed && <span title="Phoenix Feather ready" style={{ color: "#E8B44F" }}>✧</span>}
+      {mage.shield > 0 && <span title={`Barreira: +${mage.shield} absorção (+20% Dano em Ataques!)`} style={{ color: "#5FC1E8" }}>🛡{mage.shield}</span>}
+      {mage.status?.burn > 0 && <span title={`Queimando: 4 dmg × ${mage.status.burn} turnos (Vulnerável a Detonação)`} style={{ color: "#FF6B3D" }}>🔥{mage.status.burn}</span>}
+      {mage.status?.chill && <span title="Congelado: -30% no próximo ataque (Vulnerável a Quebra de Gelo)" style={{ color: "#5FC1E8" }}>❄</span>}
+      {mage.status?.entangled > 0 && <span title={`Enredado: Preso por ${mage.status.entangled} turnos (Vulnerável a Espinhos)`} style={{ color: "#72C063" }}>🌿{mage.status.entangled}</span>}
+      {mage.relic?.revive && !mage.phoenixUsed && <span title="Pena da Fênix pronta para reviver" style={{ color: "#E8B44F" }}>✧</span>}
     </span>
   );
 }
 
 function RarityCard({ item, selected, locked, onClick, subtitle }) {
-  const r = RARITY[item.rarity];
+  const r = RARITY[item.rarity] || { color: T.common, label: "Comum" };
   return (
-    <button onClick={onClick} disabled={locked}
-      className="rounded-md border p-2 text-left w-full"
+    <button
+      onClick={onClick}
+      disabled={locked}
+      className={`card-surface rounded-xl p-3 text-left w-full transition-all duration-150 relative overflow-hidden select-none group ${
+        locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+      }`}
       style={{
-        borderColor: selected ? r.color : "#3A3356",
-        background: selected ? r.color + "1C" : "#1C1833",
-        boxShadow: selected ? r.glow : "none",
-        opacity: locked ? 0.55 : 1,
-      }}>
-      <div className="flex justify-between items-center">
-        <span className="font-mono text-sm" style={{ color: "#F2EAD8" }}>{locked && "🔒 "}{item.name}</span>
-        <span className="text-xs font-mono" style={{ color: r.color }}>{r.label}</span>
+        backgroundColor: T.bgSurface,
+        borderColor: selected ? r.color : T.borderSubtle,
+        boxShadow: selected
+          ? `0 4px 16px rgba(0,0,0,0.5), 0 0 14px ${r.color}33, inset 0 1px 0 rgba(255,255,255,0.08)`
+          : "0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)",
+      }}
+      onMouseEnter={(e) => {
+        if (!locked && !selected) {
+          e.currentTarget.style.borderColor = `${r.color}99`;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!locked && !selected) {
+          e.currentTarget.style.borderColor = T.borderSubtle;
+        }
+      }}
+    >
+      <div className="flex justify-between items-center mb-1 gap-2">
+        <span
+          className="font-mono text-[13px] sm:text-[14px] font-bold flex items-center gap-1.5"
+          style={{ color: T.textPrimary }}
+        >
+          {locked && <span className="text-[12px] opacity-70">🔒</span>}
+          <span>{item.name}</span>
+        </span>
+        <span
+          className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border flex-shrink-0"
+          style={{
+            borderColor: `${r.color}66`,
+            backgroundColor: `${r.color}18`,
+            color: r.color,
+          }}
+        >
+          {r.label}
+        </span>
       </div>
-      <div className="text-xs font-mono" style={{ color: "#B7AE95" }}>{locked ? "Win duels or trade to unlock" : subtitle || item.desc || ""}</div>
+      <div
+        className="text-[11px] sm:text-[12px] font-mono leading-relaxed"
+        style={{ color: T.textSecondary }}
+      >
+        {locked ? "Desbloqueie vencendo duelos ou na Loja Arcana." : subtitle || item.desc || ""}
+      </div>
     </button>
   );
 }
@@ -3622,11 +4251,73 @@ export default function MageDuel() {
   const [glovesId, setGlovesId] = useState(saved?.glovesId ?? "gloves_arcane");
   const [createTab, setCreateTab] = useState("body");
   const [owned, setOwned] = useState(new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED)));
+  const [shards, setShards] = useState(() => saved?.shards ?? 0);
+  const [premiumOwned, setPremiumOwned] = useState(new Set(saved?.premiumOwned ?? []));
+
+  // Battle Pass State (Season of Embers)
+  const [seasonXp, setSeasonXp] = useState(() => saved?.seasonXp ?? 0);
+  const [passPremiumOwned, setPassPremiumOwned] = useState(() => saved?.passPremiumOwned ?? false);
+  const [claimedRewards, setClaimedRewards] = useState(() => new Set(saved?.claimedRewards ?? []));
+  const [winStreak, setWinStreak] = useState(0);
+
+  // Mage Progression (Level 1-30 & 4-7 Dynamic Slots)
+  const [mageXp, setMageXp] = useState(() => saved?.mageXp ?? 0);
+  const [unlockedSkills, setUnlockedSkills] = useState(() => new Set(saved?.unlockedSkills ?? START_SKILLS));
+  const [skillMastery, setSkillMastery] = useState(() => saved?.skillMastery ?? {});
+  const [pendingLevelDraft, setPendingLevelDraft] = useState(() => saved?.pendingLevelDraft ?? null);
+  const [bossesDefeated, setBossesDefeated] = useState(() => new Set(saved?.bossesDefeated ?? []));
+  const [bossEncounter, setBossEncounter] = useState(null);
+  const [showBossTrialsModal, setShowBossTrialsModal] = useState(false);
+  const [showMasteryCelebration, setShowMasteryCelebration] = useState(null);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [admToast, setAdmToast] = useState(null);
+
+  // Skillbook Filters
+  const [skillFilterEl, setSkillFilterEl] = useState("all");
+  const [skillFilterRole, setSkillFilterRole] = useState("all");
+
+  const mageLevelInfo = getMageXpInfo(mageXp);
+  const mageLevel = mageLevelInfo.level;
+  const maxSlots = getMaxSlots(mageLevel);
+
+  // Juice & Feedback States
+  const [damageFlashP, setDamageFlashP] = useState(false);
+  const [damageFlashE, setDamageFlashE] = useState(false);
+  const [screenFlash, setScreenFlash] = useState(null); // 'white' | 'gold' | null
+  const [phaseTransition, setPhaseTransition] = useState(false);
+  const [showRainbow, setShowRainbow] = useState(false);
+  const [showShootingStars, setShowShootingStars] = useState(false);
+  const [easterEgg, setEasterEgg] = useState(null);
+
+  const seasonLevel = Math.min(SEASON.maxLevel, Math.floor(seasonXp / SEASON.xpPerLevel) + 1);
+
+  // Phase transition circle overlay
+  useEffect(() => {
+    setPhaseTransition(true);
+    const t = setTimeout(() => setPhaseTransition(false), 500);
+    return () => clearTimeout(t);
+  }, [phase]);
 
   useEffect(() => {
-    const data = { mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned: [...owned] };
+    const data = {
+      mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
+      skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId,
+      earringId, noseRingId, offhandId, glovesId,
+      owned: [...owned],
+      shards,
+      premiumOwned: [...premiumOwned],
+      seasonId: SEASON.id,
+      seasonXp,
+      passPremiumOwned,
+      claimedRewards: [...claimedRewards],
+      mageXp,
+      unlockedSkills: [...unlockedSkills],
+      skillMastery,
+      pendingLevelDraft,
+      bossesDefeated: [...bossesDefeated],
+    };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned]);
+  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -3689,22 +4380,100 @@ export default function MageDuel() {
   const [result, setResult] = useState(null);
   const [loot, setLoot] = useState(null);
   const [confirmSurrender, setConfirmSurrender] = useState(false);
+  const [showSurrenderModal, setShowSurrenderModal] = useState(false);
+  const TURN_DURATION = 15;
+  const [turnCountdown, setTurnCountdown] = useState(TURN_DURATION);
+  const [roundNum, setRoundNum] = useState(1);
+  const [currentTurn, setCurrentTurn] = useState("player");
+  const [combatStats, setCombatStats] = useState({
+    totalDamageDealt: 0,
+    totalDamageTaken: 0,
+    critsCount: 0,
+    turnsCount: 0,
+    combosCount: 0,
+    highestHit: 0,
+    skillUsage: {},
+  });
+  const [isTutorial, setIsTutorial] = useState(false);
+  const [isTimerPaused, setIsTimerPaused] = useState(false);
+  const [screenShake, setScreenShake] = useState(null);
+  const [activeSpell, setActiveSpell] = useState(null);
+  const [impactEffects, setImpactEffects] = useState([]);
+  const [selfCastEffects, setSelfCastEffects] = useState([]);
   const logRef = useRef(null);
   const floatId = useRef(0);
   const projId = useRef(0);
 
-  const stars = useMemo(() => Array.from({ length: 45 }, () => ({
+  // ================= LOJA DE COSMÉTICOS & MOEDA ARCANE SHARDS =================
+  const [showShardShopModal, setShowShardShopModal] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
+  const [shopCategory, setShopCategory] = useState("all");
+  const [adModalOpen, setAdModalOpen] = useState(false);
+  const [adTimer, setAdTimer] = useState(3);
+  const adIntervalRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (adIntervalRef.current) clearInterval(adIntervalRef.current);
+    };
+  }, []);
+
+  function buyCosmetic(itemId) {
+    const entry = SHOP_ITEMS.find(i => i.id === itemId);
+    if (!entry || shards < entry.price) return false;
+    if (owned.has(itemId)) return false;
+    setShards(s => s - entry.price);
+    setOwned(o => new Set([...o, itemId]));
+    setPremiumOwned(p => new Set([...p, itemId]));
+    return true;
+  }
+
+  function purchaseShardPack(amount) {
+    // TODO: redirecionar para Stripe Checkout Session (backend)
+    setPurchasing(true);
+    setTimeout(() => {
+      setShards(s => s + amount);
+      setPurchasing(false);
+      setShowShardShopModal(false);
+    }, 1500);
+  }
+
+  function startWatchRewardedAd() {
+    // TODO: integrar SDK de rewarded ads (CrazyGames/Poki)
+    if (adIntervalRef.current) clearInterval(adIntervalRef.current);
+    setAdModalOpen(true);
+    setAdTimer(3);
+    let timeLeft = 3;
+    adIntervalRef.current = setInterval(() => {
+      timeLeft -= 1;
+      setAdTimer(timeLeft);
+      if (timeLeft <= 0) {
+        clearInterval(adIntervalRef.current);
+        setShards(s => s + 50);
+        setTimeout(() => setAdModalOpen(false), 700);
+      }
+    }, 1000);
+  }
+
+  const stars = useMemo(() => Array.from({ length: 16 }, () => ({
     left: Math.random() * 100, top: Math.random() * 100,
-    size: rand(1, 2.5), delay: rand(0, 4), dur: rand(2.5, 5),
+    size: rand(1, 2), delay: rand(0, 4), dur: rand(3, 6),
+  })), []);
+
+  const dustParticles = useMemo(() => Array.from({ length: 8 }, () => ({
+    left: Math.random() * 100,
+    size: rand(1.5, 2.5),
+    delay: rand(0, 15),
+    dur: rand(20, 30),
   })), []);
 
   useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [log]);
   const addLog = (line) => setLog(l => [...l, line]);
 
-  function addFloat(side, text, color, big) {
+  function addFloat(side, text, color, big, badge = null, badgeColor = null) {
     const id = ++floatId.current;
-    setFloats(f => [...f, { id, side, text, color, big, left: rand(20, 60) }]);
-    setTimeout(() => setFloats(f => f.filter(x => x.id !== id)), 1000);
+    setFloats(f => [...f, { id, side, text, color, big, badge, badgeColor, left: rand(20, 60) }]);
+    setTimeout(() => setFloats(f => f.filter(x => x.id !== id)), 1200);
   }
 
   function fireProjectile(el, fromSide) {
@@ -3714,10 +4483,21 @@ export default function MageDuel() {
   }
 
   function toggleSkill(id) {
-    setChosen(c => c.includes(id) ? c.filter(x => x !== id) : c.length < 4 ? [...c, id] : c);
+    if (!unlockedSkills.has(id)) return;
+    setChosen(c => {
+      if (c.includes(id)) {
+        if (c.length <= 1) return c;
+        return c.filter(x => x !== id);
+      }
+      if (c.length < maxSlots) {
+        return [...c, id];
+      }
+      return c;
+    });
   }
 
   function findOpponent() {
+    setBossEncounter(null);
     setMatchmaking(true);
     setMatchTimer(0);
     setMatchStatus("Scanning arcane leylines for duelists...");
@@ -3734,13 +4514,75 @@ export default function MageDuel() {
 
     matchTimeoutRef.current = setTimeout(() => {
       if (matchIntervalRef.current) clearInterval(matchIntervalRef.current);
-      setEnemy(makeEnemy());
+      setEnemy(makeEnemy(mageLevel));
       setMatchStatus("Match Found! Teleporting to faceoff...");
       setTimeout(() => {
         setMatchmaking(false);
         setPhase("scout");
       }, 450);
     }, 2100);
+  }
+
+  function startBossDuel(boss) {
+    const bossSkills = boss.skills.map(id => SKILLS.find(s => s.id === id)).filter(Boolean);
+    const bossMage = makeMage(
+      boss.name,
+      boss.affinity,
+      bossSkills,
+      boss.staffId,
+      boss.relicId,
+      boss.hatId,
+      boss.auraId,
+      boss.capeId,
+      "armor_none",
+      "pet_none",
+      "robe_classic",
+      boss.look,
+      "offhand_none",
+      "gloves_arcane"
+    );
+    bossMage.maxHp = boss.hp;
+    bossMage.hp = boss.hp;
+    if (bossMage.relic?.startShield) bossMage.shield = bossMage.relic.startShield;
+
+    setBossEncounter(boss);
+    setEnemy(bossMage);
+    setShowBossTrialsModal(false);
+    setPhase("scout");
+  }
+
+  function startTutorial() {
+    const dummy = makeMage(
+      "Espantalho Arcano",
+      "arcane",
+      [FOCUS],
+      "ashwood",
+      "none",
+      "hat_pointed",
+      "aura_sparkle",
+      "cape_none",
+      "armor_none",
+      "pet_none",
+      "robe_classic",
+      { skinTone: "skin_fair", hairColor: "hair_white", hairStyle: "hair_short", beardStyle: "beard_none", eyeColor: "eye_dark", gender: "gender_male", face: "face_round", earrings: "earring_none", noseRing: "nosering_none" },
+      "offhand_none",
+      "gloves_arcane"
+    );
+    dummy.maxHp = 40;
+    dummy.hp = 40;
+    dummy.mana = 20;
+    dummy.archetype = {
+      id: "dummy",
+      name: "Alvo de Treino",
+      icon: "🎯",
+      color: "#38BDF8",
+      desc: "Espantalho arcano encantado para noviços praticarem combos e gestão de mana.",
+      tagline: "Inofensivo",
+    };
+    setBossEncounter(null);
+    setIsTutorial(true);
+    setEnemy(dummy);
+    setPhase("scout");
   }
 
   function cancelMatchmaking() {
@@ -3754,27 +4596,148 @@ export default function MageDuel() {
       { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId);
     if (p.relic?.startShield) p.shield = p.relic.startShield;
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
-    setLog([
+    setShowSurrenderModal(false);
+    setRoundNum(1);
+    setCurrentTurn("player");
+    setCombatStats({
+      totalDamageDealt: 0,
+      totalDamageTaken: 0,
+      critsCount: 0,
+      turnsCount: 0,
+      combosCount: 0,
+      highestHit: 0,
+      skillUsage: {},
+    });
+    const todayMod = getTodayModifier();
+    const turnDur = todayMod.id === "swift_duels" ? 8 : TURN_DURATION;
+    setTurnCountdown(turnDur);
+    setIsTimerPaused(false);
+    setScreenShake(null);
+    setActiveSpell(null);
+    setImpactEffects([]);
+    setSelfCastEffects([]);
+    const initialLogs = isTutorial ? [
+      "🎯 CAMPO DE TREINAMENTO ARCANO",
+      "💡 DICA 1: Sua mana máxima é 40 (+3/turno). Use 'Foco' para restaurar +10 de mana!",
+      "💡 DICA 2: Crie COMBOS! Congelar + Gelo causa Quebra (+50%). Queimar + Fogo causa Detonação!",
+      "💡 DICA 3: Mantenha sua Barreira erguida para desferir Golpes Fortalecidos (+20% dano)!",
+    ] : [
       `${enemy.name} challenges you!`,
       `Foe: ${ELEMENTS[enemy.affinity].name} affinity · ${enemy.staffGear.name}${enemy.relic ? " · " + enemy.relic.name : ""}`,
-    ]);
+      `Arquétipo: ${enemy.archetype?.name || "Desconhecido"} ${enemy.archetype?.icon || "⚔️"} — ${enemy.archetype?.tagline || ""}`,
+    ];
+    setLog(initialLogs);
     setPhase("battle"); setBusy(false);
   }
 
+  function recordMastery(skillId) {
+    if (!skillId || skillId === "focus") return;
+    setSkillMastery(prev => {
+      const current = prev[skillId] || 0;
+      const nextCount = current + 1;
+      const updated = { ...prev, [skillId]: nextCount };
+      const upgradeSkill = SKILLS.find(s => s.upgradeOf === skillId);
+      if (upgradeSkill && !unlockedSkills.has(upgradeSkill.id)) {
+        const required = upgradeSkill.unlock?.casts || 8;
+        if (nextCount >= required) {
+          setUnlockedSkills(us => new Set([...us, upgradeSkill.id]));
+          const baseName = SKILLS.find(s => s.id === skillId)?.name || skillId;
+          addLog(`✨ MAESTRIA! Você dominou ${baseName} e desbloqueou ${upgradeSkill.name}!`);
+          setShowMasteryCelebration(upgradeSkill);
+        }
+      }
+      return updated;
+    });
+  }
+
   function applySkill(skill, attacker, defender, side) {
+    const todayMod = getTodayModifier();
     const lines = [];
     const a = { ...attacker, status: { ...attacker.status }, cds: { ...attacker.cds } };
     const d = { ...defender, status: { ...defender.status }, cds: { ...defender.cds } };
+
+    // Blood Rite daily modifier: skills cost 3 HP
+    if (todayMod.id === "blood_rite" && (skill.mana > 0 || skill.dmg > 0)) {
+      a.hp = Math.max(1, a.hp - 3);
+      lines.push("🩸 Rito de Sangue: Custo sacrificial de 3 HP!");
+      addFloat(side, "-3 HP", "#DC2626", false);
+    }
+
     a.mana -= skill.mana;
     if (skill.cd) a.cds[skill.id] = skill.cd + 1;
     lines.push(`${side === "p" ? "You cast" : a.name + " casts"} ${skill.name}!`);
 
-    if (skill.restore) { a.mana = Math.min(MAX_MANA, a.mana + skill.restore); lines.push(`+${skill.restore} mana.`); }
-    if (skill.shield) { a.shield += skill.shield; lines.push(`A ward absorbs the next ${skill.shield} damage.`); }
+    if (side === "p") {
+      recordMastery(skill.id);
+    }
+
+    if (skill.restore) {
+      a.mana = Math.min(MAX_MANA, a.mana + skill.restore);
+      lines.push(`+${skill.restore} mana.`);
+      addFloat(side, `+${skill.restore} 💧`, "#38BDF8", false);
+    }
+    if (skill.shield) {
+      const shieldVal = todayMod.id === "runic_bulwark" ? Math.round(skill.shield * 1.4) : skill.shield;
+      a.shield += shieldVal;
+      lines.push(`A ward absorbs the next ${shieldVal} damage.`);
+      addFloat(side, `+${shieldVal} 🛡️`, "#5FC1E8", false);
+    }
+    if (skill.heal && !skill.dmg) {
+      const h = Math.round(skill.heal * (1 + (a.staffGear?.healBonus || 0)));
+      a.hp = Math.min(a.maxHp, a.hp + h);
+      lines.push(`Healed ${h} HP.`);
+      addFloat(side, `+${h}`, "#72C063", false);
+    }
 
     let didDamage = false;
     if (skill.dmg) {
-      const { dmg, crit, chilled } = computeDamage(skill, a, d);
+      let comboMult = 1;
+      let bonusFlatDmg = 0;
+      let isCombo = false;
+
+      // Combo 1: Chill + Frost Lance / Ice ("Quebra de Gelo")
+      if (d.status.chill && skill.el === "ice") {
+        comboMult *= 1.5;
+        d.status.chill = false;
+        isCombo = true;
+        lines.push("⚡ COMBO: Quebra de Gelo! O gelo estilhaça no alvo congelado (+50% de dano)!");
+        addFloat(side === "p" ? "e" : "p", "QUEBRA DE GELO!", "#4FA3D1", true, "⚡ COMBO!", "#38BDF8");
+      }
+
+      // Combo 2: Burn + Fireball / Fire ("Detonação Ígnea")
+      if (d.status.burn > 0 && skill.el === "fire") {
+        const burnBonus = d.status.burn * 8;
+        d.status.burn = 0;
+        bonusFlatDmg += burnBonus;
+        isCombo = true;
+        lines.push(`💥 COMBO: Detonação Ígnea! Queimadura consumida para causar +${burnBonus} de dano explosivo!`);
+        addFloat(side === "p" ? "e" : "p", `+${burnBonus} EXPLOSÃO!`, "#FF6B3D", true, "💥 COMBO!", "#F97316");
+      }
+
+      // Combo 3: Entangle + Thorns / Nature ("Espinhos Entrelaçados")
+      if ((d.status.entangled > 0 || d.mana <= 12) && skill.el === "nature") {
+        bonusFlatDmg += 12;
+        if (d.status.entangled > 0) d.status.entangled = 0;
+        isCombo = true;
+        lines.push("🌿 COMBO: Espinhos Entrelaçados! +12 de dano perfurante nas raízes do alvo!");
+        addFloat(side === "p" ? "e" : "p", "+12 ESPINHOS!", "#72C063", true, "🌿 COMBO!", "#22C55E");
+      }
+
+      // Combo 4: Shield + Attack ("Golpe Fortalecido")
+      if (a.shield > 0) {
+        comboMult *= 1.2;
+        isCombo = true;
+        lines.push("🛡️ COMBO: Golpe Fortalecido! Barreira ativa canalizou +20% de dano!");
+        addFloat(side, "+20% FORÇA!", "#E8B44F", false, "🛡️ FORÇA!", "#E8B44F");
+      }
+
+      // Mana Opportunity Cost (Change 4): Arcane high mana reserve bonus (attacker had >= 25 mana before spell deduction)
+      if (attacker.mana >= 25 && (skill.el === "arcane" || skill.tier >= 2)) {
+        comboMult *= 1.15;
+        lines.push("✨ SOBRECARGA ARCANA: +15% de dano por reserva de mana elevada (≥25)!");
+      }
+
+      const { dmg, crit, chilled } = computeDamage(skill, a, d, comboMult, bonusFlatDmg);
       if (chilled) { a.status.chill = false; lines.push("The chill dampens the spell..."); }
       let remaining = dmg;
       if (d.shield > 0) {
@@ -3785,18 +4748,80 @@ export default function MageDuel() {
       d.hp -= remaining;
       didDamage = true;
       lines.push(`${crit ? "CRITICAL HIT! " : ""}${remaining} damage.`);
-      addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : "#F2EAD8", crit);
+      addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : "#F2EAD8", crit, isCombo ? "COMBO!" : crit ? "CRIT!" : null);
 
-      const heavy = skill.dmg >= 20;
-      if (heavy && skill.el === "fire" && chance(25 + (a.staffGear?.burnChance || 0))) {
-        d.status.burn = 3; lines.push(`${side === "p" ? "The foe is" : "You are"} Burning! (4 dmg × 3 turns)`);
+      // Track combat statistics
+      if (side === "p") {
+        setCombatStats(prev => ({
+          ...prev,
+          totalDamageDealt: prev.totalDamageDealt + remaining,
+          critsCount: prev.critsCount + (crit ? 1 : 0),
+          combosCount: prev.combosCount + (isCombo ? 1 : 0),
+          highestHit: Math.max(prev.highestHit, remaining),
+          skillUsage: {
+            ...prev.skillUsage,
+            [skill.id]: (prev.skillUsage[skill.id] || 0) + 1,
+          },
+        }));
+      } else {
+        setCombatStats(prev => ({
+          ...prev,
+          totalDamageTaken: prev.totalDamageTaken + remaining,
+        }));
       }
-      if (heavy && skill.el === "ice" && chance(30)) {
-        d.status.chill = true; lines.push("Chilled! Next attack weakened 30%.");
+
+      // Stormcaller chill proc (10% on any skill hit)
+      if (a.staffGear?.chillChance && chance(a.staffGear.chillChance)) {
+        d.status.chill = true;
+        lines.push("Stormcaller crackles! The foe is Chilled.");
       }
-      if (heavy && skill.el === "nature" && chance(30)) {
-        d.mana = Math.max(0, d.mana - 8); lines.push("Entangled! Foe loses 8 mana.");
+
+      // Prismatic Prism echo proc (15% chance to echo 50% damage)
+      if (didDamage && a.offhand?.echoChance && chance(a.offhand.echoChance)) {
+        const echoDmg = Math.round(remaining * 0.5);
+        if (echoDmg > 0) {
+          d.hp -= echoDmg;
+          lines.push(`Prismatic Echo resonates for ${echoDmg} extra damage!`);
+          addFloat(side === "p" ? "e" : "p", `-${echoDmg}`, "#A855F7", false);
+        }
       }
+
+      // Explicit status effects from skill.effect
+      const statusDurExtra = todayMod.id === "status_storm" ? 1 : 0;
+      if (skill.effect) {
+        const eff = skill.effect;
+        const willProc = !eff.chance || chance(eff.chance);
+        if (willProc) {
+          if (eff.status === "burn") {
+            const dur = (eff.duration || 3) + statusDurExtra;
+            d.status.burn = dur;
+            lines.push(`${side === "p" ? "The foe is" : "You are"} Burning! (4 dmg × ${dur} turns)`);
+          } else if (eff.status === "chill") {
+            d.status.chill = true;
+            lines.push("Chilled! Next attack weakened 30%.");
+          } else if (eff.status === "entangle") {
+            const drain = eff.amount || 8;
+            d.mana = Math.max(0, d.mana - drain);
+            d.status.entangled = 2 + statusDurExtra;
+            lines.push(`Entangled! Foe loses ${drain} mana and is rooted.`);
+          }
+        }
+      } else {
+        const heavy = skill.dmg >= 20;
+        if (heavy && skill.el === "fire" && chance(25 + (a.staffGear?.burnChance || 0))) {
+          const dur = 3 + statusDurExtra;
+          d.status.burn = dur; lines.push(`${side === "p" ? "The foe is" : "You are"} Burning! (4 dmg × ${dur} turns)`);
+        }
+        if (heavy && skill.el === "ice" && chance(30)) {
+          d.status.chill = true; lines.push("Chilled! Next attack weakened 30%.");
+        }
+        if (heavy && skill.el === "nature" && chance(30)) {
+          d.mana = Math.max(0, d.mana - 8);
+          d.status.entangled = 2 + statusDurExtra;
+          lines.push("Entangled! Foe loses 8 mana and is rooted.");
+        }
+      }
+
       if (skill.heal) {
         const h = Math.round(skill.heal * (1 + (a.staffGear?.healBonus || 0)));
         a.hp = Math.min(a.maxHp, a.hp + h);
@@ -3807,34 +4832,120 @@ export default function MageDuel() {
         d.hp = 20; d.phoenixUsed = true;
         lines.push(`${side === "p" ? "The foe's" : "Your"} Phoenix Feather blazes — risen at 20 HP!`);
       }
+      // Soulstone relic: heal 8 HP upon defeating an opponent
+      if (d.hp <= 0 && a.relic?.id === "soulstone") {
+        const sHeal = a.relic.healOnKill || 8;
+        a.hp = Math.min(a.maxHp, a.hp + sHeal);
+        lines.push(`Soulstone feeds on defeat: healed +${sHeal} HP!`);
+        addFloat(side, `+${sHeal}`, "#72C063", false);
+      }
     }
     return { a, d, lines, didDamage };
   }
 
   function tickTurnEnd(m) {
+    const todayMod = getTodayModifier();
     const n = { ...m, status: { ...m.status }, cds: {} };
-    for (const k in m.cds) if (m.cds[k] - 1 > 0) n.cds[k] = m.cds[k] - 1;
+    const cdExtra = todayMod.id === "swift_duels" ? 1 : 0;
+    const cdReduction = 1 + (m.relic?.id === "chronoloop" ? 1 : 0) + cdExtra;
+    for (const k in m.cds) if (m.cds[k] - cdReduction > 0) n.cds[k] = m.cds[k] - cdReduction;
     if (n.status.burn > 0) { n.hp -= 4; n.status.burn -= 1; }
-    n.mana = Math.min(MAX_MANA, n.mana + REGEN + (n.staffGear?.regen || 0) + (n.relic?.regen || 0));
+    if (n.status.entangled > 0) { n.status.entangled -= 1; }
+    let baseRegen = REGEN;
+    if (todayMod.id === "arcane_surge") baseRegen += 2;
+    n.mana = Math.min(MAX_MANA, n.mana + baseRegen + (n.staffGear?.regen || 0) + (n.relic?.regen || 0));
     return n;
   }
 
   function aiChoose(e, p) {
+    // Training dummy is harmless and uses focus
+    if (e.archetype?.id === "dummy") return FOCUS;
+
     const usable = e.skills.filter(s => e.mana >= s.mana && !e.cds[s.id]);
+    if (usable.length === 0) return FOCUS;
+
     const heal = usable.find(s => s.heal);
-    if (e.hp < 30 && heal) return heal;
+    const ward = usable.find(s => s.shield);
     const surge = usable.find(s => s.restore);
     const attacks = usable.filter(s => s.dmg > 0);
-    if (attacks.length === 0) return surge || FOCUS;
+
+    const arch = e.archetype?.id || "tactician";
+
+    // Berserker: Aggressive, highest damage, ignores shields
+    if (arch === "berserker") {
+      if (e.hp < 18 && heal && Math.random() < 0.4) return heal;
+      if (attacks.length > 0) {
+        return attacks.slice().sort((a, b) => (b.dmg || 0) - (a.dmg || 0))[0];
+      }
+      return surge || FOCUS;
+    }
+
+    // Turtle: Highly defensive, maintains shields & sustained heals
+    if (arch === "turtle") {
+      if (ward && e.shield <= 6 && Math.random() < 0.85) return ward;
+      if (e.hp < 65 && heal && Math.random() < 0.7) return heal;
+      if (attacks.length > 0) {
+        const drainAtk = attacks.find(s => s.heal);
+        if (drainAtk) return drainAtk;
+        return attacks.slice().sort((a, b) => a.mana - b.mana)[0];
+      }
+      return surge || FOCUS;
+    }
+
+    // Controller: Prioritizes applying status ailments
+    if (arch === "controller") {
+      const chillSpell = attacks.find(s => s.effect?.status === "chill" || s.el === "ice");
+      if (!p.status.chill && chillSpell && Math.random() < 0.8) return chillSpell;
+
+      const burnSpell = attacks.find(s => s.effect?.status === "burn" || s.el === "fire");
+      if (!p.status.burn && burnSpell && Math.random() < 0.8) return burnSpell;
+
+      const drainSpell = attacks.find(s => s.effect?.status === "entangle" || s.heal);
+      if (drainSpell && p.mana > 12 && Math.random() < 0.7) return drainSpell;
+
+      if (e.hp < 35 && heal) return heal;
+      if (ward && e.shield === 0 && Math.random() < 0.4) return ward;
+      if (attacks.length > 0) return attacks.slice().sort((a, b) => (b.dmg || 0) - (a.dmg || 0))[0];
+      return surge || FOCUS;
+    }
+
+    // Gambler: Loves heavy attacks, crits, and high variance
+    if (arch === "gambler") {
+      if (Math.random() < 0.25 && surge) return surge;
+      if (attacks.length > 0) {
+        if (Math.random() < 0.6) {
+          return attacks.slice().sort((a, b) => (b.dmg || 0) - (a.dmg || 0))[0];
+        }
+        return pick(attacks);
+      }
+      return usable[0] || FOCUS;
+    }
+
+    // Tactician: Smart combo triggers, shields when vulnerable
+    if (p.status.chill) {
+      const iceCombo = attacks.find(s => s.el === "ice");
+      if (iceCombo) return iceCombo;
+    }
+    if (p.status.burn > 0) {
+      const fireCombo = attacks.find(s => s.el === "fire");
+      if (fireCombo) return fireCombo;
+    }
+    if (e.shield > 0 && attacks.length > 0) {
+      return attacks.slice().sort((a, b) => (b.dmg || 0) - (a.dmg || 0))[0];
+    }
+    if (e.hp < 35 && heal) return heal;
+    if (ward && e.shield === 0 && e.hp < 70 && Math.random() < 0.5) return ward;
+    if (attacks.length === 0) return surge || usable[0] || FOCUS;
+
     let best = attacks[0], bestVal = -1;
     for (const s of attacks) {
       let v = s.dmg * (s.el === e.affinity ? AFFINITY_BONUS : 1);
       if (e.staffGear?.el === s.el && e.staffGear.elBonus) v *= 1 + e.staffGear.elBonus;
+      if (s.effect?.status === "chill" && !p.status.chill) v += 8;
+      if (s.effect?.status === "burn" && !p.status.burn) v += 10;
       if (v > bestVal) { bestVal = v; best = s; }
     }
-    const ward = usable.find(s => s.shield);
-    if (ward && e.shield === 0 && e.hp < 55 && Math.random() < 0.35) return ward;
-    if (surge && e.mana < 20 && Math.random() < 0.5) return surge;
+    if (surge && e.mana < 12 && Math.random() < 0.6) return surge;
     return best;
   }
 
@@ -3854,54 +4965,282 @@ export default function MageDuel() {
 
   function finishBattle(win) {
     setResult(win ? "win" : "lose");
-    if (win) {
-      const drop = rollLoot();
-      if (drop) { setLoot(findItem(drop)); setOwned(o => new Set([...o, drop])); }
+    // Battle Pass XP Progression
+    const bpXpGained = win ? 30 : 10;
+    setSeasonXp(prevXp => {
+      const nextXp = prevXp + bpXpGained;
+      const oldLvl = Math.min(SEASON.maxLevel, Math.floor(prevXp / SEASON.xpPerLevel) + 1);
+      const newLvl = Math.min(SEASON.maxLevel, Math.floor(nextXp / SEASON.xpPerLevel) + 1);
+      if (newLvl > oldLvl) {
+        addLog(`🎉 Subiu para o nível ${newLvl} no Passe de Batalha!`);
+      }
+      return nextXp;
+    });
+
+    // Mage Level XP Progression (Win: +50 XP, Loss: +20 XP)
+    const mageXpGained = win ? 50 : 20;
+    setMageXp(prevXp => {
+      const nextXp = prevXp + mageXpGained;
+      const oldLvl = getMageLevel(prevXp);
+      const newLvl = getMageLevel(nextXp);
+      if (newLvl > oldLvl) {
+        addLog(`🎉 MAGE LEVEL UP! Subiu para o Nível ${newLvl}!`);
+        if (newLvl === 10 || newLvl === 20 || newLvl === 30) {
+          addLog(`✨ NOVO SLOT DE SKILL! Agora você pode equipar ${getMaxSlots(newLvl)} feitiços!`);
+        }
+        // Generate 3 random choices from level pool
+        const pool = SKILLS.filter(s => s.unlock.type === "level" && !unlockedSkills.has(s.id));
+        const draftPool = pool.length >= 3 ? pool : SKILLS.filter(s => s.unlock.type !== "boss" && !unlockedSkills.has(s.id));
+        if (draftPool.length > 0) {
+          const shuffled = [...draftPool].sort(() => Math.random() - 0.5);
+          const choices = shuffled.slice(0, Math.min(3, shuffled.length)).map(s => s.id);
+          setPendingLevelDraft({ level: newLvl, choices });
+        }
+      }
+      return nextXp;
+    });
+
+    // Handle Boss Training Victory
+    if (win && bossEncounter) {
+      const rewardSkill = SKILLS.find(s => s.id === bossEncounter.rewardSkillId);
+      if (rewardSkill && !unlockedSkills.has(rewardSkill.id)) {
+        setUnlockedSkills(us => new Set([...us, rewardSkill.id]));
+      }
+      setBossesDefeated(bd => new Set([...bd, bossEncounter.id]));
+      setLoot({ isBoss: true, boss: bossEncounter, skill: rewardSkill });
+      addLog(`👑 VITÓRIA DE ARQUIMAGO! ${bossEncounter.name} foi derrotado!`);
+      addLog(`✨ Feitiço Mestre aprendido: ${rewardSkill ? rewardSkill.name : ""}`);
+    } else if (win) {
+      // Normal duel victory: 35% chance to drop an ancient Spell Tome if unlearned tomes exist
+      const unlearnedTomes = TOMES.filter(t => !unlockedSkills.has(t.skillId));
+      if (unlearnedTomes.length > 0 && Math.random() < 0.35) {
+        const droppedTome = pick(unlearnedTomes);
+        const skill = SKILLS.find(s => s.id === droppedTome.skillId);
+        setUnlockedSkills(us => new Set([...us, droppedTome.skillId]));
+        setLoot({ isTome: true, tome: droppedTome, skill });
+        addLog(`📖 Você encontrou o ${droppedTome.name}!`);
+        addLog(`✨ Novo feitiço aprendido: ${skill.name}!`);
+      } else {
+        const drop = rollLoot();
+        if (drop) { setLoot(findItem(drop)); setOwned(o => new Set([...o, drop])); }
+      }
+      setShards(s => s + 5); // +5 por vitória
+      setWinStreak(s => {
+        const next = s + 1;
+        if (next >= 3) {
+          setShowShootingStars(true);
+          setTimeout(() => setShowShootingStars(false), 3000);
+        }
+        return next;
+      });
+      if (Math.random() < 0.05) {
+        setShowRainbow(true);
+        setTimeout(() => setShowRainbow(false), 2000);
+      }
+    } else {
+      setWinStreak(0);
     }
     setTimeout(() => setPhase("result"), 1200);
   }
 
+  function triggerSpellFX(skill, fromSide, crit) {
+    if (!skill) return;
+    try {
+      const isSelf = !skill.dmg || skill.dmg === 0;
+      const skin = null;
+
+      if (isSelf) {
+        const id = Date.now() + Math.random();
+        setSelfCastEffects(prev => [...prev, { id, skill, side: fromSide, skin }]);
+        setTimeout(() => {
+          setSelfCastEffects(prev => prev.filter(x => x.id !== id));
+        }, 900);
+      } else {
+        const spellData = { id: Date.now() + Math.random(), skill, fromSide, crit, skin };
+        setActiveSpell(spellData);
+
+        // Projectile lands on defender in 460ms
+        setTimeout(() => {
+          setActiveSpell(null);
+          const targetSide = fromSide === "p" ? "e" : "p";
+          const impactId = Date.now() + Math.random();
+          setImpactEffects(prev => [...prev, { id: impactId, skill, side: targetSide, crit, skin }]);
+
+          const isHeavy = crit || (skill.dmg && skill.dmg >= 20);
+          setScreenShake(isHeavy ? "heavy" : "light");
+          setTimeout(() => setScreenShake(null), isHeavy ? 450 : 300);
+
+          // Screen Flash & Damage Flash (White / Gold)
+          setScreenFlash(crit ? "gold" : isHeavy ? "white" : null);
+          setTimeout(() => setScreenFlash(null), crit ? 200 : 140);
+
+          if (targetSide === "e") {
+            setDamageFlashE(true);
+            setTimeout(() => setDamageFlashE(false), 80);
+            setHurtE(true);
+            setTimeout(() => setHurtE(false), 500);
+          } else {
+            setDamageFlashP(true);
+            setTimeout(() => setDamageFlashP(false), 80);
+            setHurtP(true);
+            setTimeout(() => setHurtP(false), 500);
+          }
+
+          // 1% Easter egg: Golden eyes on crit
+          if (crit && Math.random() < 0.01) {
+            setEasterEgg("golden_eyes");
+            setTimeout(() => setEasterEgg(null), 400);
+          }
+
+          setTimeout(() => {
+            setImpactEffects(prev => prev.filter(x => x.id !== impactId));
+          }, 750);
+        }, 460);
+      }
+    } catch (err) {
+      console.error("Error in triggerSpellFX:", err);
+    }
+  }
+
+  function handleTurnTimeout() {
+    if (busy || phase !== "battle" || currentTurn !== "player") return;
+    addLog("⏳ Turn timer expired! You instinctively channel Focus.");
+    playerAction(FOCUS);
+  }
+
+  // Turn Countdown Timer Effect
+  useEffect(() => {
+    if (phase !== "battle" || busy || currentTurn !== "player" || result || isTimerPaused) return;
+
+    const interval = setInterval(() => {
+      setTurnCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          handleTurnTimeout();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [phase, busy, currentTurn, result, isTimerPaused, player, enemy]);
+
+  // Keyboard Shortcuts (1-5, Spacebar)
+  useEffect(() => {
+    if (phase !== "battle" || busy || currentTurn !== "player" || !player) return;
+
+    function handleKeyDown(e) {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      const skills = [...player.skills, FOCUS];
+      if (e.key >= "1" && e.key <= String(skills.length)) {
+        const idx = parseInt(e.key) - 1;
+        const s = skills[idx];
+        if (s && player.mana >= s.mana && !player.cds[s.id]) {
+          playerAction(s);
+        }
+      } else if (e.code === "Space") {
+        e.preventDefault();
+        playerAction(FOCUS);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [phase, busy, currentTurn, player]);
+
   function surrender() {
     if (phase !== "battle" || busy) return;
+    setShowSurrenderModal(false);
     setBusy(true);
     addLog(`${player.name} surrenders the duel.`);
     finishBattle(false);
   }
 
   function playerAction(skill) {
-    if (busy || phase !== "battle") return;
-    setBusy(true);
-    let p = player, e = enemy;
+    if (busy || phase !== "battle" || !skill) return;
+    try {
+      setBusy(true);
+      setCurrentTurn("resolving");
+      setTurnCountdown(TURN_DURATION);
 
-    setCastP(true); setTimeout(() => setCastP(false), 600);
-    if (skill.dmg > 0) fireProjectile(skill.el, "p");
-    const r1 = applySkill(skill, p, e, "p");
-    p = r1.a; e = r1.d;
-    let delay = 0;
-    r1.lines.forEach(line => setTimeout(() => addLog(line), delay += 420));
-    if (r1.didDamage) setTimeout(() => { setHurtE(true); setTimeout(() => setHurtE(false), 500); }, delay);
-    setTimeout(() => { setPlayer({ ...p }); setEnemy({ ...e }); }, delay);
+      let p = player, e = enemy;
 
-    setTimeout(() => {
-      if (e.hp <= 0) { addLog(`${e.name} collapses. Victory!`); setEnemy({ ...e }); finishBattle(true); return; }
+      setCastP(true);
+      setTimeout(() => setCastP(false), 600);
 
-      const eSkill = aiChoose(e, p);
-      setCastE(true); setTimeout(() => setCastE(false), 600);
-      if (eSkill.dmg > 0) fireProjectile(eSkill.el, "e");
-      const r2 = applySkill(eSkill, e, p, "e");
-      e = r2.a; p = r2.d;
-      let d2 = 0;
-      r2.lines.forEach(line => setTimeout(() => addLog(line), d2 += 420));
-      if (r2.didDamage) setTimeout(() => { setHurtP(true); setTimeout(() => setHurtP(false), 500); }, d2);
+      const r1 = applySkill(skill, p, e, "p");
+      p = r1.a; e = r1.d;
 
+      triggerSpellFX(skill, "p", r1.crit);
+      addLog(r1.lines[0]);
+
+      // Outcome logs and numbers when projectile lands / cast resolves (460ms)
       setTimeout(() => {
-        p = tickTurnEnd(p); e = tickTurnEnd(e);
-        setPlayer({ ...p }); setEnemy({ ...e });
-        if (p.hp <= 0) { addLog("You fall... Defeat."); finishBattle(false); }
-        else if (e.hp <= 0) { addLog(`${e.name} succumbs to their wounds. Victory!`); finishBattle(true); }
-        else setBusy(false);
-      }, d2 + 500);
-    }, delay + 700);
+        r1.lines.slice(1).forEach((line, i) => {
+          setTimeout(() => addLog(line), i * 140);
+        });
+        setPlayer({ ...p });
+        setEnemy({ ...e });
+      }, 460);
+
+      // After player's turn completes, check enemy or victory
+      setTimeout(() => {
+        if (e.hp <= 0) {
+          addLog(`${e.name} collapses. Victory!`);
+          setEnemy({ ...e });
+          finishBattle(true);
+          return;
+        }
+
+        // Enemy Turn
+        setCurrentTurn("enemy");
+        const eSkill = aiChoose(e, p) || FOCUS;
+
+        setTimeout(() => {
+          setCastE(true);
+          setTimeout(() => setCastE(false), 600);
+
+          const r2 = applySkill(eSkill, e, p, "e");
+          e = r2.a; p = r2.d;
+
+          triggerSpellFX(eSkill, "e", r2.crit);
+          addLog(r2.lines[0]);
+
+          setTimeout(() => {
+            r2.lines.slice(1).forEach((line, i) => {
+              setTimeout(() => addLog(line), i * 140);
+            });
+            setPlayer({ ...p });
+            setEnemy({ ...e });
+          }, 460);
+
+          setTimeout(() => {
+            p = tickTurnEnd(p);
+            e = tickTurnEnd(e);
+            setPlayer({ ...p });
+            setEnemy({ ...e });
+
+            if (p.hp <= 0) {
+              addLog("You fall... Defeat.");
+              finishBattle(false);
+            } else if (e.hp <= 0) {
+              addLog(`${e.name} succumbs to their wounds. Victory!`);
+              finishBattle(true);
+            } else {
+              setRoundNum(r => r + 1);
+              setCurrentTurn("player");
+              setTurnCountdown(TURN_DURATION);
+              setBusy(false);
+            }
+          }, 1000);
+        }, 400);
+      }, 1150);
+    } catch (err) {
+      console.error("Error in playerAction:", err);
+      setBusy(false);
+      setCurrentTurn("player");
+    }
   }
 
   // ================= STYLES / BG =================
@@ -4087,19 +5426,418 @@ export default function MageDuel() {
       }
       .matchPulse { animation: matchPulse 1.8s ease-in-out infinite; }
 
-      @media (prefers-reduced-motion: reduce) { .shake,.cast,.idle,.mageFloatGroup,.groundShadow,.petShadow,.auraPulse,.dmgFloat,.lootShine,.petHover,.petGround,.projectile-up,.projectile-down,.angelWingL,.angelWingR,.demonWingL,.demonWingR,.phoenixWingL,.phoenixWingR,.faeWingL,.faeWingR,.holySparkle,.wingEmber,.staffFloat,.offhandFloat,.matchSpin,.matchPulse { animation: none; } }
+      /* Safe Area Insets (iOS notch, dynamic island, Android gesture bar) */
+      .safe-top    { padding-top: env(safe-area-inset-top, 0px); }
+      .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .safe-left   { padding-left: env(safe-area-inset-left, 0px); }
+      .safe-right  { padding-right: env(safe-area-inset-right, 0px); }
+      .safe-x      {
+        padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+        padding-right: max(0.5rem, env(safe-area-inset-right, 0px));
+      }
+      .safe-y      {
+        padding-top: max(0.375rem, env(safe-area-inset-top, 0px));
+        padding-bottom: max(0.375rem, env(safe-area-inset-bottom, 0px));
+      }
+      .safe-all    {
+        padding-top: max(0.375rem, env(safe-area-inset-top, 0px));
+        padding-bottom: max(0.375rem, env(safe-area-inset-bottom, 0px));
+        padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+        padding-right: max(0.5rem, env(safe-area-inset-right, 0px));
+      }
+
+      /* Responsive Projectile Travel (Vertical on mobile portrait, Horizontal on landscape or tablet/desktop) */
+      @keyframes spellFlyPtoE {
+        0% { top: 76%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+        15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        100% { top: 24%; left: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+      }
+      @keyframes spellFlyEtoP {
+        0% { top: 24%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+        15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        100% { top: 76%; left: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+      }
+
+      @media (min-width: 768px), (orientation: landscape) {
+        @keyframes spellFlyPtoE {
+          0% { left: 24%; top: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+          15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+          100% { left: 76%; top: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+        }
+        @keyframes spellFlyEtoP {
+          0% { left: 76%; top: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+          15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+          100% { left: 24%; top: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+        }
+      }
+
+      .spell-proj-p { animation: spellFlyPtoE 0.46s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+      .spell-proj-e { animation: spellFlyEtoP 0.46s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+      .anchor-pos-p { top: 76%; left: 50%; transform: translate(-50%, -50%); }
+      .anchor-pos-e { top: 24%; left: 50%; transform: translate(-50%, -50%); }
+      @media (min-width: 768px), (orientation: landscape) {
+        .anchor-pos-p { top: 50%; left: 24%; transform: translate(-50%, -50%); }
+        .anchor-pos-e { top: 50%; left: 76%; transform: translate(-50%, -50%); }
+      }
+
+      @keyframes fireExplosionAnim {
+        0% { transform: scale(0.2); opacity: 1; }
+        50% { transform: scale(1.3); opacity: 0.95; }
+        100% { transform: scale(1.8); opacity: 0; }
+      }
+      @keyframes fireRingAnim {
+        0% { transform: scale(0.3); opacity: 1; border-width: 5px; }
+        100% { transform: scale(2.2); opacity: 0; border-width: 1px; }
+      }
+      @keyframes sparkRadial {
+        0% { transform: translate(0, 0) scale(1); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+      }
+
+      @keyframes frostShatterAnim {
+        0% { transform: scale(0.3); opacity: 1; }
+        50% { transform: scale(1.25); opacity: 0.95; }
+        100% { transform: scale(1.7); opacity: 0; }
+      }
+      @keyframes frostRingAnim {
+        0% { transform: scale(0.3); opacity: 1; }
+        100% { transform: scale(2.3); opacity: 0; }
+      }
+      @keyframes iceShardScatter {
+        0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) rotate(360deg) scale(0.3); opacity: 0; }
+      }
+
+      @keyframes arcaneSupernovaAnim {
+        0% { transform: scale(0.2) rotate(0deg); opacity: 1; }
+        60% { transform: scale(1.4) rotate(90deg); opacity: 0.95; }
+        100% { transform: scale(2.1) rotate(180deg); opacity: 0; }
+      }
+
+      @keyframes leafScatter {
+        0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+        100% { transform: translate(var(--dx), var(--dy)) rotate(720deg) scale(0.2); opacity: 0; }
+      }
+      @keyframes vineWhipAnim {
+        0% { transform: scale(0.5) rotate(-15deg); opacity: 0; }
+        40% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+        100% { transform: scale(1) rotate(0deg); opacity: 0; }
+      }
+
+      @keyframes wardHexDomeAnim {
+        0% { transform: scale(0.2); opacity: 0.9; }
+        40% { transform: scale(1.2); opacity: 1; }
+        80% { transform: scale(1.05); opacity: 0.85; }
+        100% { transform: scale(1.15); opacity: 0; }
+      }
+      @keyframes manaPillarAnim {
+        0% { transform: translateY(40%) scaleY(0.1); opacity: 0; }
+        35% { transform: translateY(0%) scaleY(1.3); opacity: 1; }
+        100% { transform: translateY(-40%) scaleY(0.4); opacity: 0; }
+      }
+      @keyframes focusRippleAnim {
+        0% { transform: scale(1.8); opacity: 0; }
+        50% { transform: scale(1); opacity: 0.9; }
+        100% { transform: scale(0.3); opacity: 0; }
+      }
+
+      @keyframes critBannerPop {
+        0% { transform: scale(0.2) rotate(-6deg); opacity: 0; }
+        40% { transform: scale(1.25) rotate(3deg); opacity: 1; }
+        70% { transform: scale(1.05) rotate(0deg); opacity: 1; }
+        100% { transform: scale(1) translateY(-20px); opacity: 0; }
+      }
+
+      @keyframes shakeHeavy {
+        0% { transform: translate(0, 0); }
+        12% { transform: translate(-10px, 8px) rotate(-1.5deg); }
+        25% { transform: translate(9px, -7px) rotate(1.2deg); }
+        40% { transform: translate(-7px, 5px) rotate(-0.8deg); }
+        60% { transform: translate(5px, -4px) rotate(0.5deg); }
+        80% { transform: translate(-3px, 2px); }
+        100% { transform: translate(0, 0); }
+      }
+      @keyframes shakeLight {
+        0% { transform: translate(0, 0); }
+        25% { transform: translate(-4px, 3px); }
+        50% { transform: translate(4px, -3px); }
+        75% { transform: translate(-2px, 2px); }
+        100% { transform: translate(0, 0); }
+      }
+      .arena-shake-heavy { animation: shakeHeavy 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+      .arena-shake-light { animation: shakeLight 0.28s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+
+      @keyframes lowHpPulse {
+        0%, 100% { box-shadow: 0 0 4px #EF444444; border-color: #EF4444; }
+        50% { box-shadow: 0 0 16px #EF4444DD; border-color: #F87171; }
+      }
+      .low-hp-alert { animation: lowHpPulse 1.2s ease-in-out infinite; }
+
+      /* Screen flashes */
+      @keyframes flashFade { 0% { opacity: 0.45; } 100% { opacity: 0; } }
+      .screen-flash-white { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.1) 70%, transparent 100%); pointer-events: none; z-index: 100; animation: flashFade 0.16s ease-out forwards; }
+      .screen-flash-gold { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.45) 0%, rgba(245, 158, 11, 0.1) 70%, transparent 100%); pointer-events: none; z-index: 100; animation: flashFade 0.2s ease-out forwards; }
+
+      /* Mage Damage Flash & Low HP Pulse */
+      .damage-flash { filter: brightness(3) saturate(0) !important; }
+      @keyframes lowHpPulse { 0%, 100% { filter: drop-shadow(0 0 4px #EF4444); } 50% { filter: drop-shadow(0 0 16px #EF4444); } }
+      .low-hp-pulse { animation: lowHpPulse 1.2s ease-in-out infinite; }
+
+      /* Organic Idle: Natural Eye Blinking & Beard sway */
+      @keyframes naturalBlink {
+        0%, 93%, 100% {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+        95.5%, 97% {
+          transform: scaleY(0.04);
+          opacity: 0.1;
+        }
+        98.5% {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+      }
+      .eye-blink-l { animation: naturalBlink 4.4s ease-in-out infinite; transform-origin: 178px 167px; transform-box: view-box; }
+      .eye-blink-r { animation: naturalBlink 4.4s ease-in-out infinite; transform-origin: 222px 167px; transform-box: view-box; }
+      @keyframes beardSway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(1.2deg); } }
+      .beard-sway { animation: beardSway 3.8s ease-in-out infinite; transform-origin: 200px 206px; }
+
+      /* Arena Ambiance: Dust, Mist, Rune Circle, Phase transition */
+      @keyframes dustFloat {
+        0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+        10% { opacity: 0.45; }
+        90% { opacity: 0.45; }
+        100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
+      }
+      @keyframes scrollMist { 0% { transform: translateX(-50%); } 100% { transform: translateX(0%); } }
+      @keyframes rotateRune { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes phaseCircle { 0% { clip-path: circle(0% at 50% 50%); opacity: 1; } 50% { clip-path: circle(100% at 50% 50%); opacity: 1; } 100% { clip-path: circle(100% at 50% 50%); opacity: 0; } }
+      .phase-transition { position: fixed; inset: 0; background: #0B0A16; pointer-events: none; z-index: 120; animation: phaseCircle 0.5s ease-in-out forwards; }
+      @keyframes shootingStar { 0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 1; } 100% { transform: translateX(-600px) translateY(600px) rotate(-45deg); opacity: 0; } }
+
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0E0C1CCC;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #E8B44F66;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #E8B44F;
+      }
+
+      /* ================= DESIGN SYSTEM UI CLASSES ================= */
+      .btn-gold {
+        background: linear-gradient(135deg, #FBBF24 0%, #D97706 45%, #92400E 100%);
+        border: 1px solid rgba(254, 240, 138, 0.65);
+        color: #0F172A;
+        box-shadow: 0 6px 28px rgba(245, 158, 11, 0.5), 0 2px 6px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+        font-family: 'Cinzel', serif;
+        font-weight: 900;
+        letter-spacing: 0.1em;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        overflow: hidden;
+      }
+      .btn-gold:hover:not(:disabled) {
+        filter: brightness(1.1);
+        transform: translateY(-2px) scale(1.015);
+        box-shadow: 0 8px 36px rgba(245, 158, 11, 0.7), 0 0 24px rgba(251, 191, 36, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+      }
+      .btn-gold:active:not(:disabled) {
+        transform: translateY(1px) scale(0.98);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      .btn-gold:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        filter: grayscale(0.6);
+        box-shadow: none;
+        transform: none;
+      }
+
+      .btn-surface {
+        background: rgba(30, 41, 59, 0.82);
+        color: #F8FAFC;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+        transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background 0.16s ease, border-color 0.16s ease;
+        user-select: none;
+        cursor: pointer;
+        border-radius: 12px;
+      }
+      .btn-surface:hover:not(:disabled) {
+        background: rgba(51, 65, 85, 0.95);
+        border-color: rgba(245, 158, 11, 0.45);
+        color: #FFFFFF;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15), 0 0 14px rgba(245,158,11,0.2);
+        transform: translateY(-1.5px);
+      }
+      .btn-surface:active:not(:disabled) {
+        transform: translateY(1px) scale(0.98);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      }
+      .btn-surface:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-danger {
+        background: linear-gradient(180deg, #7F1D1D 0%, #450A0A 100%);
+        color: #FEE2E2;
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+        cursor: pointer;
+        border-radius: 12px;
+      }
+      .btn-danger:hover:not(:disabled) {
+        border-color: #EF4444;
+        background: linear-gradient(180deg, #991B1B 0%, #5B0E0E 100%);
+        box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        transform: translateY(-1px);
+      }
+      .btn-danger:active:not(:disabled) {
+        transform: translateY(1px) scale(0.98);
+      }
+      .btn-danger:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .panel-base {
+        background-color: rgba(11, 15, 26, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 16px;
+        box-shadow: 0 12px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07);
+      }
+
+      .panel-elevated {
+        background-color: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        box-shadow: 0 14px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+
+      .card-surface {
+        background: rgba(15, 23, 42, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        border-radius: 14px;
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+        will-change: transform;
+      }
+      .card-surface:hover {
+        border-color: rgba(245, 158, 11, 0.45);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 14px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+      }
+
+      @keyframes modalEnter {
+        from {
+          opacity: 0;
+          transform: scale(0.96) translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .modal-backdrop {
+        background-color: rgba(2, 6, 23, 0.82);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      .modal-window {
+        animation: modalEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        background: rgba(15, 23, 42, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 35px rgba(245,158,11,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+        border-radius: 20px;
+      }
+
+      /* Fluid & Responsive Game Feel Classes */
+      .game-card {
+        transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+        will-change: transform;
+      }
+      .game-card:hover {
+        transform: translateY(-2px);
+      }
+      .game-card:active {
+        transform: scale(0.97);
+      }
+      .game-btn {
+        transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), filter 0.16s ease, box-shadow 0.16s ease;
+        user-select: none;
+        will-change: transform;
+      }
+      .game-btn:hover {
+        filter: brightness(1.12);
+        transform: translateY(-1px);
+      }
+      .game-btn:active {
+        transform: scale(0.96) translateY(1px);
+        filter: brightness(0.95);
+      }
+
+      @media (prefers-reduced-motion: reduce) { .shake,.cast,.idle,.mageFloatGroup,.groundShadow,.petShadow,.auraPulse,.dmgFloat,.lootShine,.petHover,.petGround,.projectile-up,.projectile-down,.spell-proj-p,.spell-proj-e,.arena-shake-heavy,.arena-shake-light,.angelWingL,.angelWingR,.demonWingL,.demonWingR,.phoenixWingL,.phoenixWingR,.faeWingL,.faeWingR,.holySparkle,.wingEmber,.staffFloat,.offhandFloat,.matchSpin,.matchPulse,.eye-blink-l,.eye-blink-r,.beard-sway,.phase-transition,.modal-window { animation: none; } }
     `}</style>
   );
 
   const bg = (
-    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -10%, #241E45 0%, #100E1F 55%, #0A0814 100%)", overflow: "hidden", zIndex: 0 }}>
+    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -20%, #1E1B4B 0%, #0F172A 45%, #020617 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
       {stars.map((s, i) => (
         <div key={i} style={{
           position: "absolute", left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size,
           borderRadius: "50%", background: "#EFE7D2",
           animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
+          willChange: "opacity",
         }} />
       ))}
+      {/* Subtle floating arena dust particles */}
+      {dustParticles.map((d, i) => (
+        <div key={`d-${i}`} style={{
+          position: "absolute", left: `${d.left}%`, width: d.size, height: d.size,
+          borderRadius: "50%", background: "#E8B44F",
+          animation: `dustFloat ${d.dur}s linear ${d.delay}s infinite`,
+          opacity: 0.3,
+          willChange: "transform",
+        }} />
+      ))}
+      {/* Horizontal scrolling mist layer */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, width: "200%", height: "35%",
+        background: "linear-gradient(to top, #02061799 0%, transparent 100%)",
+        animation: "scrollMist 25s linear infinite",
+        pointerEvents: "none", opacity: 0.35,
+        willChange: "transform",
+      }} />
+      {/* Radial edge vignette */}
+      <div style={{
+        position: "fixed", inset: 0,
+        background: "radial-gradient(circle at center, transparent 40%, #020617CC 100%)",
+        pointerEvents: "none", zIndex: 1,
+      }} />
     </div>
   );
 
@@ -4114,77 +5852,129 @@ export default function MageDuel() {
     };
     const trimmedName = mageName.trim();
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex items-center justify-center p-2 sm:p-4" style={{ color: "#F2EAD8" }}>
+      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex items-center justify-center safe-all p-2 sm:p-4 md:p-6" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 w-full max-w-3xl max-h-[96dvh] flex flex-col md:flex-row gap-3 md:gap-5 bg-[#16122ACC] border border-[#3A3356] rounded-xl p-3 sm:p-5 backdrop-blur-md shadow-2xl overflow-hidden">
-          
+        {renderAdmToast()}
+        <div
+          className="relative z-10 w-full max-w-4xl max-h-[94dvh] flex flex-col landscape:flex-row md:flex-row gap-3 sm:gap-6 rounded-2xl p-3 sm:p-6 panel-base overflow-y-auto landscape:overflow-hidden md:overflow-hidden"
+          style={{
+            borderColor: T.borderDefault,
+            boxShadow: "0 16px 48px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.06)",
+          }}
+        >
           {/* Left Column: Studio Preview, Name, Affinity, Launch */}
-          <div className="md:w-5/12 flex flex-col items-center justify-between border-b md:border-b-0 md:border-r border-[#3A3356] pb-3 md:pb-0 md:pr-4">
+          <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col items-center justify-between border-b landscape:border-b-0 md:border-b-0 landscape:border-r md:border-r border-white/10 pb-4 landscape:pb-0 md:pb-0 landscape:pr-4 md:pr-6 flex-shrink-0">
             <div className="w-full text-center">
-              <h1 className="font-serif text-xl sm:text-2xl md:text-3xl text-center" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>Create Your Mage</h1>
-              <p className="text-center text-[11px] font-mono mb-1" style={{ color: "#B7AE95" }}>Affinity spells deal +25% damage</p>
+              <h1
+                className="font-serif text-[24px] sm:text-[28px] font-bold text-center text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.3)]"
+              >
+                Crie seu Arquimago
+              </h1>
+              <p className="text-center text-[12px] font-sans text-zinc-400 mt-1">
+                Feitiços de afinidade causam +25% de dano
+              </p>
             </div>
 
-            <div className="flex justify-center my-1">
-              <MageSprite mage={previewMage} facing="right" size={1.4} />
+            <div className="flex justify-center my-2 scale-95 sm:scale-105 landscape:scale-95 md:landscape:scale-105">
+              <MageSprite mage={previewMage} facing="right" size={1.3} />
             </div>
 
-            <div className="w-full">
-              <p className="font-mono text-xs mb-1" style={{ color: "#E8B44F" }}>Mage Name</p>
-              <input
-                value={mageName}
-                onChange={(e) => setMageName(e.target.value.slice(0, 18))}
-                placeholder="Enter mage name"
-                className="w-full rounded-md border px-2.5 py-1.5 font-mono text-xs md:text-sm mb-2 outline-none"
-                style={{ borderColor: "#3A3356", background: "#1C1833", color: "#F2EAD8" }}
-              />
-
-              <p className="font-mono text-xs mb-1" style={{ color: "#E8B44F" }}>Affinity</p>
-              <div className="grid grid-cols-4 gap-1.5 mb-2.5">
-                {Object.entries(ELEMENTS).map(([key, e]) => (
-                  <button key={key} onClick={() => setAffinity(key)} className="rounded-md border py-1 px-1 text-center font-mono text-xs transition-colors"
-                    style={{ borderColor: affinity === key ? e.color : "#3A3356", background: affinity === key ? e.color + "26" : "#1C1833", color: e.color, boxShadow: affinity === key ? `0 0 8px ${e.color}44` : "none" }}>
-                    <div className="leading-none">{e.icon}</div>
-                    <div className="text-[10px] leading-tight">{e.name}</div>
-                  </button>
-                ))}
+            <div className="w-full space-y-3">
+              <div>
+                <p className="font-serif text-[12px] font-bold mb-1 text-amber-200">
+                  Nome do Mago
+                </p>
+                <input
+                  value={mageName}
+                  onChange={(e) => setMageName(e.target.value.slice(0, 18))}
+                  placeholder="Digite o nome arcano..."
+                  className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/70 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40"
+                />
               </div>
 
-              <button onClick={() => setPhase("loadout")} disabled={!trimmedName}
-                className="w-full rounded-md border py-2.5 font-serif text-base md:text-lg transition-all"
-                style={{ borderColor: "#E8B44F", background: trimmedName ? "linear-gradient(180deg, #E8B44F, #C9902E)" : "#1C1833", color: trimmedName ? "#100E1F" : "#3A3356", boxShadow: trimmedName ? "0 0 16px #E8B44F55" : "none" }}>
-                Begin Your Journey
+              <div>
+                <p className="font-serif text-[12px] font-bold mb-1.5 text-amber-200">
+                  Afinidade Elemental
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {Object.entries(ELEMENTS).map(([key, e]) => (
+                    <button
+                      key={key}
+                      onClick={() => setAffinity(key)}
+                      className={`card-surface rounded-xl p-2 text-center font-sans text-[12px] transition-all flex flex-col items-center justify-center ${
+                        affinity === key ? "scale-[1.03]" : ""
+                      }`}
+                      style={{
+                        borderColor: affinity === key ? e.color : "rgba(255,255,255,0.08)",
+                        backgroundColor: affinity === key ? `${e.color}1c` : "rgba(15, 23, 42, 0.4)",
+                        color: e.color,
+                        boxShadow: affinity === key ? `0 0 16px ${e.color}44` : "none",
+                      }}
+                    >
+                      <div className="leading-none text-base">{e.icon}</div>
+                      <div className="text-[11px] font-bold mt-1">{e.name}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={() => setPhase("loadout")}
+                disabled={!trimmedName}
+                className="btn-king w-full rounded-xl py-3 font-serif text-[16px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                <span>⚔️ Iniciar Jornada</span>
               </button>
             </div>
           </div>
 
           {/* Right Column: Customization with sub-tabs */}
-          <div className="md:w-7/12 flex flex-col min-h-0 flex-1">
+          <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col min-h-0 flex-1 overflow-hidden">
             {/* Sub-tabs header */}
-            <div className="grid grid-cols-3 gap-1.5 mb-2 pb-2 border-b border-[#3A3356]">
+            <div className="grid grid-cols-3 gap-2 mb-3 pb-2 border-b border-[#2A2444]">
               {[
-                ["body", "Body & Skin", "👤"],
-                ["hair", "Hair & Beard", "✂"],
-                ["details", "Face & Piercing", "✨"],
+                ["body", "Corpo & Pele", "👤"],
+                ["hair", "Cabelo & Barba", "✂"],
+                ["details", "Rosto & Piercing", "✨"],
               ].map(([t, label, icon]) => (
-                <button key={t} onClick={() => setCreateTab(t)}
-                  className="rounded-md border py-1 px-1 font-mono text-xs flex items-center justify-center gap-1 transition-all"
-                  style={{ borderColor: createTab === t ? "#E8B44F" : "#3A3356", background: createTab === t ? "#E8B44F22" : "#1C1833", color: createTab === t ? "#E8B44F" : "#B7AE95" }}>
-                  <span>{icon}</span><span className="truncate">{label}</span>
+                <button
+                  key={t}
+                  onClick={() => setCreateTab(t)}
+                  className={`btn-surface rounded-xl py-2 px-1 font-mono text-[12px] flex items-center justify-center gap-1.5 transition-all ${
+                    createTab === t ? "border-[#E8B44F] text-[#E8B44F] font-bold" : ""
+                  }`}
+                  style={{
+                    borderColor: createTab === t ? T.gold : T.borderSubtle,
+                    backgroundColor: createTab === t ? `${T.gold}18` : T.bgSurface,
+                    color: createTab === t ? T.gold : T.textSecondary,
+                  }}
+                >
+                  <span>{icon}</span>
+                  <span className="truncate">{label}</span>
                 </button>
               ))}
             </div>
 
             {/* Customizer tab content */}
-            <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-1">
               {createTab === "body" && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Gender</p>
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Gênero</p>
                     <div className="grid grid-cols-2 gap-2">
                       {GENDERS.map(g => (
-                        <button key={g.id} onClick={() => setGenderId(g.id)} className="rounded-md border py-1.5 font-mono text-xs transition-colors"
-                          style={{ borderColor: genderId === g.id ? "#E8B44F" : "#3A3356", background: genderId === g.id ? "#E8B44F1F" : "#1C1833", color: genderId === g.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={g.id}
+                          onClick={() => setGenderId(g.id)}
+                          className={`btn-surface rounded-xl py-2 font-mono text-[12px] font-bold transition-all ${
+                            genderId === g.id ? "border-[#E8B44F] text-[#E8B44F]" : ""
+                          }`}
+                          style={{
+                            borderColor: genderId === g.id ? T.gold : T.borderSubtle,
+                            backgroundColor: genderId === g.id ? `${T.gold}18` : T.bgSurface,
+                            color: genderId === g.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {g.name}
                         </button>
                       ))}
@@ -4192,22 +5982,41 @@ export default function MageDuel() {
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Skin Tone</p>
-                    <div className="flex gap-2 flex-wrap">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Tom de Pele</p>
+                    <div className="flex gap-2.5 flex-wrap">
                       {SKIN_TONES.map(s => (
-                        <button key={s.id} onClick={() => setSkinToneId(s.id)} title={s.name}
-                          className="rounded-full transition-transform"
-                          style={{ width: 32, height: 32, background: s.skin, border: skinToneId === s.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: skinToneId === s.id ? "0 0 8px #E8B44F66" : "none", transform: skinToneId === s.id ? "scale(1.1)" : "none" }} />
+                        <button
+                          key={s.id}
+                          onClick={() => setSkinToneId(s.id)}
+                          title={s.name}
+                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: s.skin,
+                            border: skinToneId === s.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
+                            boxShadow: skinToneId === s.id ? `0 0 12px ${T.gold}88` : "none",
+                            transform: skinToneId === s.id ? "scale(1.12)" : "none",
+                          }}
+                        />
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Face Shape</p>
-                    <div className="grid grid-cols-4 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Formato do Rosto</p>
+                    <div className="grid grid-cols-4 gap-2">
                       {FACES.map(f => (
-                        <button key={f.id} onClick={() => setFaceId(f.id)} className="rounded-md border py-1.5 font-mono text-xs transition-colors"
-                          style={{ borderColor: faceId === f.id ? "#E8B44F" : "#3A3356", background: faceId === f.id ? "#E8B44F1F" : "#1C1833", color: faceId === f.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={f.id}
+                          onClick={() => setFaceId(f.id)}
+                          className="btn-surface rounded-xl py-2 font-mono text-[11px] font-bold transition-all"
+                          style={{
+                            borderColor: faceId === f.id ? T.gold : T.borderSubtle,
+                            backgroundColor: faceId === f.id ? `${T.gold}18` : T.bgSurface,
+                            color: faceId === f.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {f.name}
                         </button>
                       ))}
@@ -4215,11 +6024,19 @@ export default function MageDuel() {
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Gloves & Hands</p>
-                    <div className="grid grid-cols-2 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Luvas & Mãos</p>
+                    <div className="grid grid-cols-2 gap-2">
                       {GLOVES.map(gl => (
-                        <button key={gl.id} onClick={() => setGlovesId(gl.id)} className="rounded-md border py-1.5 px-2 font-mono text-xs text-left transition-colors truncate"
-                          style={{ borderColor: glovesId === gl.id ? "#E8B44F" : "#3A3356", background: glovesId === gl.id ? "#E8B44F1F" : "#1C1833", color: glovesId === gl.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={gl.id}
+                          onClick={() => setGlovesId(gl.id)}
+                          className="btn-surface rounded-xl py-2 px-2.5 font-mono text-[12px] text-left transition-all truncate"
+                          style={{
+                            borderColor: glovesId === gl.id ? T.gold : T.borderSubtle,
+                            backgroundColor: glovesId === gl.id ? `${T.gold}18` : T.bgSurface,
+                            color: glovesId === gl.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {gl.name}
                         </button>
                       ))}
@@ -4229,24 +6046,43 @@ export default function MageDuel() {
               )}
 
               {createTab === "hair" && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Hair Color</p>
-                    <div className="flex gap-2 flex-wrap">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Cor do Cabelo</p>
+                    <div className="flex gap-2.5 flex-wrap">
                       {HAIR_COLORS.map(h => (
-                        <button key={h.id} onClick={() => setHairColorId(h.id)} title={h.name}
-                          className="rounded-full transition-transform"
-                          style={{ width: 32, height: 32, background: h.hair, border: hairColorId === h.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: hairColorId === h.id ? "0 0 8px #E8B44F66" : "none", transform: hairColorId === h.id ? "scale(1.1)" : "none" }} />
+                        <button
+                          key={h.id}
+                          onClick={() => setHairColorId(h.id)}
+                          title={h.name}
+                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: h.hair,
+                            border: hairColorId === h.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
+                            boxShadow: hairColorId === h.id ? `0 0 12px ${T.gold}88` : "none",
+                            transform: hairColorId === h.id ? "scale(1.12)" : "none",
+                          }}
+                        />
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Hairstyle</p>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Penteado</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {HAIR_STYLES.map(hs => (
-                        <button key={hs.id} onClick={() => setHairStyleId(hs.id)} className="rounded-md border py-1.5 font-mono text-xs truncate transition-colors"
-                          style={{ borderColor: hairStyleId === hs.id ? "#E8B44F" : "#3A3356", background: hairStyleId === hs.id ? "#E8B44F1F" : "#1C1833", color: hairStyleId === hs.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={hs.id}
+                          onClick={() => setHairStyleId(hs.id)}
+                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
+                          style={{
+                            borderColor: hairStyleId === hs.id ? T.gold : T.borderSubtle,
+                            backgroundColor: hairStyleId === hs.id ? `${T.gold}18` : T.bgSurface,
+                            color: hairStyleId === hs.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {hs.name}
                         </button>
                       ))}
@@ -4254,11 +6090,19 @@ export default function MageDuel() {
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Beard Style</p>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Estilo de Barba</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {BEARD_STYLES.map(b => (
-                        <button key={b.id} onClick={() => setBeardStyleId(b.id)} className="rounded-md border py-1.5 font-mono text-xs truncate transition-colors"
-                          style={{ borderColor: beardStyleId === b.id ? "#E8B44F" : "#3A3356", background: beardStyleId === b.id ? "#E8B44F1F" : "#1C1833", color: beardStyleId === b.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={b.id}
+                          onClick={() => setBeardStyleId(b.id)}
+                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
+                          style={{
+                            borderColor: beardStyleId === b.id ? T.gold : T.borderSubtle,
+                            backgroundColor: beardStyleId === b.id ? `${T.gold}18` : T.bgSurface,
+                            color: beardStyleId === b.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {b.name}
                         </button>
                       ))}
@@ -4268,24 +6112,43 @@ export default function MageDuel() {
               )}
 
               {createTab === "details" && (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Eye Color</p>
-                    <div className="flex gap-2 flex-wrap">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Cor dos Olhos</p>
+                    <div className="flex gap-2.5 flex-wrap">
                       {EYE_COLORS.map(e => (
-                        <button key={e.id} onClick={() => setEyeColorId(e.id)} title={e.name}
-                          className="rounded-full transition-transform"
-                          style={{ width: 32, height: 32, background: e.color, border: eyeColorId === e.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: eyeColorId === e.id ? "0 0 8px #E8B44F66" : "none", transform: eyeColorId === e.id ? "scale(1.1)" : "none" }} />
+                        <button
+                          key={e.id}
+                          onClick={() => setEyeColorId(e.id)}
+                          title={e.name}
+                          className="rounded-full transition-transform hover:scale-110 active:scale-95"
+                          style={{
+                            width: 32,
+                            height: 32,
+                            backgroundColor: e.color,
+                            border: eyeColorId === e.id ? `3px solid ${T.gold}` : `2px solid ${T.borderDefault}`,
+                            boxShadow: eyeColorId === e.id ? `0 0 12px ${T.gold}88` : "none",
+                            transform: eyeColorId === e.id ? "scale(1.12)" : "none",
+                          }}
+                        />
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Earrings</p>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Brincos</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {EARRINGS.map(e => (
-                        <button key={e.id} onClick={() => setEarringId(e.id)} className="rounded-md border py-1.5 font-mono text-xs truncate transition-colors"
-                          style={{ borderColor: earringId === e.id ? "#E8B44F" : "#3A3356", background: earringId === e.id ? "#E8B44F1F" : "#1C1833", color: earringId === e.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={e.id}
+                          onClick={() => setEarringId(e.id)}
+                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
+                          style={{
+                            borderColor: earringId === e.id ? T.gold : T.borderSubtle,
+                            backgroundColor: earringId === e.id ? `${T.gold}18` : T.bgSurface,
+                            color: earringId === e.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {e.name}
                         </button>
                       ))}
@@ -4293,11 +6156,19 @@ export default function MageDuel() {
                   </div>
 
                   <div>
-                    <p className="font-mono text-xs mb-1.5" style={{ color: "#E8B44F" }}>Nose Piercing</p>
-                    <div className="grid grid-cols-3 gap-1.5">
+                    <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>Piercing de Nariz</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {NOSE_RINGS.map(n => (
-                        <button key={n.id} onClick={() => setNoseRingId(n.id)} className="rounded-md border py-1.5 font-mono text-xs truncate transition-colors"
-                          style={{ borderColor: noseRingId === n.id ? "#E8B44F" : "#3A3356", background: noseRingId === n.id ? "#E8B44F1F" : "#1C1833", color: noseRingId === n.id ? "#E8B44F" : "#B7AE95" }}>
+                        <button
+                          key={n.id}
+                          onClick={() => setNoseRingId(n.id)}
+                          className="btn-surface rounded-xl py-2 font-mono text-[12px] truncate transition-all font-bold"
+                          style={{
+                            borderColor: noseRingId === n.id ? T.gold : T.borderSubtle,
+                            backgroundColor: noseRingId === n.id ? `${T.gold}18` : T.bgSurface,
+                            color: noseRingId === n.id ? T.gold : T.textSecondary,
+                          }}
+                        >
                           {n.name}
                         </button>
                       ))}
@@ -4309,6 +6180,7 @@ export default function MageDuel() {
           </div>
 
         </div>
+        {renderAdminModal()}
       </div>
     );
   }
@@ -4333,91 +6205,475 @@ export default function MageDuel() {
     const previewMage = buildPreviewMage();
     const relic = RELICS.find(r => r.id === relicId);
     const hat = findItem(hatId), aura = findItem(auraId), robeSkin = findItem(robeId), cape = findItem(capeId), pet = findItem(petId), offhand = findItem(offhandId), gloves = findItem(glovesId);
+    const el = ELEMENTS[affinity] || ELEMENTS.fire;
+
+    const hasUnclaimedPass = BATTLE_PASS_REWARDS.some(entry => {
+      if (entry.level > seasonLevel) return false;
+      if (entry.free && !claimedRewards.has(`free_${entry.level}`)) return true;
+      if (passPremiumOwned && entry.premium && !claimedRewards.has(`premium_${entry.level}`)) return true;
+      return false;
+    });
+
+    const HUB_PORTALS = [
+      { id: "skills", label: "Grimório", sub: `${unlockedSkills.size}/36 Magias`, icon: "⚔️", color: "#E8B44F" },
+      { id: "gear", label: "Equipamento", sub: previewMage.staffGear?.name || "Cajado & Relíquia", icon: "🪄", color: "#38BDF8" },
+      { id: "style", label: "Cosméticos", sub: "Auras, Pets & Capas", icon: "✨", color: "#A855F7" },
+      { id: "shop", label: "Loja Arcana", sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
+      { id: "pass", label: "Passe Batalha", sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
+      { id: "appearance", label: "Aparência", sub: "Customizar Mago", icon: "👤", color: "#10B981" },
+    ];
+
     return (
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center w-full">
-        <div className="flex-1 min-h-0 flex items-center justify-center cursor-pointer group relative py-1" onClick={() => setTab("appearance")} title="Click to customize appearance">
-          <MageSprite mage={previewMage} facing="right" size={2.2} />
-          <div className="absolute bottom-0 bg-[#141126CC] px-2.5 py-0.5 rounded-full text-[11px] font-mono border border-[#3A3356] text-[#B7AE95] group-hover:border-[#E8B44F] group-hover:text-[#E8B44F] transition-all flex items-center gap-1 shadow-md">
-            <span>👤</span><span>Customize Look</span>
+      <div className="flex-1 min-h-0 flex flex-col landscape:flex-row md:flex-row items-center justify-between gap-2 sm:gap-4 md:gap-5 w-full my-1">
+        {/* Left: Floating Mage & Translucent Badges */}
+        <div className="flex-1 min-h-0 flex flex-col items-center justify-center w-full landscape:w-5/12 md:w-5/12 relative py-1">
+          <div
+            className="flex flex-col items-center justify-center cursor-pointer group relative py-1 sm:py-2 select-none"
+            onClick={() => setTab("appearance")}
+            title="Clique para customizar aparência"
+          >
+            {/* Atmospheric Ambient Glow behind mage */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+              <div
+                className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl transition-all duration-500"
+                style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
+              />
+            </div>
+
+            {/* Floating Mage Character Sprite */}
+            <div className="scale-85 xs:scale-95 sm:scale-105 landscape:scale-80 md:landscape:scale-105 md:scale-115 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
+              <MageSprite mage={previewMage} facing="right" size={1.65} />
+            </div>
+
+            {/* Soft Ambient Ground Shadow (no rigid box or pedestal) */}
+            <div className="w-24 sm:w-36 h-2.5 sm:h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
+
+            <div className="mt-1 px-2.5 py-0.5 rounded-full text-[9px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
+              <span>👤</span><span>Personalizar</span>
+            </div>
+          </div>
+
+          {/* Translucent Rounded Attribute Badges */}
+          <div className="flex justify-center gap-1 sm:gap-1.5 items-center flex-wrap mt-0.5 z-10">
+            <span
+              className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
+              style={{ color: el.color, borderColor: `${el.color}44` }}
+            >
+              <span>{el.icon}</span>
+              <span>{el.name}</span>
+            </span>
+
+            <button
+              onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
+              title="Alternar gênero"
+              className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
+            >
+              <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
+              <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
+            </button>
+
+            {relic && relic.id !== "none" && (
+              <span
+                className="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-sans font-semibold bg-slate-900/90 border shadow-sm"
+                style={{ color: RARITY[relic.rarity].color, borderColor: `${RARITY[relic.rarity].color}44` }}
+              >
+                ✦ {relic.name}
+              </span>
+            )}
+          </div>
+
+          <div className="text-center text-[9px] sm:text-[11px] font-sans text-zinc-400/90 truncate max-w-xs z-10 mt-0.5">
+            <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity].color : undefined }}>
+              {previewMage.staffGear?.name}
+            </span>
+            {offhand && <span> · {offhand.name}</span>}
           </div>
         </div>
 
-        <div className="flex justify-center gap-2 items-center flex-wrap my-1">
-          <ElementBadge el={affinity} />
-          <button onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")} title="Click to switch gender" className="text-xs font-mono px-2 py-0.5 rounded-sm border hover:border-[#E8B44F] transition-colors flex items-center gap-1" style={{ borderColor: "#3A3356", background: "#1C1833", color: "#E8B44F" }}>
-            <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
-            <span>{genderId === "gender_female" ? "Female" : "Male"}</span>
-          </button>
-          {relic && relic.id !== "none" && <span className="text-xs font-mono px-1.5 py-0.5 rounded-sm border" style={{ color: RARITY[relic.rarity].color, borderColor: RARITY[relic.rarity].color + "66", background: RARITY[relic.rarity].color + "1A" }}>{relic.name}</span>}
-        </div>
-        <div className="text-center text-xs font-mono" style={{ color: "#B7AE95" }}>
-          {previewMage.staffGear?.name} · {offhand?.name}
-        </div>
-        <div className="text-center text-xs font-mono mb-2" style={{ color: "#B7AE95" }}>
-          {hat?.name} · {robeSkin?.name} · {gloves?.name} · {cape?.name} · {aura?.name} · {pet?.name}
-        </div>
+        {/* Right: Modern 6 Hub Portals (3x2 grid on mobile & desktop for compact height) */}
+        <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col justify-center">
+          {extra}
 
-        {extra}
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+            {HUB_PORTALS.map(portal => (
+              <button
+                key={portal.id}
+                onClick={() => setTab(portal.id)}
+                className="glass-card p-2 sm:p-3 md:p-3.5 text-left transition-all relative overflow-hidden group select-none flex flex-col justify-between"
+              >
+                {/* Notification indicator dot */}
+                {portal.hasNotice && (
+                  <span className="absolute top-1.5 right-1.5 sm:top-2.5 sm:right-2.5 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shadow-[0_0_8px_#F59E0B]"></span>
+                  </span>
+                )}
 
-        <div className="grid grid-cols-4 gap-1.5 w-full">
-          {[
-            ["skills", "Skills", "⚔"],
-            ["gear", "Gear", "🪄"],
-            ["style", "Style", "✨"],
-            ["appearance", "Appearance", "👤"],
-          ].map(([k, label, icon]) => (
-            <button key={k} onClick={() => setTab(k)} className="rounded-md border py-2 px-1 font-serif text-center transition-colors hover:border-[#E8B44F]"
-              style={{ borderColor: "#3A3356", background: "#1C1833", color: "#B7AE95" }}>
-              <div className="text-base leading-none mb-0.5">{icon}</div>
-              <div className="text-xs font-serif leading-tight">{label}</div>
-            </button>
-          ))}
+                <div className="flex items-center justify-between mb-1 sm:mb-2">
+                  <span className="text-xl sm:text-2xl md:text-3xl drop-shadow-[0_0_10px_currentColor] transition-transform duration-200 group-hover:scale-110" style={{ color: portal.color }}>
+                    {portal.icon}
+                  </span>
+                  <span className="text-[11px] sm:text-[12px] font-sans transition-all opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 hidden xs:inline" style={{ color: portal.color }}>
+                    ▸
+                  </span>
+                </div>
+
+                <div>
+                  <div className="font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold tracking-wide transition-colors leading-tight text-zinc-100 group-hover:text-amber-200 truncate">
+                    {portal.label}
+                  </div>
+                  <div className="text-[9px] sm:text-[10px] md:text-[11px] font-sans text-zinc-400/80 font-medium truncate mt-0.5 hidden xs:block">
+                    {portal.sub}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
 
+
+  // Battle Pass Helpers
+  function claimReward(track, level) {
+    const rewardKey = `${track}_${level}`;
+    if (claimedRewards.has(rewardKey)) return;
+    const entry = BATTLE_PASS_REWARDS.find(r => r.level === level);
+    if (!entry) return;
+    const reward = track === "free" ? entry.free : entry.premium;
+    if (!reward) return;
+    if (level > seasonLevel) return;
+    if (track === "premium" && !passPremiumOwned) return;
+
+    if (reward.type === "shards") {
+      setShards(s => s + reward.amount);
+      addLog(`🎫 Coletado: +${reward.amount} ✦ Arcane Shards do Passe!`);
+    } else if (reward.type === "item") {
+      setOwned(o => new Set([...o, reward.id]));
+      addLog(`🎫 Desbloqueado: ${reward.name} do Passe de Batalha!`);
+    }
+    setClaimedRewards(prev => new Set([...prev, rewardKey]));
+  }
+
+  function claimAllRewards() {
+    let shardCount = 0;
+    const newItems = [];
+    const newClaimed = new Set(claimedRewards);
+
+    BATTLE_PASS_REWARDS.forEach(entry => {
+      if (entry.level <= seasonLevel) {
+        const freeKey = `free_${entry.level}`;
+        if (entry.free && !newClaimed.has(freeKey)) {
+          newClaimed.add(freeKey);
+          if (entry.free.type === "shards") shardCount += entry.free.amount;
+          else if (entry.free.type === "item") newItems.push(entry.free.id);
+        }
+        if (passPremiumOwned) {
+          const premKey = `premium_${entry.level}`;
+          if (entry.premium && !newClaimed.has(premKey)) {
+            newClaimed.add(premKey);
+            if (entry.premium.type === "shards") shardCount += entry.premium.amount;
+            else if (entry.premium.type === "item") newItems.push(entry.premium.id);
+          }
+        }
+      }
+    });
+
+    if (shardCount > 0) setShards(s => s + shardCount);
+    if (newItems.length > 0) setOwned(o => new Set([...o, ...newItems]));
+    setClaimedRewards(newClaimed);
+    addLog(`🎫 Coletado tudo: +${shardCount} ✦ Shards e ${newItems.length} novos itens!`);
+  }
+
+  function buyPremiumPass() {
+    if (passPremiumOwned) return;
+    if (shards < SEASON.premiumCost) {
+      alert("✦ Saldo insuficiente de Arcane Shards! Adquira mais no Cofre Arcano.");
+      return;
+    }
+    setShards(s => s - SEASON.premiumCost);
+    setPassPremiumOwned(true);
+    addLog("✨ Passe Premium Desbloqueado! Aproveite todas as recompensas exclusivas!");
+  }
+
+  const unclaimedCount = useMemo(() => {
+    let count = 0;
+    BATTLE_PASS_REWARDS.forEach(entry => {
+      if (entry.level <= seasonLevel) {
+        if (entry.free && !claimedRewards.has(`free_${entry.level}`)) count++;
+        if (passPremiumOwned && entry.premium && !claimedRewards.has(`premium_${entry.level}`)) count++;
+      }
+    });
+    return count;
+  }, [seasonLevel, passPremiumOwned, claimedRewards]);
+
   function renderGearModal() {
     if (!tab) return null;
-    const panelTitle = { skills: "Skills", gear: "Gear", style: "Style", appearance: "Appearance" }[tab];
+    const panelTitle = { skills: "Skills", gear: "Gear", style: "Style", appearance: "Aparência", shop: "Loja de Cosméticos", pass: "Passe de Batalha: Season of Embers" }[tab];
     const previewMage = buildPreviewMage();
     return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setTab(null)}>
-        <div className="w-full max-w-md rounded-t-lg border-t" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "85vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
-          <div className="sticky top-0 z-10 flex items-center gap-2 p-3 border-b" style={{ background: "#1A1630", borderColor: "#3A3356" }}>
-            <div style={{ marginTop: -8, marginBottom: -8 }}>
-              <MageSprite mage={previewMage} facing="right" size={1.15} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center safe-all p-2 sm:p-4 modal-backdrop" onClick={() => setTab(null)}>
+        <div className="w-full max-w-md md:max-w-2xl lg:max-w-3xl modal-window max-h-[92dvh] md:max-h-[86vh] flex flex-col overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-3 p-3 sm:p-4 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
+            <div className="hidden sm:block landscape:hidden md:landscape:block -my-2 flex-shrink-0">
+              <MageSprite mage={previewMage} facing="right" size={0.95} />
             </div>
-            <span className="font-serif text-lg flex-1" style={{ color: "#E8B44F" }}>{panelTitle}</span>
-            <button onClick={() => setTab(null)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+            <span className="font-serif text-[18px] sm:text-[20px] flex-1 truncate font-bold text-amber-200">
+              {panelTitle}
+            </span>
+            <button
+              onClick={() => setTab(null)}
+              className="p-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-bold"
+            >
+              ✕
+            </button>
           </div>
-          <div className="p-4 pt-3 pb-6">
+          <div className="p-3 sm:p-4 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
 
           {tab === "skills" && (
             <div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Affinity <span style={{ color: "#B7AE95" }}>(+25% matching dmg)</span></p>
+              <p className="font-mono text-[12px] font-bold mb-2" style={{ color: T.gold }}>
+                Afinidade Elemental <span style={{ color: T.textSecondary }}>(+25% dano correspondente)</span>
+              </p>
               <div className="grid grid-cols-4 gap-2 mb-4">
                 {Object.entries(ELEMENTS).map(([key, e]) => (
-                  <button key={key} onClick={() => setAffinity(key)} className="rounded-md border p-2 text-sm font-mono"
-                    style={{ borderColor: affinity === key ? e.color : "#3A3356", background: affinity === key ? e.color + "26" : "#1C1833", color: e.color, boxShadow: affinity === key ? `0 0 10px ${e.color}44` : "none" }}>
-                    {e.icon}<br />{e.name}
+                  <button
+                    key={key}
+                    onClick={() => setAffinity(key)}
+                    className="card-surface rounded-xl p-2 text-[12px] font-mono flex flex-col items-center justify-center transition-all"
+                    style={{
+                      borderColor: affinity === key ? e.color : T.borderSubtle,
+                      backgroundColor: affinity === key ? `${e.color}1c` : T.bgSurface,
+                      color: e.color,
+                      boxShadow: affinity === key ? `0 0 14px ${e.color}44` : "none",
+                    }}
+                  >
+                    <span className="text-base leading-none">{e.icon}</span>
+                    <span className="font-bold mt-1 text-[11px]">{e.name}</span>
                   </button>
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Skills <span style={{ color: "#B7AE95" }}>({chosen.length}/4)</span></p>
-              <div className="grid grid-cols-1 gap-2">
-                {SKILLS.map(s => {
+
+              {/* Skills Header & Slot Counter */}
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-mono text-[13px] font-bold" style={{ color: T.gold }}>
+                  Grimório de Feitiços <span style={{ color: T.textSecondary }}>({chosen.length}/{maxSlots} equipados)</span>
+                </p>
+                <span className="text-[12px] font-mono" style={{ color: T.textTertiary }}>
+                  {unlockedSkills.size}/36 Desbloqueados
+                </span>
+              </div>
+
+              {/* Filter Tabs: Elements */}
+              <div className="flex gap-1.5 mb-2 overflow-x-auto pb-1 text-[12px] font-mono">
+                {["all", "fire", "ice", "nature", "arcane"].map(elKey => {
+                  const el = ELEMENTS[elKey];
+                  const label = elKey === "all" ? "Todos" : `${el.icon} ${el.name}`;
+                  const isSel = skillFilterEl === elKey;
+                  return (
+                    <button
+                      key={elKey}
+                      onClick={() => setSkillFilterEl(elKey)}
+                      className={`btn-surface px-3 py-1 rounded-lg transition-colors whitespace-nowrap text-[12px] ${
+                        isSel ? "font-bold" : ""
+                      }`}
+                      style={{
+                        borderColor: isSel ? T.gold : T.borderSubtle,
+                        backgroundColor: isSel ? `${T.gold}20` : T.bgSurface,
+                        color: isSel ? T.gold : T.textSecondary,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Filter Tabs: Roles */}
+              <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1 text-[12px] font-mono">
+                {[
+                  { id: "all", label: "Todas Funções" },
+                  { id: "attack", label: "⚔️ Ataque" },
+                  { id: "control", label: "🌀 Controle" },
+                  { id: "support", label: "🛡️ Suporte" },
+                ].map(r => {
+                  const isSel = skillFilterRole === r.id;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => setSkillFilterRole(r.id)}
+                      className={`btn-surface px-3 py-1 rounded-lg transition-colors whitespace-nowrap text-[12px] ${
+                        isSel ? "font-bold" : ""
+                      }`}
+                      style={{
+                        borderColor: isSel ? T.arcane : T.borderSubtle,
+                        backgroundColor: isSel ? `${T.arcane}20` : T.bgSurface,
+                        color: isSel ? "#DDD6FE" : T.textSecondary,
+                      }}
+                    >
+                      {r.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 36-Skill Cards Grid */}
+              <div className="grid grid-cols-1 gap-2.5">
+                {SKILLS.filter(s => {
+                  if (skillFilterEl !== "all" && s.el !== skillFilterEl) return false;
+                  if (skillFilterRole !== "all" && s.role !== skillFilterRole) return false;
+                  return true;
+                }).map(s => {
+                  const isUnlocked = unlockedSkills.has(s.id);
                   const sel = chosen.includes(s.id);
                   const e = ELEMENTS[s.el];
+                  const upgradeSkill = SKILLS.find(x => x.upgradeOf === s.id);
+                  const masteryCasts = skillMastery[s.id] || 0;
+                  const reqCasts = upgradeSkill?.unlock?.casts || 8;
+                  const isUpgraded = upgradeSkill && unlockedSkills.has(upgradeSkill.id);
+
                   return (
-                    <button key={s.id} onClick={() => toggleSkill(s.id)} className="rounded-md border p-2 text-left flex items-center justify-between gap-2"
-                      style={{ borderColor: sel ? "#E8B44F" : "#3A3356", background: sel ? "#E8B44F14" : "#1C1833" }}>
-                      <div>
-                        <div className="font-mono text-sm">{s.name} <span style={{ color: e.color }}>{e.icon}</span></div>
-                        <div className="text-xs font-mono" style={{ color: "#B7AE95" }}>{s.desc} · {s.mana} mana</div>
+                    <div
+                      key={s.id}
+                      onClick={() => isUnlocked && toggleSkill(s.id)}
+                      className={`card-surface rounded-xl p-3 text-left transition-all relative overflow-hidden flex flex-col justify-between ${
+                        !isUnlocked
+                          ? "opacity-55 cursor-not-allowed"
+                          : sel
+                          ? "cursor-pointer"
+                          : "cursor-pointer hover:-translate-y-0.5"
+                      }`}
+                      style={{
+                        backgroundColor: T.bgSurface,
+                        borderColor: sel ? T.gold : isUnlocked ? `${e.color}55` : T.borderSubtle,
+                        boxShadow: sel
+                          ? `0 4px 16px rgba(0,0,0,0.5), 0 0 14px ${T.gold}33, inset 0 1px 0 rgba(255,255,255,0.06)`
+                          : "0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04)",
+                      }}
+                    >
+                      {/* Top row: Name, Element, Tier, Role, Mana, CD, Equip State */}
+                      <div className="flex items-start justify-between gap-2 mb-1.5 flex-wrap">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {!isUnlocked && <span className="text-xs">🔒</span>}
+                          <span className="text-base drop-shadow-[0_0_8px_currentColor]" style={{ color: e.color }}>
+                            {e.icon}
+                          </span>
+                          <span className="font-serif text-sm sm:text-base font-bold text-[#FAF6EE]">
+                            {s.name}
+                          </span>
+                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#2D224D] border border-[#8B5CF666] text-[#DDD6FE] font-bold">
+                            T{s.tier}
+                          </span>
+                          <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold border ${
+                            s.role === "attack"
+                              ? "text-red-200 bg-red-950/60 border-red-500/50"
+                              : s.role === "control"
+                              ? "text-amber-200 bg-amber-950/60 border-amber-500/50"
+                              : "text-blue-200 bg-blue-950/60 border-blue-500/50"
+                          }`}>
+                            {s.role === "attack" ? "⚔️ Ataque" : s.role === "control" ? "🌀 Controle" : "🛡️ Suporte"}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-xs font-mono font-bold text-sky-300 bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-500/40">
+                            💧 {s.mana}
+                          </span>
+                          {s.cd > 0 ? (
+                            <span className="text-xs font-mono font-bold text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-500/40">
+                              ⏳ {s.cd}t
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-mono text-emerald-400">⚡ Instant</span>
+                          )}
+                          {isUnlocked && (
+                            sel ? (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E8B44F] text-[#100E1F] shadow-[0_0_10px_#E8B44F66]">
+                                ✓ Slot {chosen.indexOf(s.id) + 1}
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border border-[#3A3356] bg-[#100E1F] text-[#B7AE95] hover:border-[#E8B44F] hover:text-[#E8B44F] transition-colors">
+                                + Equipar
+                              </span>
+                            )
+                          )}
+                        </div>
                       </div>
-                      <span className="font-mono text-lg" style={{ color: sel ? "#E8B44F" : "#3A3356" }}>{sel ? "◉" : "○"}</span>
-                    </button>
+
+                      {/* Stat badges row */}
+                      <div className="flex items-center gap-1.5 flex-wrap my-1">
+                        {s.dmg > 0 && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-950/70 border border-red-500/50 text-red-200 font-bold">
+                            ⚔️ {s.dmg} Dano
+                          </span>
+                        )}
+                        {s.shield > 0 && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-950/70 border border-sky-500/50 text-sky-200 font-bold">
+                            🛡️ +{s.shield} Ward
+                          </span>
+                        )}
+                        {s.heal > 0 && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-950/70 border border-emerald-500/50 text-emerald-200 font-bold">
+                            💚 +{s.heal} Cura
+                          </span>
+                        )}
+                        {s.restore > 0 && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-cyan-950/70 border border-cyan-500/50 text-cyan-200 font-bold">
+                            💧 +{s.restore} Mana
+                          </span>
+                        )}
+                        {s.el === affinity && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-400 text-amber-300 font-bold">
+                            ✨ Afinidade (+25% Dano)
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Description - crystal clear without truncate */}
+                      <div className="text-xs font-mono text-[#D8D0BF] leading-relaxed my-1 break-words">
+                        {s.desc}
+                      </div>
+
+                      {/* Unlock requirement or Mastery evolution */}
+                      {!isUnlocked ? (
+                        <div className="mt-2 pt-2 border-t border-[#3A335688] text-[11px] font-mono text-amber-300/90 flex items-center gap-1.5 bg-[#0D0A1C88] p-1.5 rounded">
+                          <span className="font-bold">🔓 Como Desbloquear:</span>
+                          <span className="text-[#F2EAD8]">
+                            {s.unlock.type === "level" && `Alcançar Nível ${s.unlock.value} de Mago (Draft de Level Up)`}
+                            {s.unlock.type === "tome" && `Grimório Arcano raro (Drop aleatório de vitória em duelo)`}
+                            {s.unlock.type === "mastery" && `Lançar ${SKILLS.find(x => x.id === s.upgradeOf)?.name} (${skillMastery[s.upgradeOf] || 0}/${s.unlock.casts || 8} vezes em combate)`}
+                            {s.unlock.type === "boss" && `Derrotar ${s.unlock.value} no Treinamento de Arquimagos`}
+                          </span>
+                        </div>
+                      ) : upgradeSkill ? (
+                        <div className="mt-2 pt-2 border-t border-[#3A335688] text-[11px] font-mono">
+                          {isUpgraded ? (
+                            <div className="flex items-center gap-1.5 text-emerald-400 font-bold">
+                              <span>✓ Maestria Mestra:</span>
+                              <span>Evoluiu para {upgradeSkill.name}!</span>
+                            </div>
+                          ) : (
+                            <div>
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <span className="text-[#E8B44F] font-bold">
+                                  ✨ Maestria: {masteryCasts}/{reqCasts} lançamentos em duelos
+                                </span>
+                                <span className="text-[#DDD6FE]">
+                                  → Desbloqueia {upgradeSkill.name}
+                                </span>
+                              </div>
+                              <div className="w-full bg-[#100E1F] h-1.5 rounded-full overflow-hidden border border-[#3A3356]">
+                                <div
+                                  className="bg-gradient-to-r from-[#E8B44F] to-[#F59E0B] h-full"
+                                  style={{ width: `${Math.min(100, Math.floor((masteryCasts / reqCasts) * 100))}%` }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
                   );
                 })}
               </div>
@@ -4523,11 +6779,28 @@ export default function MageDuel() {
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hair Color</p>
               <div className="flex gap-2 mb-4 flex-wrap">
-                {HAIR_COLORS.map(h => (
-                  <button key={h.id} onClick={() => setHairColorId(h.id)} title={h.name}
-                    className="rounded-full transition-transform"
-                    style={{ width: 34, height: 34, background: h.hair, border: hairColorId === h.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: hairColorId === h.id ? "0 0 10px #E8B44F88" : "none", transform: hairColorId === h.id ? "scale(1.1)" : "none" }} />
-                ))}
+                {HAIR_COLORS.map(h => {
+                  const isShop = SHOP_ITEMS.some(si => si.id === h.id);
+                  const locked = isShop && !owned.has(h.id);
+                  return (
+                    <button key={h.id}
+                      onClick={() => {
+                        if (locked) { setTab("shop"); setShopCategory("hair"); }
+                        else { setHairColorId(h.id); }
+                      }}
+                      title={locked ? `${h.name} (Bloqueado - Comprar na Loja)` : h.name}
+                      className="rounded-full transition-transform relative flex items-center justify-center"
+                      style={{
+                        width: 34, height: 34, background: h.hair,
+                        border: hairColorId === h.id ? "3px solid #E8B44F" : "3px solid #3A3356",
+                        boxShadow: hairColorId === h.id ? "0 0 10px #E8B44F88" : "none",
+                        transform: hairColorId === h.id ? "scale(1.1)" : "none",
+                        opacity: locked ? 0.6 : 1,
+                      }}>
+                      {locked && <span className="text-[10px] leading-none">🔒</span>}
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hairstyle</p>
@@ -4552,11 +6825,28 @@ export default function MageDuel() {
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Eye Color</p>
               <div className="flex gap-2 mb-4 flex-wrap">
-                {EYE_COLORS.map(e => (
-                  <button key={e.id} onClick={() => setEyeColorId(e.id)} title={e.name}
-                    className="rounded-full transition-transform"
-                    style={{ width: 34, height: 34, background: e.color, border: eyeColorId === e.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: eyeColorId === e.id ? "0 0 10px #E8B44F88" : "none", transform: eyeColorId === e.id ? "scale(1.1)" : "none" }} />
-                ))}
+                {EYE_COLORS.map(e => {
+                  const isShop = SHOP_ITEMS.some(si => si.id === e.id);
+                  const locked = isShop && !owned.has(e.id);
+                  return (
+                    <button key={e.id}
+                      onClick={() => {
+                        if (locked) { setTab("shop"); setShopCategory("eyes"); }
+                        else { setEyeColorId(e.id); }
+                      }}
+                      title={locked ? `${e.name} (Bloqueado - Comprar na Loja)` : e.name}
+                      className="rounded-full transition-transform relative flex items-center justify-center"
+                      style={{
+                        width: 34, height: 34, background: e.color,
+                        border: eyeColorId === e.id ? "3px solid #E8B44F" : "3px solid #3A3356",
+                        boxShadow: eyeColorId === e.id ? "0 0 10px #E8B44F88" : "none",
+                        transform: eyeColorId === e.id ? "scale(1.1)" : "none",
+                        opacity: locked ? 0.6 : 1,
+                      }}>
+                      {locked && <span className="text-[10px] leading-none">🔒</span>}
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Face Shape</p>
@@ -4571,32 +6861,362 @@ export default function MageDuel() {
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Earrings</p>
               <div className="grid grid-cols-2 gap-2 mb-4">
-                {EARRINGS.map(e => (
-                  <button key={e.id} onClick={() => setEarringId(e.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: earringId === e.id ? "#E8B44F" : "#3A3356", background: earringId === e.id ? "#E8B44F1F" : "#1C1833", color: earringId === e.id ? "#E8B44F" : "#B7AE95" }}>
-                    {e.name}
-                  </button>
-                ))}
+                {EARRINGS.map(e => {
+                  const isShop = SHOP_ITEMS.some(si => si.id === e.id);
+                  const locked = isShop && !owned.has(e.id);
+                  return (
+                    <button key={e.id}
+                      onClick={() => {
+                        if (locked) { setTab("shop"); setShopCategory("jewelry"); }
+                        else { setEarringId(e.id); }
+                      }}
+                      className="rounded-md border py-2 font-mono text-xs"
+                      style={{
+                        borderColor: earringId === e.id ? "#E8B44F" : "#3A3356",
+                        background: earringId === e.id ? "#E8B44F1F" : "#1C1833",
+                        color: earringId === e.id ? "#E8B44F" : "#B7AE95",
+                        opacity: locked ? 0.6 : 1,
+                      }}>
+                      {locked ? `🔒 ${e.name}` : e.name}
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Nose Piercing</p>
               <div className="grid grid-cols-3 gap-2">
-                {NOSE_RINGS.map(n => (
-                  <button key={n.id} onClick={() => setNoseRingId(n.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: noseRingId === n.id ? "#E8B44F" : "#3A3356", background: noseRingId === n.id ? "#E8B44F1F" : "#1C1833", color: noseRingId === n.id ? "#E8B44F" : "#B7AE95" }}>
-                    {n.name}
-                  </button>
-                ))}
+                {NOSE_RINGS.map(n => {
+                  const isShop = SHOP_ITEMS.some(si => si.id === n.id);
+                  const locked = isShop && !owned.has(n.id);
+                  return (
+                    <button key={n.id}
+                      onClick={() => {
+                        if (locked) { setTab("shop"); setShopCategory("jewelry"); }
+                        else { setNoseRingId(n.id); }
+                      }}
+                      className="rounded-md border py-2 font-mono text-xs"
+                      style={{
+                        borderColor: noseRingId === n.id ? "#E8B44F" : "#3A3356",
+                        background: noseRingId === n.id ? "#E8B44F1F" : "#1C1833",
+                        color: noseRingId === n.id ? "#E8B44F" : "#B7AE95",
+                        opacity: locked ? 0.6 : 1,
+                      }}>
+                      {locked ? `🔒 ${n.name}` : n.name}
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="font-mono text-sm mb-2 mt-4" style={{ color: "#E8B44F" }}>Gloves & Hands</p>
               <div className="grid grid-cols-2 gap-2">
-                {GLOVES.map(gl => (
-                  <button key={gl.id} onClick={() => setGlovesId(gl.id)} className="rounded-md border py-2 px-2 font-mono text-xs text-left transition-colors truncate"
-                    style={{ borderColor: glovesId === gl.id ? "#E8B44F" : "#3A3356", background: glovesId === gl.id ? "#E8B44F1F" : "#1C1833", color: glovesId === gl.id ? "#E8B44F" : "#B7AE95" }}>
-                    {gl.name}
+                {GLOVES.map(gl => {
+                  const isShop = SHOP_ITEMS.some(si => si.id === gl.id);
+                  const locked = isShop && !owned.has(gl.id);
+                  return (
+                    <button key={gl.id}
+                      onClick={() => {
+                        if (locked) { setTab("shop"); setShopCategory("clothes"); }
+                        else { setGlovesId(gl.id); }
+                      }}
+                      className="rounded-md border py-2 px-2 font-mono text-xs text-left transition-colors truncate"
+                      style={{
+                        borderColor: glovesId === gl.id ? "#E8B44F" : "#3A3356",
+                        background: glovesId === gl.id ? "#E8B44F1F" : "#1C1833",
+                        color: glovesId === gl.id ? "#E8B44F" : "#B7AE95",
+                        opacity: locked ? 0.6 : 1,
+                      }}>
+                      {locked ? `🔒 ${gl.name}` : gl.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {tab === "shop" && (
+            <div>
+              {/* Banner verde no topo: "⚔️ Cosmético apenas — não afeta o combate" */}
+              <div
+                className="rounded-xl border p-3 mb-3 flex items-center gap-3 shadow-sm"
+                style={{ borderColor: `${T.success}44`, background: `${T.success}14` }}
+              >
+                <span className="text-xl flex-shrink-0">⚔️</span>
+                <div>
+                  <div className="text-[12px] font-mono font-bold" style={{ color: T.success }}>
+                    Cosmético apenas — não afeta o combate
+                  </div>
+                  <div className="text-[11px] font-mono" style={{ color: T.textSecondary }}>
+                    Nenhum item da loja concede dano, mana, bônus ou qualquer vantagem de combate.
+                  </div>
+                </div>
+              </div>
+
+              {/* Header mostrando saldo: "✦ {shards} Arcane Shards" */}
+              <div
+                className="rounded-2xl panel-base border p-4 mb-3 text-center shadow-lg"
+                style={{ borderColor: `${T.gold}44` }}
+              >
+                <div className="text-[12px] font-mono mb-1" style={{ color: T.textSecondary }}>Seu Saldo Arcane</div>
+                <div
+                  className="text-3xl font-mono font-bold flex items-center justify-center gap-2 drop-shadow-md"
+                  style={{ color: T.gold }}
+                >
+                  <span>✦</span>
+                  <span>{shards} Arcane Shards</span>
+                </div>
+
+                {/* Botões Obter mais Shards e Assistir anúncio */}
+                <div className="flex justify-center gap-2.5 mt-3 flex-wrap">
+                  <button
+                    onClick={() => setShowShardShopModal(true)}
+                    className="btn-gold rounded-lg px-4 py-2 font-mono text-[12px] font-bold shadow-md flex items-center gap-1.5"
+                  >
+                    <span>💳</span>
+                    <span>Obter mais Shards</span>
+                  </button>
+                  <button
+                    onClick={startWatchRewardedAd}
+                    className="btn-surface rounded-lg px-3.5 py-2 font-mono text-[12px] font-bold transition-colors shadow-sm flex items-center gap-1.5"
+                    style={{ borderColor: `${T.success}66`, color: T.success }}
+                  >
+                    <span>🎬</span>
+                    <span>Assistir anúncio +50 ✦</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Filtros: Todas / Cabelo / Olhos / Joias / Roupas / Asas / Pets */}
+              <div className="flex gap-2 mb-3 overflow-x-auto pb-1 text-xs font-mono">
+                {[
+                  ["all", "Todas"],
+                  ["hair", "Cabelo"],
+                  ["eyes", "Olhos"],
+                  ["jewelry", "Joias"],
+                  ["clothes", "Roupas"],
+                  ["wings", "Asas"],
+                  ["pet", "Pets"],
+                ].map(([fKey, label]) => (
+                  <button
+                    key={fKey}
+                    onClick={() => setShopCategory(fKey)}
+                    className="btn-surface px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors text-[11px] font-bold"
+                    style={{
+                      borderColor: shopCategory === fKey ? T.gold : undefined,
+                      background: shopCategory === fKey ? `${T.gold}22` : undefined,
+                      color: shopCategory === fKey ? T.goldLight : undefined,
+                    }}
+                  >
+                    {label}
                   </button>
                 ))}
+              </div>
+
+              {/* Grid de itens por categoria (usando RarityCard) */}
+              <div className="grid gap-2">
+                {SHOP_ITEMS
+                  .filter(entry => {
+                    if (shopCategory === "all") return true;
+                    if (shopCategory === "hair") return entry.category === "hair";
+                    if (shopCategory === "eyes") return entry.category === "eyes";
+                    if (shopCategory === "jewelry") return entry.category === "jewelry";
+                    if (shopCategory === "clothes") return entry.category === "robe" || entry.category === "gloves" || entry.category === "cape";
+                    if (shopCategory === "wings") return entry.category === "wings";
+                    if (shopCategory === "pet") return entry.category === "pet";
+                    return true;
+                  })
+                  .map(entry => {
+                    const itemObj = resolveShopItem(entry);
+                    const isOwned = owned.has(entry.id);
+                    const canAfford = shards >= entry.price;
+                    const subtitle = isOwned
+                      ? "✓ Adquirido na Coleção"
+                      : `✦ ${entry.price} Shards · ${canAfford ? "Clique para comprar" : "Saldo insuficiente"}`;
+
+                    return (
+                      <RarityCard
+                        key={entry.id}
+                        item={itemObj}
+                        selected={isOwned}
+                        locked={!isOwned && !canAfford}
+                        onClick={() => {
+                          if (!isOwned) buyCosmetic(entry.id);
+                        }}
+                        subtitle={subtitle}
+                      />
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+
+          {tab === "pass" && (
+            <div>
+              {/* Season Header Banner */}
+              <div
+                className="rounded-2xl panel-elevated border p-4 mb-3 shadow-lg"
+                style={{ borderColor: `${T.arcane}66` }}
+              >
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">🎫</span>
+                    <span className="font-serif font-bold text-[15px] sm:text-[16px]" style={{ color: T.textPrimary }}>{SEASON.name}</span>
+                  </div>
+                  <span
+                    className="text-[11px] font-mono px-2 py-0.5 rounded border"
+                    style={{ borderColor: `${T.arcane}55`, background: `${T.arcane}18`, color: T.arcane }}
+                  >
+                    Termina em 31/05/2026
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center text-[12px] font-mono mb-1.5" style={{ color: T.textSecondary }}>
+                  <span>Nível Atual: <strong style={{ color: T.textPrimary }}>{seasonLevel}</strong> / {SEASON.maxLevel}</span>
+                  <span>{seasonXp} XP Total ({seasonLevel < SEASON.maxLevel ? `${seasonXp % SEASON.xpPerLevel}/${SEASON.xpPerLevel} XP` : "MAX"})</span>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full h-2.5 rounded-full border overflow-hidden mb-3" style={{ background: T.bgDeep, borderColor: T.borderSubtle }}>
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${seasonLevel >= SEASON.maxLevel ? 100 : ((seasonXp % SEASON.xpPerLevel) / SEASON.xpPerLevel) * 100}%`,
+                      background: `linear-gradient(90deg, ${T.arcane}, ${T.gold})`,
+                      boxShadow: `0 0 10px ${T.arcane}66`
+                    }}
+                  />
+                </div>
+
+                {/* Premium Pass Status & Unlock Button */}
+                <div className="flex items-center justify-between gap-2 flex-wrap pt-2.5 border-t" style={{ borderColor: T.borderSubtle }}>
+                  {passPremiumOwned ? (
+                    <div className="flex items-center gap-1.5 text-[12px] font-mono font-bold" style={{ color: T.gold }}>
+                      <span>⭐</span>
+                      <span>Passe Premium Ativo!</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={buyPremiumPass}
+                      className="btn-gold rounded-lg px-4 py-2 font-mono text-[12px] font-bold shadow-md flex items-center gap-1.5"
+                    >
+                      <span>✦ Desbloquear Premium ({SEASON.premiumCost} ✦)</span>
+                    </button>
+                  )}
+
+                  {unclaimedCount > 3 && (
+                    <button
+                      onClick={claimAllRewards}
+                      className="btn-surface rounded-lg px-3.5 py-1.5 font-mono text-[11px] font-bold transition-all animate-pulse"
+                      style={{ borderColor: `${T.success}88`, color: T.success }}
+                    >
+                      Coletar Tudo ({unclaimedCount})
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Reward Track Columns Header */}
+              <div className="grid grid-cols-[1fr_40px_1fr] gap-1.5 text-center font-mono text-xs font-bold mb-2 px-1">
+                <div className="text-[#B07FF5] bg-[#B07FF51A] py-1 rounded border border-[#B07FF533]">GRÁTIS</div>
+                <div className="text-[#B7AE95] py-1">NV</div>
+                <div className="text-[#E8B44F] bg-[#E8B44F1A] py-1 rounded border border-[#E8B44F33]">PREMIUM</div>
+              </div>
+
+              {/* 30-Level Track List */}
+              <div className="grid gap-2 max-h-[50vh] overflow-y-auto pr-1">
+                {BATTLE_PASS_REWARDS.map(entry => {
+                  const isLevelUnlocked = entry.level <= seasonLevel;
+                  const isFreeClaimed = claimedRewards.has(`free_${entry.level}`);
+                  const isPremClaimed = claimedRewards.has(`premium_${entry.level}`);
+
+                  return (
+                    <div
+                      key={entry.level}
+                      className="grid grid-cols-[1fr_40px_1fr] gap-1.5 items-center p-1.5 rounded-lg border transition-all"
+                      style={{
+                        borderColor: isLevelUnlocked ? "#3A3356" : "#241D3B",
+                        background: entry.level === seasonLevel ? "#221B3A" : "#141126",
+                      }}
+                    >
+                      {/* Free Track Card */}
+                      {entry.free ? (
+                        <div
+                          className={`p-2 rounded border flex flex-col justify-between text-xs font-mono transition-all ${
+                            isFreeClaimed
+                              ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
+                              : isLevelUnlocked
+                              ? "border-[#B07FF5] bg-[#B07FF514] shadow-sm"
+                              : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1 mb-1">
+                            <span>{entry.free.icon}</span>
+                            <span className="font-bold text-[#F2EAD8] truncate">{entry.free.name}</span>
+                          </div>
+                          {isFreeClaimed ? (
+                            <span className="text-[10px] text-emerald-400 font-bold">✓ Coletado</span>
+                          ) : isLevelUnlocked ? (
+                            <button
+                              onClick={() => claimReward("free", entry.level)}
+                              className="rounded bg-[#B07FF5] hover:bg-[#A855F7] text-white font-bold py-0.5 px-2 text-[10px] transition-colors"
+                            >
+                              Coletar
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
+                      )}
+
+                      {/* Level Badge in Center */}
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs mx-auto border"
+                        style={{
+                          borderColor: isLevelUnlocked ? "#E8B44F" : "#3A3356",
+                          background: isLevelUnlocked ? "#E8B44F22" : "#1A1630",
+                          color: isLevelUnlocked ? "#E8B44F" : "#5A5478",
+                        }}
+                      >
+                        {entry.level}
+                      </div>
+
+                      {/* Premium Track Card */}
+                      {entry.premium ? (
+                        <div
+                          className={`p-2 rounded border flex flex-col justify-between text-xs font-mono transition-all ${
+                            isPremClaimed
+                              ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
+                              : isLevelUnlocked && passPremiumOwned
+                              ? "border-[#E8B44F] bg-[#E8B44F14] shadow-sm"
+                              : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
+                          }`}
+                        >
+                          <div className="flex items-center gap-1 mb-1">
+                            <span>{entry.premium.icon}</span>
+                            <span className="font-bold text-[#F2EAD8] truncate">{entry.premium.name}</span>
+                          </div>
+                          {isPremClaimed ? (
+                            <span className="text-[10px] text-emerald-400 font-bold">✓ Coletado</span>
+                          ) : isLevelUnlocked && passPremiumOwned ? (
+                            <button
+                              onClick={() => claimReward("premium", entry.level)}
+                              className="rounded bg-[#E8B44F] hover:bg-[#D97706] text-[#100E1F] font-bold py-0.5 px-2 text-[10px] transition-colors"
+                            >
+                              Coletar
+                            </button>
+                          ) : !passPremiumOwned ? (
+                            <span className="text-[10px] text-[#E8B44F88]">⭐ Requer Passe</span>
+                          ) : (
+                            <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -4609,31 +7229,50 @@ export default function MageDuel() {
   function renderFriendsModal() {
     if (!showFriends) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setShowFriends(false)}>
-        <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630", maxHeight: "80vh", overflowY: "auto" }} onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>Friends</span>
-            <button onClick={() => setShowFriends(false)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+      <div className="fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4 modal-backdrop" onClick={() => setShowFriends(false)}>
+        <div className="w-full max-w-md modal-window p-5 max-h-[85vh] overflow-y-auto custom-scrollbar shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#2A2444]">
+            <span className="font-serif text-[20px] font-bold" style={{ color: T.gold }}>Amigos Arcanos</span>
+            <button
+              onClick={() => setShowFriends(false)}
+              className="btn-surface rounded-lg px-2.5 py-1 font-mono text-[12px] font-bold"
+            >
+              ✕
+            </button>
           </div>
           {friends.length === 0 && (
-            <p className="text-xs font-mono" style={{ color: "#5A5478" }}>No friends yet. Add one from the Scouting Report before a duel.</p>
+            <p className="text-[12px] font-mono leading-relaxed" style={{ color: T.textTertiary }}>
+              Nenhum amigo adicionado ainda. Adicione oponentes no relatório de confronto antes de um duelo.
+            </p>
           )}
-          <div className="grid gap-2">
+          <div className="grid gap-2.5">
             {friends.map(f => (
-              <div key={f.name} className="rounded-md border p-2" style={{ borderColor: "#3A3356", background: "#1C1833" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-serif text-sm">{f.name}</span>
+              <div key={f.name} className="card-surface p-3 rounded-xl border" style={{ borderColor: T.borderSubtle, backgroundColor: T.bgSurface }}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-serif text-[14px] font-bold" style={{ color: T.textPrimary }}>{f.name}</span>
                   <ElementBadge el={f.affinity} />
                 </div>
-                <div className="text-xs font-mono mb-2" style={{ color: "#5A5478" }}>{f.staffGear?.name}</div>
+                <div className="text-[11px] font-mono mb-2.5" style={{ color: T.textTertiary }}>
+                  {f.staffGear?.name || "Sem cajado"}
+                </div>
                 <div className="flex gap-2">
-                  <button onClick={() => openChat(f)} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#14112A" }}>
-                    💬 Chat
+                  <button
+                    onClick={() => openChat(f)}
+                    className="flex-1 btn-surface rounded-lg py-1.5 font-mono text-[12px] font-bold"
+                  >
+                    💬 Conversar
                   </button>
-                  <button onClick={() => duelFriend(f)} className="flex-1 rounded-md border py-1.5 font-mono text-xs" style={{ borderColor: "#E8B44F", color: "#E8B44F", background: "#14112A" }}>
-                    ⚔ Duel
+                  <button
+                    onClick={() => duelFriend(f)}
+                    className="flex-1 btn-gold rounded-lg py-1.5 font-mono text-[12px] font-bold"
+                  >
+                    ⚔ Duelar
                   </button>
-                  <button onClick={() => removeFriend(f.name)} className="rounded-md border px-2 py-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#5A5478", background: "#14112A" }}>
+                  <button
+                    onClick={() => removeFriend(f.name)}
+                    className="btn-danger rounded-lg px-2.5 py-1.5 font-mono text-[12px] font-bold"
+                    title="Remover amigo"
+                  >
                     ✕
                   </button>
                 </div>
@@ -4648,28 +7287,39 @@ export default function MageDuel() {
   function renderChatModal() {
     if (!chatWith) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "#000000B3" }} onClick={() => setChatWith(null)}>
-        <div className="w-full max-w-md rounded-t-lg border-t p-4 pb-6" style={{ borderColor: "#3A3356", background: "#1A1630" }} onClick={(e) => e.stopPropagation()}>
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-serif text-lg" style={{ color: "#E8B44F" }}>{chatWith.name}</span>
-            <button onClick={() => setChatWith(null)} className="rounded-md border px-2.5 py-1 font-mono text-sm" style={{ borderColor: "#3A3356", color: "#B7AE95" }}>✕</button>
+      <div className="fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4 modal-backdrop" onClick={() => setChatWith(null)}>
+        <div className="w-full max-w-md modal-window p-5 max-h-[85vh] overflow-y-auto custom-scrollbar shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-3 pb-2 border-b border-[#2A2444]">
+            <span className="font-serif text-[18px] font-bold" style={{ color: T.gold }}>{chatWith.name}</span>
+            <button
+              onClick={() => setChatWith(null)}
+              className="btn-surface rounded-lg px-2.5 py-1 font-mono text-[12px] font-bold"
+            >
+              ✕
+            </button>
           </div>
-          <div className="rounded-md border p-3 mb-3 font-mono text-sm overflow-y-auto" style={{ borderColor: "#3A3356", background: "#0B0A16DD", height: "160px" }}>
+          <div
+            className="rounded-xl border p-3 mb-3 font-mono text-[12px] overflow-y-auto custom-scrollbar"
+            style={{ borderColor: T.borderSubtle, backgroundColor: T.bgDeep, height: "160px" }}
+          >
             {chatLog.map((m, i) => (
-              <div key={i} className="mb-1" style={{ color: m.from === "you" ? "#E8B44F" : "#B7AE95" }}>
-                <span className="opacity-70">{m.from === "you" ? "You: " : `${chatWith.name}: `}</span>{m.text}
+              <div key={i} className="mb-1.5 leading-relaxed" style={{ color: m.from === "you" ? T.gold : T.textSecondary }}>
+                <span className="opacity-60">{m.from === "you" ? "Você: " : `${chatWith.name}: `}</span>{m.text}
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-2 mb-2">
-            <button onClick={() => sendChat("greet")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Say hello</button>
-            <button onClick={() => sendChat("compliment")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Compliment</button>
-            <button onClick={() => sendChat("taunt")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Taunt</button>
-            <button onClick={() => sendChat("farewell")} className="rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>Say goodbye</button>
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <button onClick={() => sendChat("greet")} className="btn-surface rounded-lg py-2 font-mono text-[11px] font-bold">Saudar ✦</button>
+            <button onClick={() => sendChat("compliment")} className="btn-surface rounded-lg py-2 font-mono text-[11px] font-bold">Elogiar ✦</button>
+            <button onClick={() => sendChat("taunt")} className="btn-surface rounded-lg py-2 font-mono text-[11px] font-bold">Provocar ⚡</button>
+            <button onClick={() => sendChat("farewell")} className="btn-surface rounded-lg py-2 font-mono text-[11px] font-bold">Despedir 🌙</button>
           </div>
           {!isFriend(chatWith) && (
-            <button onClick={() => addFriend(chatWith)} className="w-full rounded-md border py-2 font-mono text-xs" style={{ borderColor: "#72C063", color: "#72C063", background: "#14112A" }}>
-              + Add Friend
+            <button
+              onClick={() => addFriend(chatWith)}
+              className="w-full btn-gold rounded-lg py-2 font-mono text-[12px] font-bold"
+            >
+              + Adicionar aos Amigos
             </button>
           )}
         </div>
@@ -4680,46 +7330,757 @@ export default function MageDuel() {
   function renderMatchmakingModal() {
     if (!matchmaking) return null;
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(10, 8, 20, 0.88)", backdropFilter: "blur(6px)" }}>
-        <div className="relative w-full max-w-sm rounded-xl border p-6 text-center flex flex-col items-center shadow-2xl"
-          style={{ borderColor: "#E8B44F66", background: "linear-gradient(180deg, #1D1836, #120F24)", boxShadow: "0 0 35px #E8B44F33" }}>
-          
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
+        <div className="relative w-full max-w-sm modal-window p-6 text-center flex flex-col items-center shadow-2xl">
           {/* Animated Arcane Matchmaking Radar / Sigil */}
           <div className="relative w-28 h-28 mb-3 flex items-center justify-center">
             <svg viewBox="0 0 100 100" className="w-full h-full matchSpin">
-              <circle cx="50" cy="50" r="46" fill="none" stroke="#E8B44F" strokeWidth="1.2" strokeDasharray="6 4" opacity="0.6" />
-              <circle cx="50" cy="50" r="36" fill="none" stroke="#B07FF5" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
-              <polygon points="50,10 85,75 15,75" fill="none" stroke="#E8B44F" strokeWidth="1" opacity="0.4" />
-              <polygon points="50,90 15,25 85,25" fill="none" stroke="#5FC1E8" strokeWidth="1" opacity="0.4" />
+              <circle cx="50" cy="50" r="46" fill="none" stroke={T.gold} strokeWidth="1.2" strokeDasharray="6 4" opacity="0.6" />
+              <circle cx="50" cy="50" r="36" fill="none" stroke={T.arcane} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+              <polygon points="50,10 85,75 15,75" fill="none" stroke={T.gold} strokeWidth="1" opacity="0.4" />
+              <polygon points="50,90 15,25 85,25" fill="none" stroke={T.ice} strokeWidth="1" opacity="0.4" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center matchPulse">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: "radial-gradient(circle, #E8B44F44 0%, transparent 70%)" }}>
+              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: `radial-gradient(circle, ${T.gold}44 0%, transparent 70%)` }}>
                 <span className="text-2xl">⚔️</span>
               </div>
             </div>
           </div>
 
-          <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono border mb-2"
-            style={{ borderColor: "#E8B44F44", background: "#E8B44F1A", color: "#E8B44F" }}>
-            <span>🤖</span><span>Automated Matchmaking (Bot Queue)</span>
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-2 font-bold"
+            style={{ borderColor: `${T.gold}55`, backgroundColor: `${T.gold}18`, color: T.gold }}
+          >
+            <span>🤖</span><span>Fila de Pareamento Arcana</span>
           </div>
 
-          <h2 className="font-serif text-xl mb-1 text-[#F2EAD8]">
-            Searching for Opponent...
+          <h2 className="font-serif text-[20px] font-bold mb-1" style={{ color: T.textPrimary }}>
+            Buscando Oponente...
           </h2>
 
-          <p className="font-mono text-xs mb-3 text-[#B7AE95] min-h-[18px]">
+          <p className="font-mono text-[12px] mb-3 min-h-[20px]" style={{ color: T.textSecondary }}>
             {matchStatus}
           </p>
 
-          <div className="font-mono text-xs mb-4 px-3 py-1 rounded border" style={{ borderColor: "#3A3356", background: "#141126", color: "#E8B44F" }}>
-            Time Elapsed: 0:0{matchTimer}
+          <div
+            className="font-mono text-[12px] font-bold mb-4 px-3 py-1.5 rounded-lg border"
+            style={{ borderColor: T.borderSubtle, backgroundColor: T.bgDeep, color: T.gold }}
+          >
+            Tempo Decorrido: 0:0{matchTimer}
           </div>
 
-          <button onClick={cancelMatchmaking} className="w-full rounded-md border py-2 font-serif text-sm transition-colors hover:border-[#EF4444] hover:text-[#EF4444]"
-            style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#141126" }}>
-            Cancel Search
+          <button
+            onClick={cancelMatchmaking}
+            className="w-full btn-surface rounded-lg py-2.5 font-serif text-[13px] font-bold transition-all hover:border-red-500 hover:text-red-400"
+          >
+            Cancelar Busca
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  function renderShardShopModal() {
+    if (!showShardShopModal) return null;
+    const packs = [
+      { id: "pack_100", amount: 100, price: "R$ 4,99", name: "Bolsa de Shards", tag: null },
+      { id: "pack_500", amount: 500, price: "R$ 19,99", name: "Baú Arcano", tag: "Popular · +25% Bônus" },
+      { id: "pack_1200", amount: 1200, price: "R$ 39,99", name: "Cofre dos Arquimagos", tag: "Melhor Valor · +50% Bônus" },
+    ];
+
+    return (
+      <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center safe-all p-3 sm:p-4" onClick={() => !purchasing && setShowShardShopModal(false)}>
+        <div
+          className="modal-window relative w-full max-w-md md:max-w-lg rounded-2xl p-5 sm:p-6 text-center flex flex-col items-center shadow-2xl max-h-[92dvh] overflow-y-auto custom-scrollbar"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="w-full flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">💳</span>
+              <h2 className="font-serif text-[18px] sm:text-[20px] font-bold" style={{ color: T.textPrimary }}>Cofre Arcano · Shards</h2>
+            </div>
+            <button
+              onClick={() => !purchasing && setShowShardShopModal(false)}
+              disabled={purchasing}
+              className="btn-surface rounded-lg px-2.5 py-1 font-mono text-[12px] font-bold transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono border mb-4"
+            style={{ borderColor: `${T.success}44`, background: `${T.success}14`, color: T.success }}
+          >
+            <span>⚔️</span>
+            <span>Cosmético apenas — zero vantagem competitiva</span>
+          </div>
+
+          {purchasing ? (
+            <div className="w-full py-10 flex flex-col items-center justify-center">
+              <div className="relative w-16 h-16 mb-4 flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-full h-full matchSpin">
+                  <circle cx="50" cy="50" r="44" fill="none" stroke={T.gold} strokeWidth="2.5" strokeDasharray="14 10" />
+                  <circle cx="50" cy="50" r="32" fill="none" stroke={T.ice} strokeWidth="2" strokeDasharray="8 8" opacity="0.8" />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl animate-pulse" style={{ color: T.gold }}>✦</span>
+                </div>
+              </div>
+              <p className="font-serif text-[16px] font-bold mb-1" style={{ color: T.textPrimary }}>Processando pagamento seguro...</p>
+              <p className="font-mono text-[12px]" style={{ color: T.textSecondary }}>
+                Conectando ao gateway e creditando Shards...
+              </p>
+            </div>
+          ) : (
+            <div className="w-full grid gap-2.5 mb-4">
+              {packs.map(p => (
+                <div
+                  key={p.id}
+                  className="card-surface rounded-xl p-3.5 flex items-center justify-between text-left transition-all group"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-serif text-[15px] sm:text-[16px] font-bold" style={{ color: T.textPrimary }}>{p.name}</span>
+                      {p.tag && (
+                        <span
+                          className="text-[10px] font-mono px-2 py-0.5 rounded border font-semibold"
+                          style={{ borderColor: `${T.gold}55`, background: `${T.gold}18`, color: T.goldLight }}
+                        >
+                          {p.tag}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[13px] font-mono font-bold flex items-center gap-1 mt-1" style={{ color: T.gold }}>
+                      <span>✦</span>
+                      <span>{p.amount} Arcane Shards</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => purchaseShardPack(p.amount)}
+                    className="btn-gold rounded-lg px-4 py-2 font-mono text-[12px] font-bold shadow-md flex-shrink-0"
+                  >
+                    {p.price}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="text-[11px] font-mono flex items-center justify-center gap-1.5" style={{ color: T.textMuted }}>
+            <span>🔒</span>
+            <span>Transação simulada · Pronto para produção Stripe API</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderRewardedAdModal() {
+    if (!adModalOpen) return null;
+    const progressPct = Math.min(100, Math.max(0, ((3 - adTimer) / 3) * 100));
+
+    return (
+      <div className="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div
+          className="modal-window relative w-full max-w-sm rounded-2xl p-5 sm:p-6 text-center flex flex-col items-center shadow-2xl"
+          style={{ borderColor: `${T.success}55` }}
+        >
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3 border"
+            style={{ borderColor: `${T.success}66`, background: `${T.success}18` }}
+          >
+            <span className="text-2xl">🎬</span>
+          </div>
+
+          <h2 className="font-serif text-[18px] font-bold mb-1" style={{ color: T.textPrimary }}>
+            Transmissão Arcana Patrocinada
+          </h2>
+          <p className="font-mono text-[12px] mb-4" style={{ color: T.textSecondary }}>
+            Assista até o encerramento para coletar sua recompensa.
+          </p>
+
+          <div
+            className="w-full panel-base rounded-xl p-4 mb-4 flex flex-col items-center"
+          >
+            {adTimer > 0 ? (
+              <>
+                <span className="font-mono text-3xl font-bold mb-2" style={{ color: T.gold }}>
+                  0:0{adTimer}
+                </span>
+                <div
+                  className="w-full rounded-full h-2.5 overflow-hidden mb-2 border"
+                  style={{ background: T.bgDeep, borderColor: T.borderSubtle }}
+                >
+                  <div
+                    className="h-full rounded-full transition-all duration-1000"
+                    style={{
+                      width: `${progressPct}%`,
+                      background: `linear-gradient(90deg, ${T.nature}, ${T.ice})`,
+                      boxShadow: `0 0 10px ${T.nature}66`
+                    }}
+                  />
+                </div>
+                <span className="text-[11px] font-mono" style={{ color: T.textTertiary }}>
+                  Transmitindo anúncio parceiro...
+                </span>
+              </>
+            ) : (
+              <div className="py-2">
+                <span className="font-mono font-bold text-[14px] block mb-1" style={{ color: T.success }}>
+                  🎉 Recompensa Concedida!
+                </span>
+                <span className="text-[12px] font-mono font-bold" style={{ color: T.gold }}>
+                  +50 ✦ Arcane Shards adicionados
+                </span>
+              </div>
+            )}
+          </div>
+
+          {adTimer > 0 && (
+            <button
+              onClick={() => {
+                if (adIntervalRef.current) clearInterval(adIntervalRef.current);
+                setAdModalOpen(false);
+              }}
+              className="btn-surface rounded-lg px-3 py-1.5 text-[11px] font-mono transition-colors"
+              style={{ color: T.textTertiary }}
+            >
+              Cancelar (abrir mão dos Shards)
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function renderLevelUpModal() {
+    if (!pendingLevelDraft) return null;
+    const { level, choices } = pendingLevelDraft;
+    const choiceSkills = choices.map(id => SKILLS.find(s => s.id === id)).filter(Boolean);
+
+    function selectDraft(skill) {
+      setUnlockedSkills(us => new Set([...us, skill.id]));
+      setPendingLevelDraft(null);
+      addLog(`✨ Novo feitiço aprendido: ${skill.name}!`);
+      setScreenFlash("gold");
+      setTimeout(() => setScreenFlash(null), 700);
+    }
+
+    return (
+      <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4">
+        <div className="modal-window w-full max-w-lg rounded-2xl p-5 sm:p-6 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl">
+          <div className="text-center mb-4">
+            <div
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-bold border mb-2"
+              style={{ background: `${T.gold}18`, borderColor: `${T.gold}66`, color: T.goldLight }}
+            >
+              <span>🌟 LEVEL UP! NÍVEL {level}</span>
+            </div>
+            <h2 className="font-serif text-[22px] sm:text-[26px] font-bold" style={{ color: T.textPrimary }}>
+              Escolha seu Novo Feitiço
+            </h2>
+            <p className="text-[12px] font-mono mt-1" style={{ color: T.textSecondary }}>
+              Selecione 1 das 3 opções para adicionar permanentemente ao seu grimório:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 my-3">
+            {choiceSkills.map(skill => {
+              const el = ELEMENTS[skill.el];
+              return (
+                <div
+                  key={skill.id}
+                  onClick={() => selectDraft(skill)}
+                  className="card-surface rounded-xl p-3.5 cursor-pointer transition-all hover:scale-[1.01] hover:shadow-lg relative overflow-hidden group border"
+                  style={{
+                    borderColor: `${el.color}66`,
+                  }}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl" style={{ color: el.color }}>{el.icon}</span>
+                      <div>
+                        <div className="font-serif font-bold text-[15px] sm:text-[16px] text-[#F2EAD8] group-hover:text-[#E8B44F] transition-colors">
+                          {skill.name}
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded font-bold" style={{ background: T.bgBase, color: T.arcane }}>
+                            Tier {skill.tier}
+                          </span>
+                          <span
+                            className="text-[10px] font-mono px-1.5 py-0.5 rounded font-semibold"
+                            style={{
+                              background: skill.role === "attack" ? `${T.danger}22` : skill.role === "control" ? `${T.warning}22` : `${T.info}22`,
+                              color: skill.role === "attack" ? T.danger : skill.role === "control" ? T.warning : T.info,
+                            }}
+                          >
+                            {skill.role === "attack" ? "⚔️ Ataque" : skill.role === "control" ? "🌀 Controle" : "🛡️ Suporte"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right font-mono text-[12px] flex items-center gap-1.5">
+                      <span className="font-bold" style={{ color: T.ice }}>💧 {skill.mana}</span>
+                      {skill.cd > 0 && <span className="font-bold" style={{ color: T.gold }}>⏳ {skill.cd}t CD</span>}
+                    </div>
+                  </div>
+
+                  <p className="text-[12px] font-mono my-2 leading-relaxed break-words" style={{ color: T.textSecondary }}>
+                    {skill.desc}
+                  </p>
+
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t" style={{ borderColor: T.borderSubtle }}>
+                    <div className="flex items-center gap-2.5 text-[11px] font-mono font-bold">
+                      {skill.dmg > 0 && <span style={{ color: T.danger }}>⚔️ {skill.dmg} Dano</span>}
+                      {skill.shield > 0 && <span style={{ color: T.ice }}>🛡️ +{skill.shield} Escudo</span>}
+                      {skill.heal > 0 && <span style={{ color: T.success }}>💚 +{skill.heal} Cura</span>}
+                      {skill.restore > 0 && <span style={{ color: T.info }}>💧 +{skill.restore} Mana</span>}
+                    </div>
+                    <button
+                      className="btn-gold px-3.5 py-1.5 rounded-lg font-serif text-[12px] font-bold shadow-md"
+                    >
+                      Aprender ✨
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderBossTrialsModal() {
+    if (!showBossTrialsModal) return null;
+
+    return (
+      <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4" onClick={() => setShowBossTrialsModal(false)}>
+        <div className="modal-window w-full max-w-2xl rounded-2xl p-5 sm:p-6 max-h-[88vh] overflow-y-auto custom-scrollbar shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <div
+                className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold border mb-1"
+                style={{ background: `${T.gold}18`, borderColor: `${T.gold}55`, color: T.goldLight }}
+              >
+                <span>👑 ARCHMAGE TRIALS</span>
+              </div>
+              <h2 className="font-serif text-[20px] sm:text-[24px] font-bold" style={{ color: T.textPrimary }}>
+                Treinamento de Mestres Elementais
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowBossTrialsModal(false)}
+              className="btn-surface rounded-lg px-2.5 py-1 font-mono text-[12px] font-bold transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          <p className="text-[12px] font-mono mb-4" style={{ color: T.textSecondary }}>
+            Derrote os 4 Arquimagos lendários em combate solo para desbloquear seus feitiços assinatura de Tier 3!
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {ARCHMAGE_BOSSES.map(boss => {
+              const el = ELEMENTS[boss.affinity];
+              const isDefeated = bossesDefeated.has(boss.id);
+              const rewardSkill = SKILLS.find(s => s.id === boss.rewardSkillId);
+
+              return (
+                <div
+                  key={boss.id}
+                  className="card-surface rounded-xl p-4 flex flex-col justify-between transition-all border"
+                  style={{
+                    borderColor: isDefeated ? `${T.success}66` : `${el.color}55`,
+                  }}
+                >
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <div className="font-serif font-bold text-[15px] sm:text-[16px] text-[#F2EAD8] flex items-center gap-1.5">
+                          <span>{boss.name}</span>
+                          <span style={{ color: el.color }}>{el.icon}</span>
+                        </div>
+                        <div className="text-[11px] font-mono italic" style={{ color: T.textTertiary }}>
+                          {boss.title}
+                        </div>
+                      </div>
+                      <span
+                        className="text-[11px] font-mono font-bold px-2 py-0.5 rounded border"
+                        style={{ borderColor: `${T.danger}55`, background: `${T.danger}18`, color: T.danger }}
+                      >
+                        {boss.hp} HP
+                      </span>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg panel-base border my-2 text-xs font-mono" style={{ borderColor: T.borderSubtle }}>
+                      <div className="font-bold text-[11px] mb-1 flex items-center justify-between" style={{ color: T.gold }}>
+                        <span>✨ Recompensa de Assinatura:</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ background: T.bgSurface, color: T.arcane }}>Tier 3</span>
+                      </div>
+                      <div className="font-bold text-[13px]" style={{ color: T.textPrimary }}>
+                        {rewardSkill ? rewardSkill.name : ""}
+                      </div>
+                      <div className="text-[11px] mt-0.5 leading-relaxed break-words" style={{ color: T.textSecondary }}>
+                        {rewardSkill ? rewardSkill.desc : ""}
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] font-mono italic mb-3" style={{ color: T.textTertiary }}>
+                      "{boss.dialogue}"
+                    </p>
+                  </div>
+
+                  {isDefeated ? (
+                    <div
+                      className="w-full py-2 rounded-lg text-center font-mono text-[12px] font-bold border flex items-center justify-center gap-1.5"
+                      style={{ borderColor: `${T.success}66`, background: `${T.success}18`, color: T.success }}
+                    >
+                      <span>✓</span><span>Mestre Derrotado · Feitiço Liberado</span>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => startBossDuel(boss)}
+                      className="btn-gold w-full py-2.5 rounded-lg font-serif text-[12px] font-bold shadow-md flex items-center justify-center gap-1.5"
+                    >
+                      <span>⚔️ Desafiar Arquimago</span>
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderMasteryCelebrationModal() {
+    if (!showMasteryCelebration) return null;
+    const skill = showMasteryCelebration;
+    const el = ELEMENTS[skill.el];
+
+    return (
+      <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center safe-all p-3" onClick={() => setShowMasteryCelebration(null)}>
+        <div className="modal-window w-full max-w-sm rounded-2xl p-5 sm:p-6 text-center shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="text-3xl mb-1">✨🔮✨</div>
+          <h3 className="font-serif text-[20px] font-bold mb-1" style={{ color: T.gold }}>
+            Nova Maestria Desbloqueada!
+          </h3>
+          <p className="text-[12px] font-mono my-2" style={{ color: T.textSecondary }}>
+            Pelo seu uso contínuo em batalha, seu feitiço evoluiu e desbloqueou:
+          </p>
+          <div className="card-surface rounded-xl border p-3.5 my-3" style={{ borderColor: `${el.color}66` }}>
+            <div className="font-serif font-bold text-[16px]" style={{ color: el.color }}>
+              {skill.name} {el.icon}
+            </div>
+            <div className="text-[11px] font-mono my-1 font-semibold" style={{ color: T.gold }}>
+              Tier {skill.tier} · {skill.role.toUpperCase()}
+            </div>
+            <div className="text-[12px] font-mono leading-relaxed break-words" style={{ color: T.textSecondary }}>
+              {skill.desc}
+            </div>
+          </div>
+          <button
+            onClick={() => setShowMasteryCelebration(null)}
+            className="btn-gold w-full py-2.5 rounded-xl font-serif text-[13px] font-bold shadow-md"
+          >
+            Adicionar ao Grimório ✦
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ================= ADMIN CHEAT & DEV UNLOCK SYSTEM =================
+  const ALL_GAME_ITEM_IDS = useMemo(() => [
+    ...new Set([
+      ...ALL_ITEMS.map(i => i.id),
+      ...LOOTABLE,
+      ...SHOP_ITEMS.map(i => i.id),
+      ...BATTLE_PASS_REWARDS.flatMap(r => [r.free?.id, r.premium?.id]).filter(Boolean),
+    ])
+  ], []);
+
+  function adminUnlockAllItems() {
+    setOwned(new Set(ALL_GAME_ITEM_IDS));
+    setPremiumOwned(new Set(SHOP_ITEMS.map(i => i.id)));
+    setPassPremiumOwned(true);
+    setShards(s => Math.max(s, 50000));
+    setScreenFlash("gold");
+    setAdmToast("✨ [ADM] Todos os itens, equipamentos e cosméticos desbloqueados!");
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function adminUnlockAllSkills() {
+    setUnlockedSkills(new Set(SKILLS.map(s => s.id)));
+    setScreenFlash("white");
+    setAdmToast("🔮 [ADM] Todos os 36 feitiços do Grimório desbloqueados!");
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function adminMaxLevel() {
+    setMageXp(12000);
+    setSeasonXp(SEASON.xpPerLevel * SEASON.maxLevel);
+    setPassPremiumOwned(true);
+    setScreenFlash("gold");
+    setAdmToast("🌟 [ADM] Nível 30 de Mago e Passe maximizados! (7 Slots liberados)");
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function adminAddShards(amount = 50000) {
+    setShards(s => s + amount);
+    setScreenFlash("gold");
+    setAdmToast(`💎 [ADM] +${amount.toLocaleString()} Arcane Shards adicionados!`);
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function adminDefeatAllBosses() {
+    setBossesDefeated(new Set(ARCHMAGE_BOSSES.map(b => b.id)));
+    setUnlockedSkills(s => new Set([...s, ...ARCHMAGE_BOSSES.map(b => b.rewardSkillId)]));
+    setScreenFlash("gold");
+    setAdmToast("👑 [ADM] Todos os 4 Arquimagos derrotados e feitiços liberados!");
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function adminUnlockEverything() {
+    setOwned(new Set(ALL_GAME_ITEM_IDS));
+    setPremiumOwned(new Set(SHOP_ITEMS.map(i => i.id)));
+    setPassPremiumOwned(true);
+    setShards(s => Math.max(s, 99999));
+    setUnlockedSkills(new Set(SKILLS.map(s => s.id)));
+    setMageXp(12000);
+    setSeasonXp(SEASON.xpPerLevel * SEASON.maxLevel);
+    setBossesDefeated(new Set(ARCHMAGE_BOSSES.map(b => b.id)));
+    setScreenFlash("gold");
+    setAdmToast("🚀 [ADM] GOD MODE: Todos os itens, feitiços, slots e shards liberados!");
+    setTimeout(() => setAdmToast(null), 4000);
+  }
+
+  function adminResetProgress() {
+    setOwned(new Set(START_OWNED));
+    setPremiumOwned(new Set());
+    setShards(0);
+    setUnlockedSkills(new Set(START_SKILLS));
+    setMageXp(0);
+    setSeasonXp(0);
+    setPassPremiumOwned(false);
+    setBossesDefeated(new Set());
+    setScreenFlash("white");
+    setAdmToast("🔄 [ADM] Progresso restaurado para o padrão inicial!");
+    setTimeout(() => setAdmToast(null), 3500);
+  }
+
+  function renderAdmToast() {
+    if (!admToast) return null;
+    return (
+      <div
+        className="fixed top-3 sm:top-4 left-1/2 -translate-x-1/2 z-[150] pointer-events-none flex items-center justify-center px-4 py-2.5 rounded-xl border font-mono text-[12px] sm:text-[13px] font-bold shadow-2xl animate-bounce"
+        style={{ borderColor: T.gold, background: `${T.bgDeep}FA`, color: T.goldLight, boxShadow: `0 0 25px ${T.gold}55` }}
+      >
+        <span>{admToast}</span>
+      </div>
+    );
+  }
+
+  function renderAdminModal() {
+    if (!showAdminModal) return null;
+
+    return (
+      <div
+        className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4"
+        onClick={() => setShowAdminModal(false)}
+      >
+        <div
+          className="modal-window w-full max-w-2xl rounded-2xl p-5 sm:p-6 max-h-[90vh] overflow-y-auto custom-scrollbar flex flex-col justify-between shadow-2xl"
+          style={{ borderColor: `${T.arcane}66` }}
+          onClick={e => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex justify-between items-start mb-4 pb-3 border-b" style={{ borderColor: T.borderSubtle }}>
+            <div>
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono font-bold border mb-1"
+                style={{ background: `${T.arcane}18`, borderColor: `${T.arcane}55`, color: T.arcane }}
+              >
+                <span>⚡ PAINEL DE CONTROLE ADM</span>
+              </div>
+              <h2 className="font-serif text-[20px] sm:text-[24px] font-bold" style={{ color: T.textPrimary }}>
+                Ferramentas de Desenvolvedor
+              </h2>
+              <p className="text-[12px] font-mono mt-0.5" style={{ color: T.textSecondary }}>
+                Desbloqueie itens, feitiços, moedas ou teste a progressão livremente.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAdminModal(false)}
+              className="btn-surface rounded-lg px-2.5 py-1 font-mono text-[12px] font-bold transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Action Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            
+            {/* 1. Unlock All Items */}
+            <div
+              className="card-surface rounded-xl p-4 flex flex-col justify-between border transition-all"
+              style={{ borderColor: `${T.arcane}44` }}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-serif font-bold text-[15px] sm:text-[16px] flex items-center gap-2" style={{ color: T.textPrimary }}>
+                    <span>🪄</span><span>Todos os Itens</span>
+                  </span>
+                  <span
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border"
+                    style={{ background: `${T.arcane}18`, borderColor: `${T.arcane}44`, color: T.arcane }}
+                  >
+                    {ALL_GAME_ITEM_IDS.length} Itens
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono leading-relaxed mb-3" style={{ color: T.textSecondary }}>
+                  Libera 100% dos cajados, relíquias, elmos, capas, túnicas, auras, mascotes, mãos secundárias e cosméticos da loja.
+                </p>
+              </div>
+              <button
+                onClick={adminUnlockAllItems}
+                className="btn-surface w-full py-2.5 rounded-lg font-serif text-[12px] font-bold transition-all flex items-center justify-center gap-1.5"
+                style={{ borderColor: `${T.arcane}66`, color: "#DDD6FE" }}
+              >
+                <span>⚡</span>
+                <span>Desbloquear Todos os Itens</span>
+              </button>
+            </div>
+
+            {/* 2. Unlock All Spells */}
+            <div
+              className="card-surface rounded-xl p-4 flex flex-col justify-between border transition-all"
+              style={{ borderColor: `${T.gold}44` }}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-serif font-bold text-[15px] sm:text-[16px] flex items-center gap-2" style={{ color: T.textPrimary }}>
+                    <span>📖</span><span>Todos os Feitiços</span>
+                  </span>
+                  <span
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border"
+                    style={{ background: `${T.gold}18`, borderColor: `${T.gold}44`, color: T.gold }}
+                  >
+                    36/36 Skills
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono leading-relaxed mb-3" style={{ color: T.textSecondary }}>
+                  Aprende todos os feitiços de Fogo, Gelo, Natureza e Arcano (Tiers 1, 2 e 3 + Grimórios raros).
+                </p>
+              </div>
+              <button
+                onClick={adminUnlockAllSkills}
+                className="btn-surface w-full py-2.5 rounded-lg font-serif text-[12px] font-bold transition-all flex items-center justify-center gap-1.5"
+                style={{ borderColor: `${T.gold}66`, color: T.goldLight }}
+              >
+                <span>🔮</span>
+                <span>Desbloquear 36 Feitiços</span>
+              </button>
+            </div>
+
+            {/* 3. Add Shards */}
+            <div
+              className="card-surface rounded-xl p-4 flex flex-col justify-between border transition-all"
+              style={{ borderColor: `${T.ice}44` }}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-serif font-bold text-[15px] sm:text-[16px] flex items-center gap-2" style={{ color: T.textPrimary }}>
+                    <span>✦</span><span>Arcane Shards</span>
+                  </span>
+                  <span
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border"
+                    style={{ background: `${T.ice}18`, borderColor: `${T.ice}44`, color: T.ice }}
+                  >
+                    Moeda da Loja
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono leading-relaxed mb-3" style={{ color: T.textSecondary }}>
+                  Adiciona instantaneamente +50.000 Shards ao seu saldo para comprar pacotes e cosméticos.
+                </p>
+              </div>
+              <button
+                onClick={() => adminAddShards(50000)}
+                className="btn-surface w-full py-2.5 rounded-lg font-serif text-[12px] font-bold transition-all flex items-center justify-center gap-1.5"
+                style={{ borderColor: `${T.ice}66`, color: T.ice }}
+              >
+                <span>💎</span>
+                <span>+50.000 Shards</span>
+              </button>
+            </div>
+
+            {/* 4. Max Level 30 & 7 Slots */}
+            <div
+              className="card-surface rounded-xl p-4 flex flex-col justify-between border transition-all"
+              style={{ borderColor: `${T.nature}44` }}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-serif font-bold text-[15px] sm:text-[16px] flex items-center gap-2" style={{ color: T.textPrimary }}>
+                    <span>🌟</span><span>Nível Máximo</span>
+                  </span>
+                  <span
+                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border"
+                    style={{ background: `${T.nature}18`, borderColor: `${T.nature}44`, color: T.nature }}
+                  >
+                    Nv. 30 (7 Slots)
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono leading-relaxed mb-3" style={{ color: T.textSecondary }}>
+                  Eleva o mago para Nível 30, liberando todos os 7 slots de feitiço e maximizando o Passe de Batalha.
+                </p>
+              </div>
+              <button
+                onClick={adminMaxLevel}
+                className="btn-surface w-full py-2.5 rounded-lg font-serif text-[12px] font-bold transition-all flex items-center justify-center gap-1.5"
+                style={{ borderColor: `${T.nature}66`, color: T.nature }}
+              >
+                <span>⭐</span>
+                <span>Maximizar para Nv. 30</span>
+              </button>
+            </div>
+
+          </div>
+
+          {/* Full God Mode Hero Banner */}
+          <div
+            className="panel-elevated p-4 rounded-xl border mb-3 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg"
+            style={{ borderColor: `${T.gold}66` }}
+          >
+            <div>
+              <div className="font-serif font-bold text-[15px] sm:text-[16px] flex items-center gap-2" style={{ color: T.goldLight }}>
+                <span>🚀</span><span>MODO DEUS COMPLETO (ALL-IN-ONE)</span>
+              </div>
+              <div className="text-[11px] font-mono mt-0.5" style={{ color: T.textSecondary }}>
+                Desbloqueia todos os itens, feitiços, slots, bosses e 99.999 shards com 1 clique.
+              </div>
+            </div>
+            <button
+              onClick={adminUnlockEverything}
+              className="btn-gold px-4 py-2.5 rounded-xl font-serif text-[13px] font-bold shadow-lg whitespace-nowrap flex-shrink-0"
+            >
+              🌟 ATIVAR TUDO
+            </button>
+          </div>
+
+          {/* Footer with Reset */}
+          <div className="pt-2 border-t flex justify-between items-center text-[10px] sm:text-[11px] font-mono" style={{ borderColor: T.borderSubtle, color: T.textTertiary }}>
+            <span>Os dados salvam automaticamente no seu navegador (localStorage).</span>
+            <button
+              onClick={adminResetProgress}
+              className="hover:text-red-400 underline transition-colors"
+            >
+              Restaurar Padrão Inicial
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -4727,27 +8088,236 @@ export default function MageDuel() {
 
   // ================= LOADOUT =================
   if (phase === "loadout") {
+    const canFindOpponent = chosen.length >= 4 && chosen.length <= maxSlots;
+
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between p-3 sm:p-4" style={{ color: "#F2EAD8" }}>
+      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex flex-col items-center justify-between safe-all p-2 sm:p-3 md:p-4" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 w-full max-w-md h-full flex flex-col justify-between overflow-hidden">
-          <div className="w-full flex items-center justify-between py-0.5">
+        {renderAdmToast()}
+        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl min-h-full sm:h-full flex flex-col justify-between p-0.5">
+          {/* Modern AAA Header */}
+          <div className="w-full flex items-center justify-between py-1.5 flex-shrink-0 flex-wrap gap-2">
             <div>
-              <h1 className="font-serif text-2xl" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>{mageName.trim() || "Mage Duel"}</h1>
-              <p className="text-xs font-mono" style={{ color: "#B7AE95" }}>Affinity spells deal +25% damage</p>
+              <div className="flex items-center gap-2.5">
+                <h1 className="font-serif text-[22px] sm:text-[26px] md:text-[30px] font-black tracking-wider text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.25)]">
+                  {mageName.trim() || "Mage Duel"}
+                </h1>
+                {/* Ultra-slim XP Badge & Bar */}
+                <div className="px-2.5 py-1 rounded-full bg-slate-900/90 border border-amber-500/25 flex items-center gap-2 shadow-sm">
+                  <span className="font-bold text-amber-300 text-[11px] font-sans">Nv. {mageLevel}</span>
+                  <div className="w-16 sm:w-24 h-1 rounded-full overflow-hidden bg-slate-950 border border-white/10">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: `${mageLevelInfo.percent}%`, background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+                    />
+                  </div>
+                </div>
+              </div>
+              <p className="text-[10px] sm:text-[11px] font-sans text-zinc-400 mt-0.5">
+                Afinidade {ELEMENTS[affinity]?.name || "Fogo"} +25% · {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP
+              </p>
             </div>
-            <button onClick={() => setShowFriends(true)} className="rounded-md border px-2 py-1 font-mono text-xs transition-colors hover:border-[#E8B44F]" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
-              👥 {friends.length}
-            </button>
+
+            {/* Right Controls: Minimalist Currency, Friends & Settings Gear */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {pendingLevelDraft && (
+                <button
+                  onClick={() => {}}
+                  className="px-3 py-1 rounded-full text-xs font-serif font-bold bg-amber-500/20 border border-amber-400/50 text-amber-300 animate-pulse shadow-md flex items-center gap-1.5"
+                  title="Novo Feitiço Disponível para Escolha!"
+                >
+                  🌟 Draft
+                </button>
+              )}
+
+              {/* Minimalist Shards Counter: icon + amount */}
+              <button
+                onClick={() => setTab("shop")}
+                title="Abrir Loja Arcana"
+                className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900/90 border border-amber-500/25 hover:border-amber-400/50 text-amber-300 text-xs font-mono font-bold transition-all flex items-center gap-1.5 shadow-sm hover:-translate-y-0.5"
+              >
+                <span className="text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">✦</span>
+                <span>{shards}</span>
+              </button>
+
+              {/* Friends Pill */}
+              <button
+                onClick={() => setShowFriends(true)}
+                title="Lista de Amigos"
+                className="px-2.5 py-1 rounded-full bg-slate-900/90 border border-white/10 hover:border-white/25 text-zinc-300 text-xs font-sans transition-all shadow-sm flex items-center gap-1.5 hover:-translate-y-0.5"
+              >
+                <span>👥</span>
+                <span className="font-bold">{friends.length}</span>
+              </button>
+
+              {/* Settings Gear (replaces bulky ADM button) */}
+              <button
+                onClick={() => setShowAdminModal(true)}
+                className="p-1.5 rounded-xl bg-slate-900/90 border border-white/10 hover:border-amber-400/50 text-zinc-300 hover:text-white transition-all shadow-sm flex items-center justify-center text-sm hover:-translate-y-0.5"
+                title="Configurações & Painel Administrativo"
+              >
+                <span>⚙️</span>
+              </button>
+            </div>
           </div>
 
           {renderCharacterPreview(null)}
 
-          <div className="w-full pt-1.5 pb-0.5">
-            <button onClick={findOpponent} disabled={chosen.length !== 4}
-              className="w-full rounded-md border py-2.5 font-serif text-lg md:text-xl transition-all"
-              style={{ borderColor: "#E8B44F", background: chosen.length === 4 ? "linear-gradient(180deg, #E8B44F, #C9902E)" : "#1C1833", color: chosen.length === 4 ? "#100E1F" : "#3A3356", boxShadow: chosen.length === 4 ? "0 0 20px #E8B44F55" : "none" }}>
-              Find an Opponent
+          {/* Center: Elegant Daily Modifier Glass Banner with Shield Icon */}
+          {(() => {
+            const todayMod = getTodayModifier();
+            return (
+              <div className="w-full rounded-xl p-2 sm:p-2.5 my-1 flex items-center justify-between gap-3 shadow-lg border glass-panel transition-all">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-base border flex-shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%)",
+                      borderColor: "rgba(245, 158, 11, 0.45)",
+                    }}
+                  >
+                    <span>🛡️</span>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px] font-sans uppercase tracking-widest font-bold text-amber-400/90">
+                        Modificador Diário
+                      </span>
+                      <span className="text-zinc-500">·</span>
+                      <span className="text-xs sm:text-sm font-serif font-bold text-zinc-100 truncate">
+                        {todayMod.icon} {todayMod.name}
+                      </span>
+                    </div>
+                    <div className="text-[10px] sm:text-[11px] font-sans text-zinc-400 truncate mt-0.5">
+                      {todayMod.desc}
+                    </div>
+                  </div>
+                </div>
+                <span
+                  className="px-2.5 py-1 rounded-full text-[10px] font-sans font-bold border flex-shrink-0 shadow-sm"
+                  style={{
+                    backgroundColor: "rgba(245, 158, 11, 0.12)",
+                    borderColor: "rgba(245, 158, 11, 0.35)",
+                    color: "#FDE68A",
+                  }}
+                >
+                  {todayMod.shortDesc}
+                </span>
+              </div>
+            );
+          })()}
+
+          {/* Footer: Dynamic Loadout Slots Indicator with Translucent Glowing Glass */}
+          <div className="w-full rounded-2xl glass-panel p-2.5 sm:p-3 my-1 flex-shrink-0 shadow-xl border border-white/10">
+            <div className="flex items-center justify-between mb-2 text-xs font-sans">
+              <div className="flex items-center gap-2">
+                <span className="font-serif font-bold flex items-center gap-1.5 text-amber-300">
+                  <span>🔮</span>
+                  <span>Slots de Feitiço ({chosen.length}/{maxSlots})</span>
+                </span>
+                <span className="text-[10px] text-zinc-500 hidden sm:inline">
+                  {maxSlots < 7 ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : "· Todos os 7 slots liberados!"}
+                </span>
+              </div>
+              <button
+                onClick={() => setTab("skills")}
+                className="text-[11px] font-sans font-medium text-amber-300/80 hover:text-amber-200 transition-colors flex items-center gap-1"
+              >
+                <span>📖 Grimório Completo</span>
+              </button>
+            </div>
+
+            {/* Sockets Grid: 4 cols on mobile portrait, 7 cols on sm+ */}
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2">
+              {Array.from({ length: 7 }).map((_, i) => {
+                const isUnlocked = i < maxSlots;
+                const skillId = chosen[i];
+                const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
+                const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : i === 6 ? 30 : 1;
+                const el = skill ? ELEMENTS[skill.el] : null;
+
+                return (
+                  <button
+                    key={i}
+                    onClick={() => isUnlocked ? setTab("skills") : null}
+                    className={`min-h-[50px] sm:min-h-[62px] rounded-xl text-center flex flex-col items-center justify-between p-1.5 transition-all group relative overflow-hidden ${
+                      !isUnlocked
+                        ? "opacity-35 cursor-not-allowed border-white/5 bg-black/40"
+                        : skill
+                        ? "bg-slate-950/80 hover:scale-[1.02] shadow-md"
+                        : "border-dashed border-white/10 bg-slate-950/30 hover:border-amber-400/40 hover:bg-slate-900/40"
+                    }`}
+                    style={{
+                      border: skill && el ? `1px solid ${el.color}66` : undefined,
+                      boxShadow: skill && el ? `0 0 16px ${el.color}28, inset 0 1px 0 rgba(255,255,255,0.06)` : undefined,
+                    }}
+                    title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
+                  >
+                    {!isUnlocked ? (
+                      <div className="flex flex-col items-center justify-center my-auto">
+                        <span className="text-[12px] opacity-60">🔒</span>
+                        <span className="text-[8px] font-sans font-bold text-zinc-500">Nv.{unlockLvl}</span>
+                      </div>
+                    ) : skill ? (
+                      <>
+                        <div className="flex items-center justify-between w-full px-0.5">
+                          <span className="text-[11px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                          <span
+                            className="text-[8px] font-mono font-bold px-1 rounded-full border border-sky-400/30 text-sky-300"
+                            style={{ background: "rgba(14, 165, 233, 0.15)" }}
+                          >
+                            💧{skill.mana}
+                          </span>
+                        </div>
+                        <span className="text-[9px] sm:text-[10px] font-serif font-bold text-zinc-100 group-hover:text-amber-200 transition-colors leading-none truncate max-w-full">
+                          {skill.name}
+                        </span>
+                        <div className="flex items-center gap-1 text-[8px] font-mono font-bold">
+                          {skill.dmg > 0 && <span className="text-red-300">⚔️{skill.dmg}</span>}
+                          {skill.shield > 0 && <span className="text-sky-300">🛡️{skill.shield}</span>}
+                          {skill.heal > 0 && <span className="text-emerald-300">💚{skill.heal}</span>}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-zinc-500">
+                        <span className="text-sm font-bold leading-none">+</span>
+                        <span className="text-[8px] font-sans uppercase tracking-wider mt-0.5">Slot {i + 1}</span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Action Row: Adaptive Responsive Layout */}
+          <div className="w-full pt-1.5 pb-1 flex-shrink-0 flex flex-col sm:flex-row gap-1.5 sm:gap-2.5 items-stretch">
+            <div className="flex gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <button
+                onClick={startTutorial}
+                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold flex items-center justify-center gap-1.5 border-sky-500/25 text-sky-200 hover:border-sky-400/50"
+                title="Treinamento com Espantalho Arcano"
+              >
+                <span className="text-sm sm:text-base">🎯</span>
+                <span>Tutorial</span>
+              </button>
+              <button
+                onClick={() => setShowBossTrialsModal(true)}
+                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold flex items-center justify-center gap-1.5 border-purple-500/25 text-purple-200 hover:border-purple-400/50"
+                title="Treinamento de Mestres Elementais"
+              >
+                <span className="text-sm sm:text-base">👑</span>
+                <span className="hidden md:inline">Provas de Arquimagos</span>
+                <span className="md:hidden">Provas</span>
+              </button>
+            </div>
+            <button
+              onClick={() => { setIsTutorial(false); findOpponent(); }}
+              disabled={!canFindOpponent}
+              className="btn-king w-full sm:flex-1 rounded-xl py-2.5 sm:py-3.5 px-4 text-[13px] sm:text-[16px] md:text-[18px] flex items-center justify-center gap-2"
+            >
+              <span className="text-base sm:text-xl">⚔️</span>
+              <span>ENCONTRAR OPONENTE</span>
             </button>
           </div>
         </div>
@@ -4756,6 +8326,12 @@ export default function MageDuel() {
         {renderFriendsModal()}
         {renderChatModal()}
         {renderMatchmakingModal()}
+        {renderShardShopModal()}
+        {renderRewardedAdModal()}
+        {renderLevelUpModal()}
+        {renderBossTrialsModal()}
+        {renderMasteryCelebrationModal()}
+        {renderAdminModal()}
       </div>
     );
   }
@@ -4769,45 +8345,65 @@ export default function MageDuel() {
     const bioHash = [...enemy.name].reduce((a, c) => a + c.charCodeAt(0), 0);
     const bio = bios.length ? bios[bioHash % bios.length] : "";
     const friended = isFriend(enemy);
+    const playerEl = ELEMENTS[affinity] || ELEMENTS.fire;
+    const enemyEl = ELEMENTS[enemy.affinity] || ELEMENTS.fire;
 
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between p-2.5 sm:p-4" style={{ color: "#F2EAD8" }}>
+      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex flex-col items-center justify-between safe-all p-2 sm:p-3 md:p-4" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 w-full max-w-xl h-full flex flex-col justify-between overflow-hidden">
+        <div className="relative z-10 w-full max-w-xl md:max-w-2xl lg:max-w-3xl min-h-full sm:h-full flex flex-col justify-between">
           
           {/* Header */}
-          <div className="text-center py-0.5">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono border mb-0.5"
-              style={{ borderColor: "#72C06366", background: "#72C0631A", color: "#72C063" }}>
-              <span>✓</span><span>Opponent Found · Bot Matchmaking</span>
+          <div className="text-center py-1">
+            <div
+              className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-1 shadow-sm"
+              style={{ borderColor: `${T.success}66`, background: `${T.success}18`, color: T.success }}
+            >
+              <span>✓</span><span>Oponente Encontrado · Pareamento de Duelo</span>
             </div>
-            <h1 className="font-serif text-xl sm:text-2xl" style={{ color: "#E8B44F", textShadow: "0 0 20px #E8B44F44" }}>
-              Duel Faceoff
+            <h1 className="font-serif text-[22px] sm:text-[26px] font-bold tracking-wide" style={{ color: T.gold, textShadow: `0 0 24px ${T.gold}44` }}>
+              Confronto de Magos
             </h1>
           </div>
 
           {/* Center Matchup: Face-to-Face Mages */}
-          <div className="flex-1 min-h-0 flex flex-col justify-center gap-2 my-1 overflow-hidden">
+          <div className="flex-1 min-h-0 flex flex-col justify-center gap-2.5 my-1 overflow-hidden">
             
-            {/* The Duelists Cards Side-by-Side */}
-            <div className="grid grid-cols-2 gap-2 w-full items-stretch">
+            {/* The Duelists Cards Side-by-Side with Central VS Badge */}
+            <div className="relative grid grid-cols-2 gap-2 sm:gap-4 w-full items-stretch">
               
+              {/* Central VS Emblem */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                <div
+                  className="w-9 h-9 sm:w-12 sm:h-12 rounded-full border-2 flex items-center justify-center font-serif font-black text-[11px] sm:text-[13px] shadow-2xl ring-4"
+                  style={{ background: T.bgDeep, borderColor: T.gold, color: T.gold, ringColor: T.bgDeep, boxShadow: `0 0 20px ${T.gold}66` }}
+                >
+                  VS
+                </div>
+              </div>
+
               {/* Player Card */}
-              <div className="rounded-lg border p-2 sm:p-2.5 flex flex-col items-center justify-between text-center relative overflow-hidden"
-                style={{ borderColor: "#3A3356", background: "linear-gradient(180deg, #1C1833, #141126)" }}>
-                <div className="w-full flex items-center justify-between gap-1 mb-0.5">
-                  <span className="font-serif text-xs sm:text-sm font-bold text-[#F2EAD8] truncate">{mageName.trim() || "You"}</span>
+              <div
+                className="card-surface rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-lg border"
+                style={{
+                  borderColor: `${playerEl.color}66`,
+                }}
+              >
+                <div className="w-full flex items-center justify-between gap-1 mb-1">
+                  <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: T.textPrimary }}>
+                    {mageName.trim() || "Você"}
+                  </span>
                   <ElementBadge el={affinity} />
                 </div>
-                <div className="my-0.5 flex justify-center items-center">
+                <div className="my-1 flex justify-center items-center">
                   <MageSprite mage={previewMage} facing="right" size={1.15} />
                 </div>
                 <div className="w-full">
-                  <div className="text-[10px] sm:text-[11px] font-mono text-[#B7AE95] truncate">
+                  <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: T.textSecondary }}>
                     {previewMage.staffGear?.name}
                   </div>
                   {relic && relic.id !== "none" && (
-                    <div className="text-[9px] sm:text-[10px] font-mono truncate" style={{ color: RARITY[relic.rarity].color }}>
+                    <div className="text-[10px] sm:text-[11px] font-mono truncate font-bold mt-0.5" style={{ color: RARITY[relic.rarity].color }}>
                       ✦ {relic.name}
                     </div>
                   )}
@@ -4815,51 +8411,102 @@ export default function MageDuel() {
               </div>
 
               {/* Opponent Card */}
-              <div className="rounded-lg border p-2 sm:p-2.5 flex flex-col items-center justify-between text-center relative overflow-hidden"
-                style={{ borderColor: "#FF6B3D66", background: "linear-gradient(180deg, #241624, #161226)" }}>
-                <div className="w-full flex items-center justify-between gap-1 mb-0.5">
-                  <span className="font-serif text-xs sm:text-sm font-bold truncate" style={{ color: "#FF6B3D" }}>{enemy.name}</span>
+              <div
+                className="card-surface rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center relative overflow-hidden shadow-lg border"
+                style={{
+                  borderColor: `${enemyEl.color}66`,
+                }}
+              >
+                <div className="w-full flex items-center justify-between gap-1 mb-1">
+                  <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: enemyEl.color }}>
+                    {enemy.name}
+                  </span>
                   <ElementBadge el={enemy.affinity} />
                 </div>
-                <div className="my-0.5 flex justify-center items-center">
+                <div className="my-1 flex justify-center items-center">
                   <MageSprite mage={enemy} facing="left" size={1.15} />
                 </div>
-                <div className="w-full">
-                  <div className="text-[10px] sm:text-[11px] font-mono truncate" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
-                    {enemy.staffGear.name}
+                  <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color || T.textSecondary }}>
+                    {enemy.staffGear?.name}
                   </div>
-                  <div className="text-[9px] sm:text-[10px] font-mono text-[#8E87A5] italic truncate">
-                    "{bio}"
-                  </div>
-                </div>
+                  {enemy.archetype ? (
+                    <div
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold mt-1 border"
+                      style={{
+                        borderColor: `${enemy.archetype.color}66`,
+                        backgroundColor: `${enemy.archetype.color}18`,
+                        color: enemy.archetype.color,
+                      }}
+                      title={enemy.archetype.desc}
+                    >
+                      <span>{enemy.archetype.icon}</span>
+                      <span>{enemy.archetype.name}</span>
+                      <span className="opacity-80 hidden sm:inline">· {enemy.archetype.tagline}</span>
+                    </div>
+                  ) : (
+                    <div className="text-[10px] sm:text-[11px] font-mono italic truncate mt-0.5" style={{ color: T.textTertiary }}>
+                      "{bio}"
+                    </div>
+                  )}
               </div>
 
             </div>
 
-            {/* Tactical Intel: Opponent's 4 Spells Preview */}
-            <div className="w-full rounded-md border p-1.5 sm:p-2" style={{ borderColor: "#3A3356", background: "#141126CC" }}>
-              <div className="flex items-center justify-between mb-1 text-[10px] sm:text-[11px] font-mono">
-                <span style={{ color: "#E8B44F" }}>⚔️ Opponent's Prepared Spells</span>
-                <div className="flex gap-1.5">
-                  <button onClick={() => openChat(enemy)} className="rounded border px-2 py-0.5 text-[10px] font-mono hover:border-[#E8B44F]" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
-                    💬 Chat
+            {/* Tactical Intel: Opponent's Spells Preview */}
+            <div className="w-full rounded-2xl panel-base p-2.5 sm:p-3 border shadow-md" style={{ borderColor: T.borderSubtle }}>
+              <div className="flex items-center justify-between mb-2 text-[11px] font-mono">
+                <span className="font-bold flex items-center gap-1.5" style={{ color: T.gold }}>
+                  <span>⚔️</span>
+                  <span>Feitiços do Oponente ({foeSkills.length})</span>
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => openChat(enemy)}
+                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all"
+                  >
+                    💬 Conversar
                   </button>
-                  <button onClick={() => addFriend(enemy)} disabled={friended} className="rounded border px-2 py-0.5 text-[10px] font-mono" style={{ borderColor: friended ? "#72C063" : "#3A3356", color: friended ? "#72C063" : "#B7AE95", background: "#1C1833" }}>
-                    {friended ? "✓ Friend" : "+ Friend"}
+                  <button
+                    onClick={() => addFriend(enemy)}
+                    disabled={friended}
+                    className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all font-bold"
+                    style={{
+                      borderColor: friended ? `${T.success}88` : undefined,
+                      color: friended ? T.success : undefined,
+                    }}
+                  >
+                    {friended ? "✓ Amigo" : "+ Amigo"}
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                 {foeSkills.map(s => {
                   const e = ELEMENTS[s.el];
                   return (
-                    <div key={s.id} className="rounded border px-1.5 py-0.5 flex flex-col justify-between" style={{ borderColor: "#3A3356", background: "#1C1833" }}>
-                      <div className="text-[10px] sm:text-[11px] font-mono flex items-center justify-between">
-                        <span className="truncate">{s.name}</span>
-                        <span style={{ color: e.color }}>{e.icon}</span>
+                    <div
+                      key={s.id}
+                      className="card-surface rounded-xl border p-2 sm:p-2.5 flex flex-col justify-between shadow-sm transition-all"
+                      style={{
+                        borderColor: `${e.color}55`,
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="font-serif text-[12px] sm:text-[13px] font-bold text-[#FAF6EE] leading-tight break-words">
+                          {s.name}
+                        </span>
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <span className="text-[12px]" style={{ color: e.color }}>{e.icon}</span>
+                          <span className="text-[8px] font-mono font-bold px-1 rounded" style={{ background: T.bgBase, color: T.arcane }}>
+                            T{s.tier}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-[9px] sm:text-[10px] font-mono" style={{ color: "#8E87A5" }}>
-                        {s.dmg ? `${s.dmg} dmg` : s.shield ? `Shield ${s.shield}` : s.restore ? `+${s.restore} mana` : s.heal ? `Heal ${s.heal}` : ""}
+                      <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-mono font-semibold mt-0.5">
+                        <span style={{ color: T.ice }}>💧{s.mana}</span>
+                        {s.dmg > 0 && <span style={{ color: T.danger }}>⚔️{s.dmg}</span>}
+                        {s.shield > 0 && <span style={{ color: T.ice }}>🛡️{s.shield}</span>}
+                        {s.heal > 0 && <span style={{ color: T.success }}>💚{s.heal}</span>}
+                        {s.restore > 0 && <span style={{ color: T.info }}>💧+{s.restore}</span>}
                       </div>
                     </div>
                   );
@@ -4870,21 +8517,24 @@ export default function MageDuel() {
           </div>
 
           {/* Bottom Action Bar */}
-          <div className="w-full flex gap-2 pt-1 pb-0.5">
-            <button onClick={() => setPhase("loadout")}
-              className="rounded-md border px-3 py-2.5 font-serif text-xs sm:text-sm transition-colors hover:border-[#E8B44F]"
-              style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
-              ← Loadout
+          <div className="w-full flex gap-2.5 pt-1.5 pb-0.5">
+            <button
+              onClick={() => setPhase("loadout")}
+              className="btn-surface rounded-xl px-4 py-3 font-serif text-[12px] sm:text-[14px] font-bold transition-all"
+            >
+              ← Grimório
             </button>
-            <button onClick={findOpponent}
-              className="flex-1 rounded-md border py-2.5 font-serif text-xs sm:text-sm transition-colors hover:border-[#E8B44F]"
-              style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
-              🔄 Re-Match (Bot)
+            <button
+              onClick={findOpponent}
+              className="btn-surface flex-1 rounded-xl py-3 font-serif text-[12px] sm:text-[14px] font-bold transition-all"
+            >
+              🔄 Novo Oponente
             </button>
-            <button onClick={confirmDuel}
-              className="flex-2 rounded-md border py-2.5 px-4 sm:px-6 font-serif text-base sm:text-lg transition-all"
-              style={{ borderColor: "#E8B44F", background: "linear-gradient(180deg, #E8B44F, #C9902E)", color: "#100E1F", boxShadow: "0 0 20px #E8B44F55" }}>
-              Enter Arena ⚔️
+            <button
+              onClick={confirmDuel}
+              className="btn-gold flex-2 rounded-xl py-3 px-5 sm:px-7 font-serif text-[15px] sm:text-[17px] font-black shadow-xl"
+            >
+              ⚔️ ENTRAR NA ARENA
             </button>
           </div>
         </div>
@@ -4897,168 +8547,568 @@ export default function MageDuel() {
 
   // ================= RESULT =================
   if (phase === "result") {
+    const isWin = result === "win";
+    const mvpSkillEntry = Object.entries(combatStats.skillUsage || {}).sort((a, b) => b[1] - a[1])[0];
+    const mvpSkill = mvpSkillEntry ? (SKILLS.find(s => s.id === mvpSkillEntry[0]) || (mvpSkillEntry[0] === "focus" ? FOCUS : null)) : null;
+    const mvpCasts = mvpSkillEntry ? mvpSkillEntry[1] : 0;
+
+    const badgesEarned = [];
+    if (combatStats.combosCount >= 2) badgesEarned.push({ icon: "⚡", name: "Mestre dos Combos", desc: `${combatStats.combosCount} combos elementais executados` });
+    if (combatStats.critsCount >= 2) badgesEarned.push({ icon: "🎯", name: "Precisão Fatal", desc: `${combatStats.critsCount} acertos críticos desferidos` });
+    if (isWin && (player?.hp || 0) >= 60) badgesEarned.push({ icon: "🛡️", name: "Baluarte Imbatível", desc: `${player?.hp} HP preservados` });
+    if (isWin && roundNum <= 4) badgesEarned.push({ icon: "⏱️", name: "Duelo Relâmpago", desc: `Vitória rápida em ${roundNum} turnos` });
+    if (combatStats.highestHit >= 30) badgesEarned.push({ icon: "💥", name: "Impacto Arcano", desc: `Maior golpe: ${combatStats.highestHit} de dano` });
+
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex items-center justify-center p-4" style={{ color: "#F2EAD8" }}>
+      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex items-center justify-center safe-all p-2 sm:p-4" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 text-center max-w-sm w-full">
-          <h1 className="font-serif text-4xl mb-2" style={{ color: result === "win" ? "#E8B44F" : "#FF6B3D", textShadow: result === "win" ? "0 0 24px #E8B44F55" : "none" }}>
-            {result === "win" ? "Victory" : "Defeat"}
+        <div
+          className="modal-window relative z-10 text-center max-w-sm sm:max-w-md w-full max-h-[92dvh] overflow-y-auto custom-scrollbar rounded-2xl border p-4 sm:p-5 shadow-2xl"
+          style={{
+            borderColor: isWin ? `${T.gold}88` : `${T.danger}88`,
+            boxShadow: isWin ? `0 0 35px ${T.gold}33` : `0 0 35px ${T.danger}22`,
+          }}
+        >
+          <div className="text-4xl mb-1">{isWin ? "👑" : "💀"}</div>
+          <h1
+            className="font-serif text-[26px] sm:text-[32px] mb-1 font-black"
+            style={{ color: isWin ? T.gold : T.danger, textShadow: isWin ? `0 0 24px ${T.gold}55` : "none" }}
+          >
+            {isWin ? (isTutorial ? "Treinamento Concluído!" : bossEncounter ? "Arquimago Derrotado!" : "Vitória Arcana!") : "Derrota"}
           </h1>
-          <p className="font-mono text-sm mb-4" style={{ color: "#B7AE95" }}>
-            {result === "win" ? `${enemy.name} yields.` : `${enemy.name} stands over you. Adjust your build and return.`}
+          <p className="font-mono text-[11px] sm:text-[12px] mb-3" style={{ color: T.textSecondary }}>
+            {isWin
+              ? isTutorial
+                ? "Você completou as lições elementais e dominou os combos e a mana!"
+                : bossEncounter
+                ? `${enemy.name} curva-se perante sua maestria dos elementos!`
+                : `${enemy.name} cede o duelo.`
+              : `${enemy.name} permanece em pé. Ajuste sua estratégia e retorne.`}
           </p>
 
-          {loot && (
-            <div className="rounded-md border p-3.5 mb-4 relative overflow-hidden lootShine"
-              style={{ borderColor: RARITY[loot.rarity].color, background: "#1C1833", boxShadow: RARITY[loot.rarity].glow }}>
-              <div className="text-xs font-mono mb-1" style={{ color: RARITY[loot.rarity].color }}>✦ {RARITY[loot.rarity].label} drop ✦</div>
-              <div className="font-serif text-2xl" style={{ color: "#F2EAD8" }}>{loot.name}</div>
-              {loot.desc && <div className="text-xs font-mono mt-1" style={{ color: "#B7AE95" }}>{loot.desc}</div>}
-              <div className="text-xs font-mono mt-2" style={{ color: "#5A5478" }}>Unlocked in your collection · tradeable in the full game</div>
+          {/* Combat Statistics Report Grid */}
+          <div className="rounded-xl border panel-base p-3 mb-3 text-left shadow-sm" style={{ borderColor: T.borderSubtle }}>
+            <div className="flex items-center justify-between text-[11px] font-mono font-bold mb-2 pb-1 border-b" style={{ borderColor: T.borderSubtle, color: T.gold }}>
+              <span className="flex items-center gap-1.5"><span>📊</span><span>Relatório do Duelo</span></span>
+              <span className="text-[10px]" style={{ color: T.textTertiary }}>{roundNum} Turnos</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center">
+              <div className="card-surface p-1.5 rounded-lg border" style={{ borderColor: `${T.danger}44` }}>
+                <div className="text-[9px] font-mono text-zinc-400">Dano Causado</div>
+                <div className="font-serif text-[14px] font-black" style={{ color: T.danger }}>{combatStats.totalDamageDealt}</div>
+              </div>
+              <div className="card-surface p-1.5 rounded-lg border" style={{ borderColor: `${T.gold}44` }}>
+                <div className="text-[9px] font-mono text-zinc-400">Maior Golpe</div>
+                <div className="font-serif text-[14px] font-black" style={{ color: T.gold }}>{combatStats.highestHit}</div>
+              </div>
+              <div className="card-surface p-1.5 rounded-lg border" style={{ borderColor: `${T.arcane}44` }}>
+                <div className="text-[9px] font-mono text-zinc-400">Combos</div>
+                <div className="font-serif text-[14px] font-black" style={{ color: T.arcane }}>{combatStats.combosCount}</div>
+              </div>
+              <div className="card-surface p-1.5 rounded-lg border" style={{ borderColor: `${T.ice}44` }}>
+                <div className="text-[9px] font-mono text-zinc-400">Críticos</div>
+                <div className="font-serif text-[14px] font-black" style={{ color: T.ice }}>{combatStats.critsCount}</div>
+              </div>
+            </div>
+
+            {/* MVP Skill Card */}
+            {mvpSkill && (
+              <div className="mt-2 pt-2 border-t flex items-center justify-between text-[11px] font-mono" style={{ borderColor: T.borderSubtle }}>
+                <span className="text-[10px] text-zinc-400 flex items-center gap-1">
+                  <span>⭐</span><span>Feitiço MVP:</span>
+                </span>
+                <span className="font-bold flex items-center gap-1" style={{ color: ELEMENTS[mvpSkill.el]?.color || T.gold }}>
+                  <span>{ELEMENTS[mvpSkill.el]?.icon}</span>
+                  <span>{mvpSkill.name}</span>
+                  <span className="text-[10px] opacity-75 font-normal">({mvpCasts}x)</span>
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Badges Earned */}
+          {badgesEarned.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 justify-center mb-3">
+              {badgesEarned.map((b, i) => (
+                <div
+                  key={i}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-[10px] font-mono font-bold shadow-sm"
+                  style={{ borderColor: `${T.gold}66`, background: `${T.gold}18`, color: T.goldLight }}
+                  title={b.desc}
+                >
+                  <span>{b.icon}</span>
+                  <span>{b.name}</span>
+                </div>
+              ))}
             </div>
           )}
-          {result === "win" && !loot && <p className="text-xs font-mono mb-4" style={{ color: "#5A5478" }}>Your collection is complete, Archmage.</p>}
 
-          <div className="flex gap-2">
-            <button onClick={findOpponent} className="flex-1 rounded-md border py-2.5 font-serif transition-colors hover:border-[#E8B44F]" style={{ borderColor: "#E8B44F", color: "#E8B44F", background: "#1C1833" }}>
-              Next Foe
+          {/* Mage XP & Level Bar */}
+          <div className="rounded-xl border panel-base p-3 mb-3 text-left shadow-sm" style={{ borderColor: T.borderSubtle }}>
+            <div className="flex justify-between items-center text-[12px] font-mono mb-1.5">
+              <span className="font-bold" style={{ color: T.gold }}>
+                🔮 Nível de Mago: Nv. {mageLevel}
+              </span>
+              <span className="font-bold" style={{ color: T.success }}>
+                {isWin ? "+50 XP" : "+20 XP"}
+              </span>
+            </div>
+            <div className="w-full h-2.5 rounded-full overflow-hidden border mb-1.5" style={{ background: T.bgDeep, borderColor: T.borderSubtle }}>
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${mageLevelInfo.percent}%`, background: `linear-gradient(90deg, ${T.gold}, ${T.warning})` }}
+              />
+            </div>
+            <div className="flex justify-between items-center text-[10px] font-mono" style={{ color: T.textTertiary }}>
+              <span>Progresso: {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP</span>
+              <span>Slots: {maxSlots}/7</span>
+            </div>
+          </div>
+
+          {/* Pending Level-Up Draft Banner */}
+          {pendingLevelDraft && (
+            <button
+              onClick={() => {}}
+              className="btn-surface w-full py-2.5 px-3 rounded-xl border text-[13px] font-serif font-bold mb-3 flex items-center justify-center gap-2 animate-bounce shadow-lg"
+              style={{ borderColor: T.gold, background: `${T.gold}22`, color: T.goldLight }}
+            >
+              <span>🌟</span>
+              <span>Novo Feitiço Disponível! (Draft Nv. {pendingLevelDraft.level})</span>
+              <span>✨</span>
             </button>
-            <button onClick={() => setPhase("loadout")} className="flex-1 rounded-md border py-2.5 font-serif transition-colors hover:border-[#E8B44F]" style={{ borderColor: "#3A3356", color: "#F2EAD8", background: "#1C1833" }}>
-              Loadout
+          )}
+
+          {/* Victory Rewards */}
+          {isWin && (
+            <div
+              className="rounded-xl border card-surface p-3 mb-3 flex items-center justify-between text-[12px] font-mono"
+              style={{ borderColor: `${T.gold}44` }}
+            >
+              <span style={{ color: T.textSecondary }}>Arcane Shards Obtidos:</span>
+              <span className="font-bold flex items-center gap-1" style={{ color: T.gold }}>
+                <span>✦</span><span>+5 Shards</span>
+              </span>
+            </div>
+          )}
+
+          {/* Special Boss Trial Loot */}
+          {loot && loot.isBoss && (
+            <div
+              className="rounded-xl border-2 p-4 mb-4 relative overflow-hidden panel-elevated shadow-xl"
+              style={{ borderColor: T.gold }}
+            >
+              <div className="text-[11px] font-mono mb-1 font-bold" style={{ color: T.gold }}>👑 RECOMPENSA DE ARQUIMAGO 👑</div>
+              <div className="font-serif text-[20px] sm:text-[22px] font-bold" style={{ color: T.textPrimary }}>{loot.skill?.name}</div>
+              <div className="text-[12px] font-mono mt-1" style={{ color: T.textSecondary }}>{loot.skill?.desc}</div>
+              <div className="text-[11px] font-mono mt-2 font-bold" style={{ color: T.success }}>✓ Feitiço Lendário desbloqueado no seu Grimório!</div>
+            </div>
+          )}
+
+          {/* Special Spell Tome Loot */}
+          {loot && loot.isTome && (
+            <div
+              className="rounded-xl border-2 p-4 mb-4 relative overflow-hidden panel-elevated shadow-xl"
+              style={{ borderColor: T.ice }}
+            >
+              <div className="text-[11px] font-mono mb-1 font-bold" style={{ color: T.ice }}>📖 GRIMÓRIO ARCANO ENCONTRADO! 📖</div>
+              <div className="font-serif text-[20px] sm:text-[22px] font-bold" style={{ color: T.textPrimary }}>{loot.tome?.name}</div>
+              <div className="text-[12px] font-mono mt-1" style={{ color: T.textSecondary }}>Aprendeu o feitiço: <strong style={{ color: T.textPrimary }}>{loot.skill?.name}</strong></div>
+              <div className="text-[11px] font-mono mt-2 font-bold" style={{ color: T.success }}>✓ Feitiço adicionado permanentemente ao Grimório!</div>
+            </div>
+          )}
+
+          {/* Normal Item Loot */}
+          {loot && !loot.isBoss && !loot.isTome && (
+            <div
+              className="rounded-xl border p-4 mb-4 relative overflow-hidden card-surface shadow-md"
+              style={{ borderColor: RARITY[loot.rarity].color }}
+            >
+              <div className="text-[11px] font-mono mb-1 font-bold" style={{ color: RARITY[loot.rarity].color }}>✦ {RARITY[loot.rarity].label} drop ✦</div>
+              <div className="font-serif text-[20px] sm:text-[22px] font-bold" style={{ color: T.textPrimary }}>{loot.name}</div>
+              {loot.desc && <div className="text-[12px] font-mono mt-1" style={{ color: T.textSecondary }}>{loot.desc}</div>}
+              <div className="text-[11px] font-mono mt-2" style={{ color: T.textTertiary }}>Item adicionado aos seus cosméticos</div>
+            </div>
+          )}
+          {isWin && !loot && <p className="text-[12px] font-mono mb-4" style={{ color: T.textTertiary }}>Coleção e grimório atualizados, Arquimago.</p>}
+
+          <div className="flex gap-2.5 pt-1">
+            <button
+              onClick={findOpponent}
+              className="btn-gold flex-1 rounded-xl py-3 font-serif text-[13px] sm:text-[14px] font-bold shadow-md"
+            >
+              ⚔️ Próximo Duelo
+            </button>
+            <button
+              onClick={() => setPhase("loadout")}
+              className="btn-surface flex-1 rounded-xl py-3 font-serif text-[13px] sm:text-[14px] font-bold transition-all"
+            >
+              🏰 Sanctum
             </button>
           </div>
         </div>
         {renderMatchmakingModal()}
+        {renderLevelUpModal()}
+        {renderMasteryCelebrationModal()}
       </div>
     );
   }
 
   // ================= BATTLE =================
   const menuSkills = [...player.skills, FOCUS];
-  const panel = { borderColor: "#3A3356", background: "linear-gradient(180deg, #221D3E, #1A1630)" };
+  const shakeClass = screenShake === "heavy" ? "arena-shake-heavy" : screenShake === "light" ? "arena-shake-light" : "";
+
   return (
-    <div className="h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between p-2 sm:p-3 md:p-4" style={{ color: "#F2EAD8" }}>
+    <div className={`h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between safe-all p-1 sm:p-2.5 md:p-4 ${shakeClass}`} style={{ color: "#F2EAD8" }}>
       {styles}{bg}
-      <div className="relative z-10 w-full max-w-4xl h-full flex flex-col justify-between overflow-hidden">
+      {phaseTransition && <div className="phase-transition" />}
+      {screenFlash === "white" && <div className="screen-flash-white" />}
+      {screenFlash === "gold" && <div className="screen-flash-gold" />}
+      {showRainbow && (
+        <div className="fixed top-8 sm:top-12 left-1/2 -translate-x-1/2 pointer-events-none z-50 flex items-center justify-center animate-bounce">
+          <div className="text-xl sm:text-3xl font-serif text-[#FEF08A] bg-[#000000AA] px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-[#E8B44F] filter drop-shadow-[0_0_15px_#FFF]">
+            🌈✨ VITÓRIA RADIANTE! ✨🌈
+          </div>
+        </div>
+      )}
+      {showShootingStars && (
+        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+          {[1, 2, 3, 4, 5].map(i => (
+            <div key={i} style={{
+              position: "absolute", top: `${i * 14}%`, right: `${i * 12}%`,
+              width: 100, height: 2, background: "linear-gradient(to left, #FFF, transparent)",
+              animation: `shootingStar 1.2s ease-out ${i * 0.25}s infinite`,
+            }} />
+          ))}
+        </div>
+      )}
+      <div className="relative z-10 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl h-full flex flex-col justify-between overflow-hidden min-h-0">
         
-        {/* Arena Combatants Area (Side-by-Side on md+, Compact Stack on mobile) */}
-        <div className="relative w-full">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-3">
+        {/* Turn Countdown & Arena Header Bar */}
+        <TurnCountdownBar
+          turnCountdown={turnCountdown}
+          maxDuration={getTodayModifier().id === "swift_duels" ? 8 : TURN_DURATION}
+          roundNum={roundNum}
+          currentTurn={currentTurn}
+          isTimerPaused={isTimerPaused}
+          onTogglePause={() => setIsTimerPaused(p => !p)}
+          busy={busy}
+          dailyMod={getTodayModifier()}
+        />
+
+        {/* Arena Combat Stage Area */}
+        <div className="relative w-full flex-shrink-0 my-0.5 sm:my-1">
+          <div className="grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-1.5 sm:gap-2.5">
             {/* Enemy Card */}
-            <div className="rounded-md border p-2 sm:p-2.5 flex gap-2 sm:gap-3 items-center relative order-1 md:order-2" style={panel}>
+            <div
+              className="card-surface rounded-2xl border p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-1 landscape:order-2 md:order-2 transition-all shadow-lg"
+              style={{
+                borderColor: currentTurn === "enemy" ? T.danger : T.borderSubtle,
+                boxShadow: currentTurn === "enemy" ? `0 0 20px ${T.danger}33` : "0 4px 20px #00000044",
+              }}
+            >
               {floats.filter(f => f.side === "e").map(f => (
-                <span key={f.id} className="dmgFloat font-mono absolute" style={{ left: `${f.left}%`, top: 6, color: f.color, fontSize: f.big ? 24 : 17, fontWeight: 700, textShadow: "0 1px 3px #000", zIndex: 5 }}>{f.text}</span>
+                <div
+                  key={f.id}
+                  className="dmgFloat font-mono absolute flex flex-col items-center pointer-events-none"
+                  style={{
+                    left: `${f.left}%`,
+                    top: 6,
+                    color: f.color,
+                    fontSize: f.big ? 26 : 18,
+                    fontWeight: 800,
+                    WebkitTextStroke: "1.2px #000000",
+                    textShadow: "0 2px 10px #000000",
+                    zIndex: 25,
+                  }}
+                >
+                  {(f.badge || f.big) && (
+                    <span
+                      className="text-[10px] font-black tracking-widest px-1.5 py-0.2 rounded border transform -rotate-6 animate-bounce"
+                      style={{ background: "#000000CC", borderColor: f.badgeColor || T.gold, color: f.badgeColor || T.gold }}
+                    >
+                      {f.badge || "CRIT!"}
+                    </span>
+                  )}
+                  <span>{f.text}</span>
+                </div>
               ))}
+
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                  <span className="font-serif text-sm md:text-base truncate">{enemy.name}</span>
+                <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1 flex-wrap">
+                  <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.textPrimary }}>{enemy.name}</span>
                   <ElementBadge el={enemy.affinity} />
                   <StatusIcons mage={enemy} />
-                  <button onClick={() => openChat(enemy)} title="Chat" className="rounded-sm border px-1.5 font-mono text-xs" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#14112A" }}>💬</button>
-                  <button onClick={() => addFriend(enemy)} disabled={isFriend(enemy)} title={isFriend(enemy) ? "Already a friend" : "Add friend"} className="rounded-sm border px-1.5 font-mono text-xs" style={{ borderColor: isFriend(enemy) ? "#72C063" : "#3A3356", color: isFriend(enemy) ? "#72C063" : "#B7AE95", background: "#14112A" }}>{isFriend(enemy) ? "✓" : "+👤"}</button>
                 </div>
-                <div className="text-[11px] font-mono mb-1 truncate" style={{ color: RARITY[enemy.staffGear.rarity].color }}>{enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}</div>
-                <Bar value={enemy.hp} max={enemy.maxHp} color="#72C063" label="HP" />
-                <Bar value={enemy.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
+
+                <div className="text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-75" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
+                  {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}
+                </div>
+
+                {/* Health & Mana with integrated Ward */}
+                <CombatBar value={enemy.hp} max={enemy.maxHp} shield={enemy.shield} type="hp" label="Health" />
+                <CombatBar value={enemy.mana} max={MAX_MANA} type="mana" label="Mana" />
               </div>
-              <MageSprite mage={enemy} facing="left" hurt={hurtE} casting={castE} size={0.92} />
+
+              <div className="relative flex-shrink-0">
+                <div className="scale-75 sm:scale-90 md:scale-100 transform origin-center">
+                  <MageSprite mage={enemy} facing="left" hurt={hurtE} casting={castE} damageFlash={damageFlashE} size={0.96} />
+                </div>
+              </div>
             </div>
 
             {/* Player Card */}
-            <div className="rounded-md border p-2 sm:p-2.5 flex gap-2 sm:gap-3 items-center relative order-2 md:order-1" style={panel}>
+            <div
+              className="card-surface rounded-2xl border p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-2 landscape:order-1 md:order-1 transition-all shadow-lg"
+              style={{
+                borderColor: currentTurn === "player" ? T.gold : T.borderSubtle,
+                boxShadow: currentTurn === "player" ? `0 0 20px ${T.gold}33` : "0 4px 20px #00000044",
+              }}
+            >
               {floats.filter(f => f.side === "p").map(f => (
-                <span key={f.id} className="dmgFloat font-mono absolute" style={{ right: `${f.left}%`, top: 6, color: f.color, fontSize: f.big ? 24 : 17, fontWeight: 700, textShadow: "0 1px 3px #000", zIndex: 5 }}>{f.text}</span>
+                <div
+                  key={f.id}
+                  className="dmgFloat font-mono absolute flex flex-col items-center pointer-events-none"
+                  style={{
+                    right: `${f.left}%`,
+                    top: 6,
+                    color: f.color,
+                    fontSize: f.big ? 26 : 18,
+                    fontWeight: 800,
+                    WebkitTextStroke: "1.2px #000000",
+                    textShadow: "0 2px 10px #000000",
+                    zIndex: 25,
+                  }}
+                >
+                  {(f.badge || f.big) && (
+                    <span
+                      className="text-[10px] font-black tracking-widest px-1.5 py-0.2 rounded border transform -rotate-6 animate-bounce"
+                      style={{ background: "#000000CC", borderColor: f.badgeColor || T.gold, color: f.badgeColor || T.gold }}
+                    >
+                      {f.badge || "CRIT!"}
+                    </span>
+                  )}
+                  <span>{f.text}</span>
+                </div>
               ))}
-              <MageSprite mage={player} facing="right" hurt={hurtP} casting={castP} size={0.92} />
+
+              <div className="relative flex-shrink-0">
+                <div className="scale-75 sm:scale-90 md:scale-100 transform origin-center">
+                  <MageSprite mage={player} facing="right" hurt={hurtP} casting={castP} damageFlash={damageFlashP} size={0.96} easterEgg={easterEgg} />
+                </div>
+              </div>
+
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-                  <span className="font-serif text-sm md:text-base truncate" style={{ color: "#E8B44F" }}>{player.name}</span>
+                <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1 flex-wrap">
+                  <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.gold }}>
+                    {player.name}
+                  </span>
                   <ElementBadge el={player.affinity} />
                   <StatusIcons mage={player} />
                 </div>
-                <div className="text-[11px] font-mono mb-1 truncate" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : "#5A5478" }}>{player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}</div>
-                <Bar value={player.hp} max={player.maxHp} color="#72C063" label="HP" />
-                <Bar value={player.mana} max={MAX_MANA} color="#5FC1E8" label="Mana" />
+
+                <div className="text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-75" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : T.textMuted }}>
+                  {player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}
+                </div>
+
+                {/* Health & Mana with integrated Ward */}
+                <CombatBar value={player.hp} max={player.maxHp} shield={player.shield} type="hp" label="Health" />
+                <CombatBar value={player.mana} max={MAX_MANA} type="mana" label="Mana" />
               </div>
             </div>
           </div>
 
-          {/* Projectile FX layer */}
-          {projectiles.map(pr => {
-            const c = ELEMENTS[pr.el].color;
-            const grad = pr.el === "fire"
-              ? "radial-gradient(circle, #FFFBEB 0%, #F59E0B 35%, #EF4444 70%, transparent 100%)"
-              : pr.el === "ice"
-              ? "radial-gradient(circle, #F0F9FF 0%, #38BDF8 35%, #0284C7 70%, transparent 100%)"
-              : pr.el === "nature"
-              ? "radial-gradient(circle, #F0FDF4 0%, #4ADE80 35%, #16A34A 70%, transparent 100%)"
-              : "radial-gradient(circle, #FAF5FF 0%, #C084FC 35%, #7C3AED 70%, transparent 100%)";
-            return (
-              <span key={pr.id} className={`projectile ${pr.fromSide === "p" ? "projectile-up" : "projectile-down"}`}
-                style={{ background: grad, boxShadow: `0 0 20px 6px ${c}DD, 0 0 36px 12px ${c}66` }} />
-            );
-          })}
+          {/* Spell Visual FX Layers */}
+          <SpellProjectile spell={activeSpell} />
+          {impactEffects.map(imp => (
+            <ImpactFX key={imp.id} impact={imp} />
+          ))}
+          {selfCastEffects.map(sc => (
+            <SelfCastFX key={sc.id} selfCast={sc} />
+          ))}
         </div>
 
-        {/* Duel Control Area: Desktop Split (Log left, Skills right) / Mobile Stack */}
-        <div className="flex-1 min-h-0 flex flex-col md:grid md:grid-cols-12 md:gap-3 my-1.5 md:my-2">
-          {/* Combat Log */}
-          <div ref={logRef} className="rounded-md border p-2 font-mono text-xs flex-1 min-h-[56px] max-h-[84px] md:max-h-none md:h-full md:col-span-5 overflow-y-auto mb-1.5 md:mb-0"
-            style={{ borderColor: "#E8B44F", background: "#0B0A16DD" }}>
-            {log.map((l, i) => <div key={i} className={i === log.length - 1 ? "" : "opacity-60"}>▸ {l}</div>)}
+        {/* Arena Controls Area (Mobile Landscape / Desktop Split) */}
+        <div className="flex-1 min-h-0 flex flex-col landscape:grid landscape:grid-cols-12 md:grid md:grid-cols-12 gap-1.5 sm:gap-2 md:gap-3 my-0.5 sm:my-1 md:my-1.5 overflow-hidden">
+          {/* Battle Chronicle / Combat Log */}
+          <div className="flex-1 min-h-[44px] max-h-[64px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 overflow-hidden">
+            <ArcaneChronicle log={log} logRef={logRef} />
           </div>
 
-          {/* Skills Grid & Battle Actions */}
-          <div className="md:col-span-7 flex flex-col justify-between">
-            <div className="grid grid-cols-2 gap-1.5 md:gap-2">
-              {menuSkills.map(s => {
-                const e = ELEMENTS[s.el];
-                const onCd = player.cds[s.id] > 0;
-                const noMana = player.mana < s.mana;
-                const disabled = busy || onCd || noMana;
-                return (
-                  <button key={s.id} onClick={() => playerAction(s)} disabled={disabled}
-                    className="rounded-md border p-1.5 md:p-2 text-left font-mono text-xs transition-all hover:brightness-110"
-                    style={{ borderColor: disabled ? "#3A3356" : e.color, background: disabled ? "#14112A" : "#1C1833", color: disabled ? "#5A5478" : "#F2EAD8", opacity: busy ? 0.7 : 1 }}>
-                    <div className="flex justify-between items-center">
-                      <span className="font-serif md:font-mono text-xs md:text-sm truncate">{s.name}</span>
-                      <span style={{ color: disabled ? "#5A5478" : e.color }}>{e.icon}</span>
-                    </div>
-                    <div className="text-[10px] md:text-xs truncate" style={{ color: "#B7AE95" }}>
-                      {onCd ? `Cooldown ${player.cds[s.id]}` : noMana && s.mana > 0 ? "Not enough mana" :
-                        s.dmg ? `${s.dmg} dmg · ${s.mana} mana` :
-                        s.shield ? `Shield ${s.shield} · ${s.mana} mana` :
-                        s.restore ? `+${s.restore} mana` : ""}
-                    </div>
-                  </button>
-                );
-              })}
+          {/* Skills Deck & Battle Actions */}
+          <div className="landscape:col-span-8 md:col-span-8 flex flex-col justify-between min-h-0 flex-1 overflow-hidden">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar p-0.5">
+              {menuSkills.map((s, idx) => (
+                <ModernSkillCard
+                  key={s.id}
+                  skill={s}
+                  hotkey={String(idx + 1)}
+                  element={ELEMENTS[s.el]}
+                  player={player}
+                  busy={busy}
+                  onClick={() => playerAction(s)}
+                />
+              ))}
             </div>
 
-            {/* Footer row with mana tip and surrender button */}
-            <div className="flex items-center justify-between mt-1.5 pt-1 border-t border-[#3A335644] text-[11px] font-mono">
-              <span style={{ color: "#5A5478" }} className="truncate">+{REGEN} mana/turn (+gear) · Burn 🔥 · Chill ❄ · Entangle</span>
-              {confirmSurrender ? (
-                <div className="flex gap-1.5 items-center flex-shrink-0 ml-2">
-                  <span style={{ color: "#B7AE95" }}>Forfeit?</span>
-                  <button onClick={surrender} disabled={busy} className="rounded-md border px-2 py-0.5 text-xs transition-colors" style={{ borderColor: "#FF6B3D", color: "#FF6B3D", background: "#1C1833" }}>
-                    Surrender
-                  </button>
-                  <button onClick={() => setConfirmSurrender(false)} className="rounded-md border px-2 py-0.5 text-xs transition-colors" style={{ borderColor: "#3A3356", color: "#B7AE95", background: "#1C1833" }}>
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <button onClick={() => setConfirmSurrender(true)} disabled={busy} className="underline transition-colors hover:text-[#FF6B3D] flex-shrink-0 ml-2" style={{ color: "#5A5478" }}>
-                  Surrender
+            {/* Bottom bar with tips, quick focus button, and surrender button */}
+            <div className="flex items-center justify-between mt-1 pt-1.5 border-t text-[10px] sm:text-[11px] font-mono flex-shrink-0" style={{ borderColor: T.borderSubtle, color: T.textSecondary }}>
+              <div className="flex items-center gap-2 min-w-0 truncate">
+                <span className="truncate opacity-75 hidden xs:inline">
+                  [1-{menuSkills.length}] Feitiços · +{REGEN} mana/t · [Espaço] Foco (+{FOCUS.restore})
+                </span>
+                <span className="truncate opacity-75 xs:hidden">
+                  +{REGEN} mana/t
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-1.5 sm:ml-2">
+                <button
+                  onClick={() => playerAction(FOCUS)}
+                  disabled={busy || currentTurn !== "player"}
+                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1"
+                  style={{ borderColor: `${T.ice}66`, color: T.ice }}
+                  title={`Recuperar ${FOCUS.restore} de Mana (Tecla Espaço)`}
+                >
+                  <span>⚡</span>
+                  <span className="hidden sm:inline">Foco (+{FOCUS.restore}) [Espaço]</span>
+                  <span className="sm:hidden">Foco (+{FOCUS.restore})</span>
                 </button>
-              )}
+                <button
+                  onClick={() => setShowSurrenderModal(true)}
+                  disabled={busy}
+                  className="btn-danger px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-colors"
+                >
+                  Render-se
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
       </div>
+
+      <SurrenderModal
+        isOpen={showSurrenderModal}
+        onConfirm={surrender}
+        onCancel={() => setShowSurrenderModal(false)}
+        busy={busy}
+      />
       {renderChatModal()}
+      {renderMasteryCelebrationModal()}
     </div>
   );
 }
+
+/*
+================================================================================
+                      SISTEMA DE LOJA COSMÉTICA (MAGE DUEL)
+================================================================================
+
+1. CHECKLIST DE IMPLEMENTAÇÃO REALIZADA:
+--------------------------------------------------------------------------------
+[✓] DEV_UNLOCK_ALL = false: Progressão padrão ativada, bloqueando itens cosméticos.
+[✓] TABELA SHOP_ITEMS: 21 itens visuais existentes (cabelos, olhos, joias, luvas,
+    capas, asas, robes, pets) mapeados com categorias e preços em Arcane Shards (✦).
+[✓] START_OWNED: Cosméticos da loja removidos da lista inicial para começarem bloqueados.
+[✓] PERSISTÊNCIA COMPLETA:
+    - Saldo `shards` e conjunto `premiumOwned` salvos no localStorage (SAVE_KEY).
+    - Suporte a recarga automática no carregamento inicial (`loadSave()`).
+[✓] 5ª ABA NO LOADOUT: Aba "Loja" integrada à grade de 5 colunas com ícone "✦".
+[✓] PAINEL DA LOJA (tab === "shop"):
+    - Banner Anti-P2W: "⚔️ Cosmético apenas — não afeta o combate".
+    - Indicador de saldo destacado com efeito de brilho e botão de recarga rápida.
+    - Botão de anúncio recompensado (+50 ✦ com simulação de 3s e progressão visual).
+    - Filtros por categoria: Todas, Cabelo, Olhos, Joias, Roupas, Asas, Pets.
+    - Reuso 100% fiel do componente <RarityCard> com legendas customizadas e bloqueio visual.
+[✓] SISTEMA DE COMPRA: Função `buyCosmetic(itemId)` debitando Shards e liberando o item
+    em `owned` e `premiumOwned`.
+[✓] RECOMPENSA DE COMBATE: +5 ✦ Arcane Shards creditados a cada vitória em `finishBattle(win)`
+    e destacados na tela de resultado (phase === "result").
+[✓] MODAL DO COFRE ARCANO (renderShardShopModal):
+    - Design idêntico ao modal de matchmaking (fundo escuro borrado, bordas douradas).
+    - 3 pacotes de Shards (100 ✦ por R$ 4,99, 500 ✦ por R$ 19,99, 1200 ✦ por R$ 39,99).
+    - Estado de carregamento com sigilo giratório durante o processamento do pagamento.
+[✓] MODAL DE ANÚNCIO (renderRewardedAdModal):
+    - Contador regressivo de 3 segundos com barra de progresso em tempo real.
+    - Concessão garantida de +50 ✦ com feedback de sucesso.
+[✓] ATALHO DIRETO DA APARÊNCIA: Clicar em uma opção de cabelo/olho/joia bloqueada
+    na aba de Aparência redireciona diretamente para a Loja na categoria correspondente.
+
+--------------------------------------------------------------------------------
+2. GUIA DE INTEGRAÇÃO COM BACKEND STRIPE (CHECKOUT & WEBHOOK):
+--------------------------------------------------------------------------------
+Passo 1: Criar o endpoint de criação de sessão no seu servidor (ex: Node.js / Express):
+
+  // server.js
+  import Stripe from "stripe";
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  app.post("/api/create-checkout-session", async (req, res) => {
+    const { packId, playerId } = req.body;
+    const PACKS = {
+      pack_100:  { amount: 100,  cents: 499,  name: "Bolsa de Shards (100 ✦)" },
+      pack_500:  { amount: 500,  cents: 1999, name: "Baú Arcano (500 ✦)" },
+      pack_1200: { amount: 1200, cents: 3999, name: "Cofre dos Arquimagos (1200 ✦)" },
+    };
+    const pack = PACKS[packId];
+    if (!pack) return res.status(400).json({ error: "Pacote inválido" });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [{
+        price_data: {
+          currency: "brl",
+          product_data: { name: pack.name },
+          unit_amount: pack.cents,
+        },
+        quantity: 1,
+      }],
+      mode: "payment",
+      metadata: { playerId, packId, shardsAmount: pack.amount },
+      success_url: `${req.headers.origin}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.origin}/?payment=cancelled`,
+    });
+
+    res.json({ url: session.url });
+  });
+
+Passo 2: Configurar o Webhook de validação de pagamento:
+
+  app.post("/api/stripe-webhook", express.raw({ type: "application/json" }), (req, res) => {
+    const sig = req.headers["stripe-signature"];
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    } catch (err) {
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+      const { playerId, shardsAmount } = session.metadata;
+      // Creditar shardsAmount no banco de dados do jogador playerId
+      creditShardsToPlayer(playerId, parseInt(shardsAmount, 10));
+    }
+    res.json({ received: true });
+  });
+
+Passo 3: Atualizar `purchaseShardPack` no frontend:
+  Substituir o setTimeout simulado por:
+    const res = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ packId, playerId: mageName })
+    });
+    const { url } = await res.json();
+    window.location.href = url;
+
+--------------------------------------------------------------------------------
+3. NOTAS DE BALANCEAMENTO ECONÔMICO:
+--------------------------------------------------------------------------------
+- Vitória em Duelo: +5 ✦ (incentiva gameplay ativo e grind gratuito).
+- Anúncio Recompensado: +50 ✦ a cada visualização (idealmente com cooldown de 5 min em produção).
+- Itens Pequenos (Cabelos, Olhos, Joias): 60 a 100 ✦ (~1 a 2 anúncios ou 12-20 vitórias).
+- Itens Médios (Luvas, Capas, Pets menores): 120 a 500 ✦.
+- Itens Exclusivos (Asas Lendárias, Robes Celestiais): 700 a 900 ✦ (~R$ 20 a R$ 30 via loja de Shards).
+- Garantia Anti-P2W: NENHUM item comercializado na loja altera atributos como HP, Mana, Dano ou Crítico.
+================================================================================
+*/
