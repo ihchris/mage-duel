@@ -786,17 +786,22 @@ function resolveShopItem(entry) {
     else rarity = "common";
   }
   let displayName = base?.name || entry.id;
+  let displayNamePt = base?.name_pt || base?.name || entry.id;
   if (entry.category === "hair" && !displayName.toLowerCase().includes("hair")) {
     displayName = `${displayName} Hair`;
+    displayNamePt = `Cabelo ${displayNamePt}`;
   } else if (entry.category === "eyes" && !displayName.toLowerCase().includes("eyes")) {
     displayName = `${displayName} Eyes`;
+    displayNamePt = `Olhos ${displayNamePt}`;
   }
   return {
     ...base,
     id: entry.id,
     name: displayName,
+    name_pt: displayNamePt,
     rarity,
     desc: base?.desc || `${entry.category.toUpperCase()} Cosmético`,
+    desc_pt: base?.desc_pt || base?.desc || `${entry.category.toUpperCase()} Cosmético`,
     price: entry.price,
     category: entry.category,
   };
@@ -4691,6 +4696,24 @@ export default function MageDuel() {
   const [showShardShopModal, setShowShardShopModal] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [shopCategory, setShopCategory] = useState("all");
+  const [shopPreviewItem, setShopPreviewItem] = useState(null);
+
+  function equipCosmetic(itemId) {
+    const entry = SHOP_ITEMS.find(i => i.id === itemId);
+    if (!entry) return;
+    if (entry.category === "hair") setHairColorId(itemId);
+    else if (entry.category === "eyes") setEyeColorId(itemId);
+    else if (entry.category === "jewelry") {
+      if (itemId.startsWith("earring")) setEarringId(itemId);
+      else if (itemId.startsWith("nosering")) setNoseRingId(itemId);
+    }
+    else if (entry.category === "gloves") setGlovesId(itemId);
+    else if (entry.category === "robe") setRobeId(itemId);
+    else if (entry.category === "cape" || entry.category === "wings") setCapeId(itemId);
+    else if (entry.category === "pet") setPetId(itemId);
+    else if (entry.category === "hat") setHatId(itemId);
+    else if (entry.category === "aura") setAuraId(itemId);
+  }
   const [scoutView, setScoutView] = useState("both");
   const [adModalOpen, setAdModalOpen] = useState(false);
   const [adTimer, setAdTimer] = useState(3);
@@ -4709,6 +4732,8 @@ export default function MageDuel() {
     setShards(s => s - entry.price);
     setOwned(o => new Set([...o, itemId]));
     setPremiumOwned(p => new Set([...p, itemId]));
+    equipCosmetic(itemId);
+    setShopPreviewItem(itemId);
     return true;
   }
 
@@ -7033,16 +7058,45 @@ export default function MageDuel() {
 
   // ================= SHARED: character editor + gear modal =================
   function buildPreviewMage() {
+    let activeHat = hatId;
+    let activeAura = auraId;
+    let activeRobe = robeId;
+    let activeCape = capeId;
+    let activePet = petId;
+    let activeGloves = glovesId;
+    let activeHairColor = hairColorId;
+    let activeEyeColor = eyeColorId;
+    let activeEarring = earringId;
+    let activeNoseRing = noseRingId;
+
+    if (tab === "shop" && shopPreviewItem) {
+      const shopEntry = SHOP_ITEMS.find(i => i.id === shopPreviewItem);
+      if (shopEntry) {
+        if (shopEntry.category === "hair") activeHairColor = shopPreviewItem;
+        else if (shopEntry.category === "eyes") activeEyeColor = shopPreviewItem;
+        else if (shopEntry.category === "jewelry") {
+          if (shopPreviewItem.startsWith("earring")) activeEarring = shopPreviewItem;
+          else if (shopPreviewItem.startsWith("nosering")) activeNoseRing = shopPreviewItem;
+        }
+        else if (shopEntry.category === "gloves") activeGloves = shopPreviewItem;
+        else if (shopEntry.category === "robe") activeRobe = shopPreviewItem;
+        else if (shopEntry.category === "cape" || shopEntry.category === "wings") activeCape = shopPreviewItem;
+        else if (shopEntry.category === "pet") activePet = shopPreviewItem;
+        else if (shopEntry.category === "hat") activeHat = shopPreviewItem;
+        else if (shopEntry.category === "aura") activeAura = shopPreviewItem;
+      }
+    }
+
     return {
-      affinity, hat: hatId, aura: auraId, robe: robeId,
+      affinity, hat: activeHat, aura: activeAura, robe: activeRobe,
       staffGear: STAFFS.find(s => s.id === staffId),
       armor: ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null,
-      cape: CAPES.find(c => c.id === capeId),
-      pet: PETS.find(p => p.id === petId),
+      cape: CAPES.find(c => c.id === activeCape),
+      pet: PETS.find(p => p.id === activePet),
       offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
-      gloves: glovesId,
-      skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId,
-      face: faceId, earrings: earringId, noseRing: noseRingId,
+      gloves: activeGloves,
+      skinTone: skinToneId, hairColor: activeHairColor, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: activeEyeColor, gender: genderId,
+      face: faceId, earrings: activeEarring, noseRing: activeNoseRing,
       status: {},
     };
   }
@@ -7384,7 +7438,47 @@ export default function MageDuel() {
                   </span>
                 </div>
 
-                {/* Badges of current equipped items */}
+                {/* Badges of current equipped items or shop preview banner */}
+                {tab === "shop" && shopPreviewItem ? (() => {
+                  const previewEntry = SHOP_ITEMS.find(i => i.id === shopPreviewItem);
+                  const previewObj = previewEntry ? resolveShopItem(previewEntry) : null;
+                  const isOwned = previewEntry ? owned.has(previewEntry.id) : false;
+                  const canAfford = previewEntry ? shards >= previewEntry.price : false;
+                  return (
+                    <div className="flex items-center gap-1.5 flex-wrap py-0.5">
+                      <span className="px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-mono font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 flex items-center gap-1 shadow-sm animate-pulse">
+                        <span>✨</span>
+                        <span>{lang === "pt" ? `Provando: ${previewObj?.name_pt || previewObj?.name}` : `Trying on: ${previewObj?.name}`}</span>
+                      </span>
+                      {!isOwned ? (
+                        <button
+                          onClick={() => buyCosmetic(previewEntry.id)}
+                          disabled={!canAfford}
+                          className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-md ${
+                            canAfford ? "bg-amber-400 hover:bg-amber-300 text-slate-950 active:scale-95 cursor-pointer shadow-[0_0_12px_rgba(245,158,11,0.5)]" : "bg-slate-800 text-zinc-500 border border-white/10 cursor-not-allowed"
+                          }`}
+                        >
+                          <span>✦</span>
+                          <span>{previewEntry.price} {lang === "pt" ? "Comprar Agora" : "Buy Now"}</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => equipCosmetic(previewEntry.id)}
+                          className="px-3 py-1 rounded-lg text-[11px] font-mono font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center gap-1 shadow-md cursor-pointer active:scale-95"
+                        >
+                          <span>✓</span>
+                          <span>{lang === "pt" ? "Equipar" : "Equip"}</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setShopPreviewItem(null)}
+                        className="text-[10px] font-mono text-zinc-400 hover:text-white underline cursor-pointer ml-1"
+                      >
+                        {lang === "pt" ? "Resetar Visual" : "Reset Look"}
+                      </button>
+                    </div>
+                  );
+                })() : (
                 <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                   {previewMage.staffGear && (
                     <span
@@ -7414,6 +7508,7 @@ export default function MageDuel() {
                     </span>
                   )}
                 </div>
+                )}
 
                 <span className="text-[9px] font-sans text-zinc-400 truncate mt-0.5">
                   {tab === "gear" ? "Cajados, relíquias e itens secundários" : tab === "style" ? "Chapéus, capas, auras e pets" : tab === "appearance" ? "Rosto, tom de pele, cabelo e barba" : "Itens e cosméticos da Loja"}
@@ -8010,7 +8105,7 @@ export default function MageDuel() {
                 ))}
               </div>
 
-              {/* Grid de itens por categoria (usando RarityCard) */}
+              {/* Grid de itens por categoria com Preview em Tempo Real */}
               <div className="grid gap-2">
                 {SHOP_ITEMS
                   .filter(entry => {
@@ -8027,21 +8122,68 @@ export default function MageDuel() {
                     const itemObj = resolveShopItem(entry);
                     const isOwned = owned.has(entry.id);
                     const canAfford = shards >= entry.price;
-                    const subtitle = isOwned
-                      ? "✓ Adquirido na Coleção"
-                      : `✦ ${entry.price} Shards · ${canAfford ? "Clique para comprar" : "Saldo insuficiente"}`;
+                    const isPreviewing = shopPreviewItem === entry.id;
+
+                    let statusText = "";
+                    if (isOwned) {
+                      statusText = lang === "pt" ? "✓ Adquirido · Clique para provar / equipar" : "✓ Owned · Click to preview / equip";
+                    } else if (isPreviewing) {
+                      statusText = lang === "pt" ? `✨ Provando em tempo real! (✦ ${entry.price} Shards)` : `✨ Live preview active! (✦ ${entry.price} Shards)`;
+                    } else {
+                      statusText = `✦ ${entry.price} Shards · ${lang === "pt" ? (canAfford ? "Clique para provar no personagem" : "Saldo insuficiente · Clique para provar") : (canAfford ? "Click to try on" : "Not enough shards · Click to try on")}`;
+                    }
 
                     return (
-                      <RarityCard
+                      <div
                         key={entry.id}
-                        item={itemObj}
-                        selected={isOwned}
-                        locked={!isOwned && !canAfford}
-                        onClick={() => {
-                          if (!isOwned) buyCosmetic(entry.id);
-                        }}
-                        subtitle={subtitle}
-                      />
+                        className={`relative rounded-xl transition-all ${
+                          isPreviewing ? "ring-2 ring-amber-400 shadow-[0_0_16px_rgba(245,158,11,0.35)]" : ""
+                        }`}
+                      >
+                        <RarityCard
+                          item={itemObj}
+                          selected={isPreviewing || isOwned}
+                          locked={false}
+                          onClick={() => {
+                            setShopPreviewItem(entry.id);
+                          }}
+                          subtitle={statusText}
+                          lang={lang}
+                        />
+                        {/* Direct Action Button Overlay on Right Side */}
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1.5">
+                          {isPreviewing && !isOwned && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                buyCosmetic(entry.id);
+                              }}
+                              disabled={!canAfford}
+                              className={`px-3 py-1.5 rounded-lg font-mono text-[11px] font-bold shadow-lg transition-all flex items-center gap-1 cursor-pointer ${
+                                canAfford
+                                  ? "bg-amber-400 hover:bg-amber-300 text-slate-950 active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                                  : "bg-slate-800 text-zinc-500 border border-white/10 cursor-not-allowed"
+                              }`}
+                            >
+                              <span>✦</span>
+                              <span>{entry.price} {lang === "pt" ? "Comprar" : "Buy"}</span>
+                            </button>
+                          )}
+                          {isOwned && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                equipCosmetic(entry.id);
+                                setShopPreviewItem(entry.id);
+                              }}
+                              className="px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold bg-slate-900/90 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400 transition-all flex items-center gap-1 cursor-pointer"
+                            >
+                              <span>✓</span>
+                              <span>{lang === "pt" ? "Equipar" : "Equip"}</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     );
                   })}
               </div>
