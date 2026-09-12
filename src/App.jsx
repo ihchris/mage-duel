@@ -690,14 +690,14 @@ const ARMORS = [
   { id: "armor_dragon", name: "Dragonscale Plate", rarity: "legendary", dmgReduction: 0.15, desc: "-15% damage taken" },
 ];
 const PETS = [
-  { id: "pet_none",     name: "No companion",    rarity: "common",    kind: null },
-  { id: "pet_imp",      name: "Ember Imp",       rarity: "rare",      kind: "imp",      color: "#FF6B3D", dark: "#C4451D", light: "#FFB27A" },
-  { id: "pet_sprite",   name: "Frost Sprite",    rarity: "rare",      kind: "sprite",   color: "#5FC1E8", dark: "#3A8FBD", light: "#D6F3FF" },
-  { id: "pet_fox",      name: "Leaf Fox",        rarity: "epic",      kind: "fox",      color: "#72C063", dark: "#4F8F45", light: "#DCF0C8" },
-  { id: "pet_wisp",     name: "Star Wisp",       rarity: "legendary", kind: "wisp",     color: "#E8B44F", dark: "#B07FF5", light: "#FFF3C4" },
-  { id: "pet_dragon",   name: "Wyrmling",        rarity: "legendary", kind: "dragon",   color: "#EF4444", dark: "#991B1B", light: "#FCA5A5", desc: "Baby red dragon hovering playfully" },
-  { id: "pet_owl",      name: "Arcane Familiar", rarity: "epic",      kind: "owl",      color: "#6366F1", dark: "#3730A3", light: "#C7D2FE", desc: "Mystic horned owl perched with ancient book" },
-  { id: "pet_mushroom", name: "Sporeling",       rarity: "rare",      kind: "mushroom", color: "#10B981", dark: "#047857", light: "#A7F3D0", desc: "Bouncy fungus sprout trailing spores" },
+  { id: "pet_none",     name: "No companion",    name_pt: "Sem mascote",          rarity: "common",    kind: null, desc: "—", desc_pt: "—" },
+  { id: "pet_imp",      name: "Ember Imp",       name_pt: "Diabrete das Chamas",  rarity: "rare",      kind: "imp",      color: "#FF6B3D", dark: "#C4451D", light: "#FFB27A", crit: 3, fireBonus: 0.04, desc: "+3% crit chance · +4% fire damage", desc_pt: "+3% chance crítica · +4% dano de fogo" },
+  { id: "pet_sprite",   name: "Frost Sprite",    name_pt: "Fada Glacial",         rarity: "rare",      kind: "sprite",   color: "#5FC1E8", dark: "#3A8FBD", light: "#D6F3FF", startShield: 4, iceBonus: 0.04, desc: "+4 start shield · +4% ice damage", desc_pt: "+4 escudo inicial · +4% dano de gelo" },
+  { id: "pet_fox",      name: "Leaf Fox",        name_pt: "Raposa das Folhas",    rarity: "epic",      kind: "fox",      color: "#72C063", dark: "#4F8F45", light: "#DCF0C8", hpBonus: 6, natureBonus: 0.04, desc: "+6 Max HP · +4% nature damage", desc_pt: "+6 vida máxima · +4% dano de natureza" },
+  { id: "pet_wisp",     name: "Star Wisp",       name_pt: "Fogo-Fátuo Estelar",   rarity: "legendary", kind: "wisp",     color: "#E8B44F", dark: "#B07FF5", light: "#FFF3C4", allDmg: 0.03, crit: 3, desc: "+3% all damage · +3% crit chance", desc_pt: "+3% dano global · +3% chance crítica" },
+  { id: "pet_dragon",   name: "Wyrmling",        name_pt: "Draconiano Bebê",      rarity: "legendary", kind: "dragon",   color: "#EF4444", dark: "#991B1B", light: "#FCA5A5", allDmg: 0.03, startShield: 3, desc: "+3% all damage · +3 start shield", desc_pt: "+3% dano global · +3 escudo inicial" },
+  { id: "pet_owl",      name: "Arcane Familiar", name_pt: "Coruja Arcana",        rarity: "epic",      kind: "owl",      color: "#6366F1", dark: "#3730A3", light: "#C7D2FE", maxManaBonus: 2, arcaneBonus: 0.04, desc: "+2 Max Mana · +4% arcane damage", desc_pt: "+2 mana máxima · +4% dano arcano" },
+  { id: "pet_mushroom", name: "Sporeling",       name_pt: "Cogumelo Esporo",      rarity: "rare",      kind: "mushroom", color: "#10B981", dark: "#047857", light: "#A7F3D0", dmgReduction: 0.03, hpBonus: 4, desc: "-3% damage taken · +4 Max HP", desc_pt: "-3% dano recebido · +4 vida máxima" },
 ];
 
 const GLOVES = [
@@ -973,9 +973,14 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
     if (atk.staffGear.allDmg) mult *= 1 + atk.staffGear.allDmg;
   }
   if (atk.offhand?.allDmg) mult *= 1 + atk.offhand.allDmg;
+  if (atk.pet?.allDmg) mult *= 1 + atk.pet.allDmg;
+  if (skill.el === "fire" && atk.pet?.fireBonus) mult *= 1 + atk.pet.fireBonus;
+  if (skill.el === "ice" && atk.pet?.iceBonus) mult *= 1 + atk.pet.iceBonus;
+  if (skill.el === "nature" && atk.pet?.natureBonus) mult *= 1 + atk.pet.natureBonus;
+  if (skill.el === "arcane" && atk.pet?.arcaneBonus) mult *= 1 + atk.pet.arcaneBonus;
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
-  let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0);
+  let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0) + (atk.pet?.crit || 0);
   if (todayMod.id === "critical_overload") critChance += 20;
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
@@ -983,23 +988,29 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   if (def.armor?.dmgReduction) mult *= 1 - def.armor.dmgReduction;
   // Offhand Buckler: 5% damage reduction
   if (def.offhand?.dmgReduction) mult *= (1 - def.offhand.dmgReduction);
+  // Pet Sporeling: 3% damage reduction
+  if (def.pet?.dmgReduction) mult *= (1 - def.pet.dmgReduction);
   const dmg = Math.max(1, Math.round(skill.dmg * mult * rand(0.92, 1.08)) + bonusFlat);
   return { dmg, crit, chilled };
 }
 
 function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId) {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
-  let maxHp = MAX_HP + (armor?.maxHpBonus || 0);
+  const pet = PETS.find(p => p.id === petId && p.id !== "pet_none") || null;
+  let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0);
   // Bloodpact Spike tradeoff: -8 Max HP
   if (staffId === "bloodpact") maxHp -= 8;
+  const relic = RELICS.find(r => r.id === relicId && r.id !== "none") || null;
+  const startShield = (relic?.startShield || 0) + (pet?.startShield || 0);
+  const maxMana = MAX_MANA + (pet?.maxManaBonus || 0);
   return {
     name, affinity, skills,
     staffGear: STAFFS.find(s => s.id === staffId) || null,
-    relic: RELICS.find(r => r.id === relicId && r.id !== "none") || null,
+    relic,
     armor,
     cape: CAPES.find(c => c.id === capeId && c.id !== "cape_none") || null,
     offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
-    pet: PETS.find(p => p.id === petId && p.id !== "pet_none") || null,
+    pet,
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     gloves: glovesId || look?.gloves || "gloves_arcane",
     skinTone: look?.skinTone || "skin_fair", hairColor: look?.hairColor || "hair_white",
@@ -1007,7 +1018,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     beardStyle: look?.beardStyle || "beard_long", eyeColor: look?.eyeColor || "eye_dark",
     gender: look?.gender || "gender_male",
     face: look?.face || "face_round", earrings: look?.earrings || "earring_none", noseRing: look?.noseRing || "nosering_none",
-    maxHp, hp: maxHp, mana: MAX_MANA, shield: 0, cds: {},
+    maxHp, hp: maxHp, maxMana, mana: maxMana, shield: startShield, cds: {},
     status: { burn: 0, chill: false, entangled: 0 }, phoenixUsed: false,
     archetype: null,
   };
@@ -1032,7 +1043,7 @@ function makeEnemy() {
     },
     Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none",
     pick(["gloves_arcane", "gloves_leather", "gloves_wraps"]));
-  if (e.relic?.startShield) e.shield = e.relic.startShield;
+  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0);
   const archKeys = Object.keys(ARCHETYPES);
   e.archetype = ARCHETYPES[pick(archKeys)];
   return e;
@@ -4487,7 +4498,7 @@ export default function MageDuel() {
   const [lang, setLang] = useState(() => saved?.lang ?? "pt");
   const t = (k) => I18N[lang]?.[k] || I18N.pt[k] || k;
   const toggleLang = () => setLang(l => (l === "pt" ? "en" : "pt"));
-  const [phase, setPhase] = useState(saved ? "loadout" : "create");
+  const [phase, setPhase] = useState(() => saved ? "loadout" : "create");
   const [tab, setTab] = useState(null);
   const [mageName, setMageName] = useState(saved?.mageName ?? "");
   const [affinity, setAffinity] = useState(saved?.affinity ?? "fire");
@@ -4540,6 +4551,7 @@ export default function MageDuel() {
   const [showMasteryCelebration, setShowMasteryCelebration] = useState(null);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [admToast, setAdmToast] = useState(null);
+  const [showEnemyGearModal, setShowEnemyGearModal] = useState(false);
 
   // Skillbook Filters
   const [skillFilterEl, setSkillFilterEl] = useState("all");
@@ -4651,7 +4663,7 @@ export default function MageDuel() {
   const [loot, setLoot] = useState(null);
   const [confirmSurrender, setConfirmSurrender] = useState(false);
   const [showSurrenderModal, setShowSurrenderModal] = useState(false);
-  const TURN_DURATION = 15;
+  const TURN_DURATION = 25;
   const [turnCountdown, setTurnCountdown] = useState(TURN_DURATION);
   const [roundNum, setRoundNum] = useState(1);
   const [currentTurn, setCurrentTurn] = useState("player");
@@ -4880,7 +4892,7 @@ export default function MageDuel() {
       skillUsage: {},
     });
     const todayMod = getTodayModifier();
-    const turnDur = todayMod.id === "swift_duels" ? 8 : TURN_DURATION;
+    const turnDur = todayMod.id === "swift_duels" ? 14 : TURN_DURATION;
     setTurnCountdown(turnDur);
     setIsTimerPaused(false);
     setScreenShake(null);
@@ -6700,12 +6712,12 @@ export default function MageDuel() {
     );
 
     return (
-      <div className="fixed inset-0 w-full h-full safe-all flex items-center justify-center p-0 sm:p-4 md:p-6 overflow-hidden select-none" style={{ color: T.textPrimary }}>
+      <div className="fixed inset-0 w-full h-full safe-all flex items-center justify-center p-0 sm:p-2 md:p-3 overflow-hidden select-none" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
 
         <div
-          className="relative z-10 w-full h-full sm:h-auto sm:max-h-[94dvh] max-w-5xl flex flex-col md:flex-row landscape:flex-row rounded-none sm:rounded-3xl panel-base overflow-hidden border-0 sm:border border-white/10 shadow-2xl"
+          className="relative z-10 w-full h-full sm:h-auto sm:max-h-[96dvh] max-w-5xl flex flex-col md:flex-row landscape:flex-row rounded-none sm:rounded-2xl panel-base overflow-hidden border-0 sm:border border-white/10 shadow-2xl"
           style={{
             boxShadow: "0 20px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08)",
           }}
@@ -6833,51 +6845,51 @@ export default function MageDuel() {
           {/* DESKTOP & LANDSCAPE VIEW (md:flex landscape:flex) */}
           <div className="hidden md:flex landscape:flex w-full h-full flex-row overflow-hidden">
             {/* Left Column: Studio Sanctuary, Name, Affinity, Launch */}
-            <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col justify-between border-r border-white/10 p-5 md:p-6 bg-slate-950/60 flex-shrink-0">
+            <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col justify-between border-r border-white/10 p-3.5 sm:p-4 lg:p-5 bg-slate-950/60 flex-shrink-0 overflow-y-auto custom-scrollbar min-h-0">
               <div className="w-full">
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-1 sm:mb-1.5">
                   <button
                     onClick={() => setShowAdminModal(true)}
-                    className="text-[12px] font-mono text-zinc-400 hover:text-zinc-200 flex items-center gap-1 transition-colors"
+                    className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200 flex items-center gap-1 transition-colors"
                     title={t("settings")}
                   >
                     <span>⚙️</span>
                   </button>
                   <button
                     onClick={toggleLang}
-                    className="px-2.5 py-1 rounded-full text-[11px] font-sans font-bold bg-slate-900/90 border border-white/20 text-zinc-200 hover:border-amber-400/60 hover:text-amber-200 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                    className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-bold bg-slate-900/90 border border-white/20 text-zinc-200 hover:border-amber-400/60 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm active:scale-95"
                     title={lang === "pt" ? "Mudar para Inglês (Switch to English)" : "Mudar para Português (Switch to Portuguese)"}
                   >
                     <span>{lang === "pt" ? "🇧🇷 Português" : "🇺🇸 English"}</span>
-                    <span className="text-[9px] text-amber-400">⇄</span>
+                    <span className="text-[8px] text-amber-400">⇄</span>
                   </button>
                 </div>
-                <h1 className="font-serif text-[26px] md:text-[28px] font-bold text-center text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.35)]">
+                <h1 className="font-serif text-[20px] sm:text-[22px] md:text-[24px] font-bold text-center text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.35)]">
                   {t("createTitle")}
                 </h1>
-                <p className="text-center text-[12px] font-sans text-zinc-400 mt-1">
+                <p className="text-center text-[10.5px] sm:text-[11px] font-sans text-zinc-400 mt-0.5">
                   {t("createSubtitle")}
                 </p>
               </div>
 
               {/* Pedestal with Sprite */}
-              <div className="relative flex flex-col items-center justify-center my-2 select-none group">
+              <div className="relative flex flex-col items-center justify-center my-1 sm:my-1.5 select-none group">
                 <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
                   <div
-                    className="w-44 h-44 rounded-full blur-2xl transition-all duration-500"
+                    className="w-32 h-32 sm:w-40 sm:h-40 rounded-full blur-2xl transition-all duration-500"
                     style={{ background: `radial-gradient(circle, ${el.color}88 0%, transparent 70%)` }}
                   />
                 </div>
 
-                <div className="transform scale-100 hover:scale-105 transition-transform duration-300">
-                  <MageSprite mage={previewMage} facing="right" size={1.65} />
+                <div className="scale-85 sm:scale-90 md:scale-95 lg:scale-100 flex items-center justify-center transform transition-transform duration-300 hover:scale-105">
+                  <MageSprite mage={previewMage} facing="right" size={1.35} />
                 </div>
 
-                <div className="w-36 h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-1" />
+                <div className="w-28 sm:w-32 h-2 sm:h-2.5 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
 
                 <button
                   onClick={rollRandomLook}
-                  className="mt-2 px-3 py-1 rounded-full text-[11px] font-sans font-bold bg-slate-900/90 border border-amber-400/40 text-amber-200 hover:bg-amber-400/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+                  className="mt-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-sans font-bold bg-slate-900/90 border border-amber-400/40 text-amber-200 hover:bg-amber-400/20 hover:border-amber-400 transition-all flex items-center gap-1 shadow-md active:scale-95"
                 >
                   <span>🎲</span>
                   <span>{t("createRandomMage")}</span>
@@ -6885,15 +6897,15 @@ export default function MageDuel() {
               </div>
 
               {/* Name & Affinity */}
-              <div className="w-full space-y-3">
+              <div className="w-full space-y-2 sm:space-y-2.5">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="font-serif text-[12px] font-bold text-amber-200">
+                    <label className="font-serif text-[11px] sm:text-[12px] font-bold text-amber-200">
                       {t("createNameLabel")}
                     </label>
                     <button
                       onClick={rollRandomName}
-                      className="text-[11px] font-mono text-amber-400 hover:text-amber-200 flex items-center gap-1 transition-colors"
+                      className="text-[10px] sm:text-[11px] font-mono text-amber-400 hover:text-amber-200 flex items-center gap-1 transition-colors"
                       title={t("createRandomName")}
                     >
                       <span>🎲</span>
@@ -6905,7 +6917,7 @@ export default function MageDuel() {
                       value={mageName}
                       onChange={(e) => setMageName(e.target.value.slice(0, 18))}
                       placeholder={t("createNamePlaceholder")}
-                      className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9"
+                      className="w-full rounded-xl border border-white/10 px-3 py-2 font-sans text-[13px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9"
                     />
                     <button
                       onClick={rollRandomName}
@@ -6918,15 +6930,15 @@ export default function MageDuel() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <label className="font-serif text-[12px] font-bold text-amber-200">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-serif text-[11px] sm:text-[12px] font-bold text-amber-200">
                       {t("createAffinityLabel")}
                     </label>
-                    <span className="text-[11px] font-mono text-zinc-400">
+                    <span className="text-[10px] font-mono text-zinc-400">
                       {t("createAffinityDesc")}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     {Object.entries(ELEMENTS).map(([key, e]) => {
                       const perkInfo = ELEMENT_PERKS[key];
                       const isSel = affinity === key;
@@ -6934,7 +6946,7 @@ export default function MageDuel() {
                         <button
                           key={key}
                           onClick={() => setAffinity(key)}
-                          className={`rounded-xl p-2 text-left font-sans transition-all flex items-center gap-2 border active:scale-95 ${
+                          className={`rounded-xl p-1.5 sm:p-2 text-left font-sans transition-all flex items-center gap-1.5 sm:gap-2 border active:scale-95 ${
                             isSel ? "scale-[1.02]" : "opacity-80 hover:opacity-100"
                           }`}
                           style={{
@@ -6944,16 +6956,16 @@ export default function MageDuel() {
                           }}
                         >
                           <div
-                            className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+                            className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0"
                             style={{ backgroundColor: `${e.color}22`, color: e.color }}
                           >
                             {e.icon}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="text-[12px] font-bold truncate" style={{ color: isSel ? e.color : T.textPrimary }}>
+                            <div className="text-[11px] sm:text-[12px] font-bold truncate" style={{ color: isSel ? e.color : T.textPrimary }}>
                               {getElementName(key, lang)}
                             </div>
-                            <div className="text-[9px] text-zinc-400 truncate">
+                            <div className="text-[8.5px] sm:text-[9px] text-zinc-400 truncate">
                               {perkInfo?.role}
                             </div>
                           </div>
@@ -6966,7 +6978,7 @@ export default function MageDuel() {
                 <button
                   onClick={() => trimmedName && setPhase("loadout")}
                   disabled={!trimmedName}
-                  className="btn-king w-full rounded-xl py-3 font-serif text-[16px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
+                  className="btn-king w-full rounded-xl py-2.5 sm:py-3 font-serif text-[14px] sm:text-[15px] font-bold transition-all shadow-xl flex items-center justify-center gap-2 mt-1"
                 >
                   <span>{t("beginJourney")}</span>
                 </button>
@@ -6976,7 +6988,7 @@ export default function MageDuel() {
             {/* Right Column: Customizer Workshop */}
             <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col min-h-0 flex-1 bg-slate-900/30 overflow-hidden">
               {/* Sub-Tabs Header */}
-              <div className="grid grid-cols-4 gap-2 p-3 sm:p-4 pb-3 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
+              <div className="grid grid-cols-4 gap-1.5 sm:gap-2 p-2.5 sm:p-3 pb-2.5 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
                 {[
                   ["body", t("tabBodySkin"), "👤"],
                   ["hair", t("tabHairBeard"), "✂"],
@@ -6986,7 +6998,7 @@ export default function MageDuel() {
                   <button
                     key={tKey}
                     onClick={() => setCreateTab(tKey)}
-                    className={`btn-surface rounded-xl py-2 px-1 font-mono text-[12px] flex items-center justify-center gap-1.5 transition-all border ${
+                    className={`btn-surface rounded-xl py-1.5 px-1 font-mono text-[11px] sm:text-[12px] flex items-center justify-center gap-1.5 transition-all border ${
                       desktopTab === tKey
                         ? "border-amber-400/80 text-amber-300 font-bold bg-amber-500/15 shadow-sm"
                         : "text-zinc-400 hover:text-zinc-200"
@@ -6999,7 +7011,7 @@ export default function MageDuel() {
               </div>
 
               {/* Scrollable Customization Content (Single, Smooth Scroll) */}
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 md:p-6 space-y-5 overscroll-contain pb-12">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 sm:p-4 md:p-5 space-y-4 overscroll-contain pb-12">
                 {desktopTab === "body" && renderBodySection()}
                 {desktopTab === "hair" && renderHairSection()}
                 {desktopTab === "details" && renderDetailsSection()}
@@ -7045,7 +7057,7 @@ export default function MageDuel() {
     });
 
     const HUB_PORTALS = [
-      { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "⚔️", color: "#E8B44F" },
+      { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: t("gear"), sub: previewMage.staffGear?.name || t("gearSub"), icon: "🪄", color: "#38BDF8" },
       { id: "style", label: t("style"), sub: t("styleSub"), icon: "✨", color: "#A855F7" },
       { id: "shop", label: t("shop"), sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
@@ -7130,37 +7142,37 @@ export default function MageDuel() {
           </div>
 
           {/* Tablet / Desktop / Landscape layout */}
-          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-1">
+          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-0.5 sm:py-1">
             <div
-              className="flex flex-col items-center justify-center cursor-pointer group relative py-1 sm:py-2 select-none"
+              className="flex flex-col items-center justify-center cursor-pointer group relative py-0.5 sm:py-1 select-none"
               onClick={() => setTab("appearance")}
               title="Clique para customizar aparência"
             >
               {/* Atmospheric Ambient Glow behind mage */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
                 <div
-                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-xl transition-all duration-500"
+                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full blur-xl transition-all duration-500"
                   style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
                 />
               </div>
 
               {/* Floating Mage Character Sprite */}
-              <div className="scale-90 sm:scale-95 landscape:scale-80 md:landscape:scale-95 md:scale-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
-                <MageSprite mage={previewMage} facing="right" size={2.2} />
+              <div className="scale-80 sm:scale-85 md:scale-90 lg:scale-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                <MageSprite mage={previewMage} facing="right" size={1.65} />
               </div>
 
               {/* Soft Ambient Ground Shadow */}
-              <div className="w-24 sm:w-36 h-2.5 sm:h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
+              <div className="w-20 sm:w-28 h-2 sm:h-2.5 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
 
-              <div className="mt-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
+              <div className="mt-0.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
                 <span>👤</span><span>{t("customize")}</span>
               </div>
             </div>
 
             {/* Badges on desktop/landscape */}
-            <div className="flex justify-center gap-1.5 items-center flex-wrap mt-1">
+            <div className="flex justify-center gap-1 items-center flex-wrap mt-0.5">
               <span
-                className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
+                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
                 style={{ color: el.color, borderColor: `${el.color}44` }}
               >
                 <span>{el.icon}</span>
@@ -7170,7 +7182,7 @@ export default function MageDuel() {
               <button
                 onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
                 title="Alternar gênero"
-                className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
+                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
               >
                 <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
                 <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
@@ -7178,7 +7190,7 @@ export default function MageDuel() {
 
               {relic && relic.id !== "none" && (
                 <span
-                  className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-semibold bg-slate-900/90 border shadow-sm"
+                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-semibold bg-slate-900/90 border shadow-sm"
                   style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}44` }}
                 >
                   ✦ {relic.name}
@@ -7186,7 +7198,7 @@ export default function MageDuel() {
               )}
             </div>
 
-            <div className="text-center text-[10px] sm:text-[11px] font-sans text-zinc-400/90 truncate max-w-xs mt-1">
+            <div className="text-center text-[9.5px] sm:text-[10.5px] font-sans text-zinc-400/90 truncate max-w-xs mt-0.5">
               <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
                 {previewMage.staffGear?.name}
               </span>
@@ -7199,35 +7211,35 @@ export default function MageDuel() {
         <div className="w-full landscape:w-7/12 md:w-7/12 flex flex-col justify-center flex-shrink-0">
           {extra}
 
-          <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 sm:gap-2.5 md:gap-3 w-full">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-1.5 sm:gap-2 md:gap-2.5 w-full">
             {HUB_PORTALS.map(portal => (
               <button
                 key={portal.id}
                 onClick={() => setTab(portal.id)}
-                className="glass-card p-2 sm:p-3 md:p-3.5 text-left transition-all relative overflow-hidden group select-none flex flex-col justify-between"
+                className="glass-card p-1.5 sm:p-2.5 md:p-3 text-left transition-all relative overflow-hidden group select-none flex flex-col justify-between"
               >
                 {/* Notification indicator dot */}
                 {portal.hasNotice && (
-                  <span className="absolute top-1.5 right-1.5 sm:top-2.5 sm:right-2.5 flex h-2 w-2">
+                  <span className="absolute top-1 right-1 sm:top-2 sm:right-2 flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shadow-[0_0_8px_#F59E0B]"></span>
                   </span>
                 )}
 
-                <div className="flex items-center justify-between mb-1 sm:mb-2">
-                  <span className="text-xl sm:text-2xl md:text-3xl drop-shadow-[0_0_10px_currentColor] transition-transform duration-200 group-hover:scale-110" style={{ color: portal.color }}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-lg sm:text-xl md:text-2xl drop-shadow-[0_0_10px_currentColor] transition-transform duration-200 group-hover:scale-110" style={{ color: portal.color }}>
                     {portal.icon}
                   </span>
-                  <span className="text-[11px] sm:text-[12px] font-sans transition-all opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 hidden xs:inline" style={{ color: portal.color }}>
+                  <span className="text-[10px] sm:text-[11px] font-sans transition-all opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 hidden xs:inline" style={{ color: portal.color }}>
                     ▸
                   </span>
                 </div>
 
                 <div>
-                  <div className="font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold tracking-wide transition-colors leading-tight text-zinc-100 group-hover:text-amber-200 truncate">
+                  <div className="font-serif text-[11px] sm:text-[12px] md:text-[13px] font-bold tracking-wide transition-colors leading-tight text-zinc-100 group-hover:text-amber-200 truncate">
                     {portal.label}
                   </div>
-                  <div className="text-[9px] sm:text-[10px] md:text-[11px] font-sans text-zinc-400/80 font-medium truncate mt-0.5 hidden xs:block">
+                  <div className="text-[8.5px] sm:text-[9.5px] md:text-[10px] font-sans text-zinc-400/80 font-medium truncate mt-0.5 hidden xs:block">
                     {portal.sub}
                   </div>
                 </div>
@@ -7659,6 +7671,12 @@ export default function MageDuel() {
 
           {tab === "gear" && (
             <div>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "bônus passivo de combate" : "passive combat bonus"})</span></p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
+                {PETS.map(pt => (
+                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} lang={lang} />
+                ))}
+              </div>
               <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Staff <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
               <div className="grid gap-2 mb-4">
                 {STAFFS.map(s => (
@@ -7723,10 +7741,10 @@ export default function MageDuel() {
                   <RarityCard key={gl.id} item={gl} selected={glovesId === gl.id} locked={!owned.has(gl.id)} onClick={() => owned.has(gl.id) && setGlovesId(gl.id)} subtitle=" " lang={lang} />
                 ))}
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#B7AE95" }}>({lang === "pt" ? "cosmético" : "cosmetic"})</span></p>
+              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "bônus passivo de combate" : "passive combat bonus"})</span></p>
               <div className="grid grid-cols-2 gap-2">
                 {PETS.map(pt => (
-                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} subtitle=" " lang={lang} />
+                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} lang={lang} />
                 ))}
               </div>
               <p className="text-xs font-mono mt-3" style={{ color: "#5A5478" }}>{lang === "pt" ? "Itens bloqueados caem como recompensa de duelos e chefes." : "Locked items drop from victories. In the full game, they're tradeable with other players."}</p>
@@ -8770,6 +8788,226 @@ export default function MageDuel() {
     );
   }
 
+  function renderEnemyGearModal() {
+    if (!showEnemyGearModal || !enemy) return null;
+    const foeEl = ELEMENTS[enemy.affinity] || ELEMENTS.fire;
+    const foeHat = HATS.find(h => h.id === enemy.hat);
+    const foeCape = enemy.cape;
+    const foeStaff = enemy.staffGear;
+    const foeRelic = enemy.relic;
+    const foeOffhand = enemy.offhand;
+    const foePet = enemy.pet;
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4 modal-backdrop" onClick={() => setShowEnemyGearModal(false)}>
+        <div className="w-full max-w-lg modal-window p-4 sm:p-5 max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl flex flex-col justify-between" onClick={e => e.stopPropagation()}>
+          <div>
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-slate-900 border border-white/15 shadow-inner">
+                  🔍
+                </div>
+                <div>
+                  <h2 className="font-serif text-[17px] sm:text-[19px] font-bold text-amber-200">
+                    {lang === "pt" ? `Equipamentos de ${enemy.name}` : `${enemy.name}'s Equipment`}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-[10.5px] font-mono font-bold flex items-center gap-1" style={{ color: foeEl.color }}>
+                      <span>{foeEl.icon}</span>
+                      <span>{getElementName(enemy.affinity, lang)}</span>
+                    </span>
+                    {enemy.archetype && (
+                      <span
+                        className="text-[9.5px] font-mono font-bold px-2 py-0.2 rounded-full border flex items-center gap-1"
+                        style={{
+                          borderColor: `${enemy.archetype.color}66`,
+                          color: enemy.archetype.color,
+                          background: `${enemy.archetype.color}15`,
+                        }}
+                      >
+                        <span>{enemy.archetype.icon}</span>
+                        <span>{enemy.archetype.name}</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowEnemyGearModal(false)}
+                className="p-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Equipment Items List */}
+            <div className="space-y-2.5">
+              {/* 1. Cajado */}
+              <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foeStaff ? `${RARITY[foeStaff.rarity]?.color || T.gold}55` : T.borderSubtle }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
+                  🪄
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[13px] font-bold truncate text-zinc-100">
+                      {foeStaff?.name || (lang === "pt" ? "Sem Cajado" : "No Staff")}
+                    </span>
+                    {foeStaff && (
+                      <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border" style={{ borderColor: `${RARITY[foeStaff.rarity]?.color}66`, color: RARITY[foeStaff.rarity]?.color, background: `${RARITY[foeStaff.rarity]?.color}15` }}>
+                        {RARITY[foeStaff.rarity]?.label}
+                      </span>
+                    )}
+                  </div>
+                  {foeStaff && (
+                    <div className="mt-1 text-[11px] font-mono text-zinc-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                      {foeStaff.elBonus && <span style={{ color: foeEl.color }}>+{Math.round(foeStaff.elBonus * 100)}% Dano {getElementName(foeStaff.el, lang)}</span>}
+                      {foeStaff.allDmg && <span className="text-amber-300">+{Math.round(foeStaff.allDmg * 100)}% Dano Geral</span>}
+                      {foeStaff.crit && <span className="text-sky-300">+{foeStaff.crit}% Crítico</span>}
+                      {foeStaff.regen && <span className="text-emerald-300">+{foeStaff.regen} Mana/Turno</span>}
+                    </div>
+                  )}
+                  {foeStaff?.desc && (
+                    <p className="text-[10.5px] font-sans text-zinc-400 mt-1">
+                      {(lang === "pt" && foeStaff.desc_pt) ? foeStaff.desc_pt : foeStaff.desc}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. Relíquia */}
+              <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foeRelic ? `${RARITY[foeRelic.rarity]?.color || T.gold}55` : T.borderSubtle }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
+                  ✦
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[13px] font-bold truncate text-zinc-100">
+                      {foeRelic ? foeRelic.name : (lang === "pt" ? "Nenhuma Relíquia" : "No Relic")}
+                    </span>
+                    {foeRelic && (
+                      <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border" style={{ borderColor: `${RARITY[foeRelic.rarity]?.color}66`, color: RARITY[foeRelic.rarity]?.color, background: `${RARITY[foeRelic.rarity]?.color}15` }}>
+                        {RARITY[foeRelic.rarity]?.label}
+                      </span>
+                    )}
+                  </div>
+                  {foeRelic ? (
+                    <>
+                      <div className="mt-1 text-[11px] font-mono text-zinc-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {foeRelic.startShield && <span className="text-sky-300">+{foeRelic.startShield} Escudo Inicial</span>}
+                        {foeRelic.regen && <span className="text-emerald-300">+{foeRelic.regen} Mana/Turno</span>}
+                        {foeRelic.crit && <span className="text-amber-300">+{foeRelic.crit}% Crítico</span>}
+                      </div>
+                      <p className="text-[10.5px] font-sans text-zinc-400 mt-1">
+                        {(lang === "pt" && foeRelic.desc_pt) ? foeRelic.desc_pt : foeRelic.desc}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[10.5px] font-sans text-zinc-500 mt-0.5">
+                      {lang === "pt" ? "O oponente não possui relíquia equipada." : "No relic equipped."}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. Item Secundário (Offhand) */}
+              <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foeOffhand ? `${RARITY[foeOffhand.rarity]?.color || T.gold}55` : T.borderSubtle }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
+                  🛡️
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[13px] font-bold truncate text-zinc-100">
+                      {foeOffhand ? foeOffhand.name : (lang === "pt" ? "Mão Secundária Livre" : "Empty Offhand")}
+                    </span>
+                    {foeOffhand && (
+                      <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border" style={{ borderColor: `${RARITY[foeOffhand.rarity]?.color}66`, color: RARITY[foeOffhand.rarity]?.color, background: `${RARITY[foeOffhand.rarity]?.color}15` }}>
+                        {RARITY[foeOffhand.rarity]?.label}
+                      </span>
+                    )}
+                  </div>
+                  {foeOffhand ? (
+                    <>
+                      <div className="mt-1 text-[11px] font-mono text-zinc-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {foeOffhand.dmgReduction && <span className="text-emerald-300">-{Math.round(foeOffhand.dmgReduction * 100)}% Dano Recebido</span>}
+                        {foeOffhand.allDmg && <span className="text-amber-300">+{Math.round(foeOffhand.allDmg * 100)}% Dano Geral</span>}
+                        {foeOffhand.crit && <span className="text-sky-300">{foeOffhand.crit > 0 ? `+${foeOffhand.crit}` : foeOffhand.crit}% Crítico</span>}
+                        {foeOffhand.echoChance && <span className="text-purple-300">+{foeOffhand.echoChance}% Chance de Eco</span>}
+                      </div>
+                      <p className="text-[10.5px] font-sans text-zinc-400 mt-1">
+                        {foeOffhand.desc}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[10.5px] font-sans text-zinc-500 mt-0.5">
+                      {lang === "pt" ? "Nenhum tomo, escudo ou orbe na mão secundária." : "No offhand equipped."}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 4. Mascote Companheiro */}
+              <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foePet ? `${RARITY[foePet.rarity]?.color || T.gold}55` : T.borderSubtle }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
+                  🐾
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[13px] font-bold truncate text-zinc-100">
+                      {foePet ? ((lang === "pt" && foePet.name_pt) ? foePet.name_pt : foePet.name) : (lang === "pt" ? "Sem Mascote" : "No Companion")}
+                    </span>
+                    {foePet && (
+                      <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border" style={{ borderColor: `${RARITY[foePet.rarity]?.color}66`, color: RARITY[foePet.rarity]?.color, background: `${RARITY[foePet.rarity]?.color}15` }}>
+                        {RARITY[foePet.rarity]?.label}
+                      </span>
+                    )}
+                  </div>
+                  {foePet ? (
+                    <p className="text-[11px] font-mono text-amber-300/90 mt-1 font-semibold">
+                      {(lang === "pt" && foePet.desc_pt) ? foePet.desc_pt : foePet.desc}
+                    </p>
+                  ) : (
+                    <p className="text-[10.5px] font-sans text-zinc-500 mt-0.5">
+                      {lang === "pt" ? "O oponente não possui mascote companheiro." : "No companion equipped."}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. Asas/Capa & Chapéu */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="card-surface p-2.5 rounded-xl border border-white/10">
+                  <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
+                    🪽 {lang === "pt" ? "Asas / Capa" : "Wings / Cape"}
+                  </div>
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200">
+                    {foeCape ? ((lang === "pt" && foeCape.name_pt) ? foeCape.name_pt : foeCape.name) : (lang === "pt" ? "Sem Capa" : "No Cape")}
+                  </div>
+                </div>
+
+                <div className="card-surface p-2.5 rounded-xl border border-white/10">
+                  <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
+                    🎩 {lang === "pt" ? "Chapéu / Adorno" : "Hat / Headgear"}
+                  </div>
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200">
+                    {foeHat ? foeHat.name : (lang === "pt" ? "Sem Chapéu" : "No Hat")}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setShowEnemyGearModal(false)}
+            className="btn-surface w-full py-2.5 mt-4 rounded-xl font-mono text-xs font-bold text-zinc-200"
+          >
+            {lang === "pt" ? "Fechar Inspeção" : "Close Inspection"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // ================= ADMIN CHEAT & DEV UNLOCK SYSTEM =================
   const ALL_GAME_ITEM_IDS = useMemo(() => [
     ...new Set([
@@ -9117,15 +9355,15 @@ export default function MageDuel() {
     const canFindOpponent = chosen.length >= 4 && chosen.length <= maxSlots;
 
     return (
-      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex flex-col items-center justify-between safe-all p-2 sm:p-3 md:p-4" style={{ color: T.textPrimary }}>
+      <div className="min-h-[100dvh] h-full sm:min-h-[100dvh] overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-between safe-all p-2 sm:p-2.5 md:p-3.5" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
-        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl min-h-full sm:h-full flex flex-col justify-between p-0.5">
+        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl min-h-full flex flex-col justify-between p-0.5 gap-1">
           {/* Modern AAA Header */}
-          <div className="w-full flex items-center justify-between py-1.5 flex-shrink-0 flex-wrap gap-2">
+          <div className="w-full flex items-center justify-between py-1 flex-shrink-0 flex-wrap gap-2">
             <div>
               <div className="flex items-center gap-2.5">
-                <h1 className="font-serif text-[22px] sm:text-[26px] md:text-[30px] font-black tracking-wider text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.25)]">
+                <h1 className="font-serif text-[20px] sm:text-[24px] md:text-[28px] font-black tracking-wider text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.25)]">
                   {mageName.trim() || "Mage Duel"}
                 </h1>
                 {/* Ultra-slim XP Badge & Bar */}
@@ -9202,10 +9440,10 @@ export default function MageDuel() {
           {(() => {
             const todayMod = getTodayModifier();
             return (
-              <div className="w-full rounded-xl p-2 sm:p-2.5 my-1 flex items-center justify-between gap-3 shadow-lg border glass-panel transition-all">
+              <div className="w-full rounded-xl p-1.5 sm:p-2 my-0.5 sm:my-1 flex items-center justify-between gap-2.5 shadow-lg border glass-panel transition-all">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-base border flex-shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center text-sm sm:text-base border flex-shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
                     style={{
                       background: "linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%)",
                       borderColor: "rgba(245, 158, 11, 0.45)",
@@ -9223,13 +9461,13 @@ export default function MageDuel() {
                         {todayMod.icon} {todayMod.name}
                       </span>
                     </div>
-                    <div className="text-[10px] sm:text-[11px] font-sans text-zinc-400 truncate mt-0.5">
+                    <div className="text-[10px] sm:text-[10.5px] font-sans text-zinc-400 truncate mt-0.5">
                       {todayMod.desc}
                     </div>
                   </div>
                 </div>
                 <span
-                  className="px-2.5 py-1 rounded-full text-[10px] font-sans font-bold border flex-shrink-0 shadow-sm"
+                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10px] font-sans font-bold border flex-shrink-0 shadow-sm"
                   style={{
                     backgroundColor: "rgba(245, 158, 11, 0.12)",
                     borderColor: "rgba(245, 158, 11, 0.35)",
@@ -9243,8 +9481,8 @@ export default function MageDuel() {
           })()}
 
           {/* Footer: Dynamic Loadout Slots Indicator with Translucent Glowing Glass */}
-          <div className="w-full rounded-2xl glass-panel p-2.5 sm:p-3 my-1 flex-shrink-0 shadow-xl border border-white/10">
-            <div className="flex items-center justify-between mb-2 text-xs font-sans">
+          <div className="w-full rounded-2xl glass-panel p-2 sm:p-2.5 my-0.5 sm:my-1 flex-shrink-0 shadow-xl border border-white/10">
+            <div className="flex items-center justify-between mb-1.5 text-xs font-sans">
               <div className="flex items-center gap-2">
                 <span className="font-serif font-bold flex items-center gap-1.5 text-amber-300">
                   <span>🔮</span>
@@ -9275,7 +9513,7 @@ export default function MageDuel() {
                   <button
                     key={i}
                     onClick={() => isUnlocked ? setTab("skills") : null}
-                    className={`min-h-[50px] sm:min-h-[62px] rounded-xl text-center flex flex-col items-center justify-between p-1.5 transition-all group relative overflow-hidden ${
+                    className={`min-h-[46px] sm:min-h-[56px] rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
                       !isUnlocked
                         ? "opacity-35 cursor-not-allowed border-white/5 bg-black/40"
                         : skill
@@ -9326,11 +9564,11 @@ export default function MageDuel() {
           </div>
 
           {/* Action Row: Adaptive Responsive Layout */}
-          <div className="w-full pt-1.5 pb-1 flex-shrink-0 flex flex-col sm:flex-row gap-1.5 sm:gap-2.5 items-stretch">
+          <div className="w-full pt-1 pb-0.5 flex-shrink-0 flex flex-col sm:flex-row gap-1.5 sm:gap-2 items-stretch">
             <div className="flex gap-1.5 sm:gap-2 w-full sm:w-auto">
               <button
                 onClick={startTutorial}
-                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold flex items-center justify-center gap-1.5 border-sky-500/25 text-sky-200 hover:border-sky-400/50"
+                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2 sm:py-2.5 px-3 sm:px-3.5 font-serif text-[11px] sm:text-[12px] md:text-[13px] font-bold flex items-center justify-center gap-1.5 border-sky-500/25 text-sky-200 hover:border-sky-400/50"
                 title="Treinamento com Espantalho Arcano"
               >
                 <span className="text-sm sm:text-base">🎯</span>
@@ -9338,7 +9576,7 @@ export default function MageDuel() {
               </button>
               <button
                 onClick={() => setShowBossTrialsModal(true)}
-                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 font-serif text-[11px] sm:text-[13px] md:text-[14px] font-bold flex items-center justify-center gap-1.5 border-purple-500/25 text-purple-200 hover:border-purple-400/50"
+                className="btn-ghost flex-1 sm:flex-initial rounded-xl py-2 sm:py-2.5 px-3 sm:px-3.5 font-serif text-[11px] sm:text-[12px] md:text-[13px] font-bold flex items-center justify-center gap-1.5 border-purple-500/25 text-purple-200 hover:border-purple-400/50"
                 title="Treinamento de Mestres Elementais"
               >
                 <span className="text-sm sm:text-base">👑</span>
@@ -9348,7 +9586,7 @@ export default function MageDuel() {
             <button
               onClick={() => { setIsTutorial(false); findOpponent(); }}
               disabled={!canFindOpponent}
-              className="btn-king w-full sm:flex-1 rounded-xl py-2.5 sm:py-3.5 px-4 text-[13px] sm:text-[16px] md:text-[18px] flex items-center justify-center gap-2"
+              className="btn-king w-full sm:flex-1 rounded-xl py-2 sm:py-2.5 px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2"
             >
               <span className="text-base sm:text-xl">⚔️</span>
               <span>{t("findDuel")}</span>
@@ -9385,7 +9623,7 @@ export default function MageDuel() {
     const canEnterArena = chosen.length >= 4;
 
     return (
-      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex flex-col items-center justify-between safe-all p-2 sm:p-3 md:p-4" style={{ color: T.textPrimary }}>
+      <div className="min-h-[100dvh] h-full sm:min-h-[100dvh] overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-between safe-all p-2 sm:p-2.5 md:p-3.5" style={{ color: T.textPrimary }}>
         {styles}{bg}
         <div className="relative z-10 w-full max-w-xl md:max-w-3xl lg:max-w-4xl min-h-full sm:h-full flex flex-col justify-between">
           
@@ -9483,9 +9721,17 @@ export default function MageDuel() {
                   <MageSprite mage={enemy} facing="left" size={1.15} />
                 </div>
                 <div className="w-full">
-                  <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color || T.textSecondary }}>
-                    {enemy.staffGear?.name}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowEnemyGearModal(true)}
+                    className="w-full text-center group cursor-pointer"
+                    title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente" : "Click to inspect opponent gear"}
+                  >
+                    <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium group-hover:underline flex items-center justify-center gap-1" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color || T.textSecondary }}>
+                      <span>{enemy.staffGear?.name}</span>
+                      <span className="text-[9.5px] opacity-75 group-hover:opacity-100">🔍</span>
+                    </div>
+                  </button>
                   {enemy.archetype ? (
                     <div
                       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold mt-1 border max-w-full truncate"
@@ -9512,6 +9758,14 @@ export default function MageDuel() {
                     >
                       ⚔️ {foeSkills.length} {lang === "pt" ? "Feitiços" : "Spells"}
                     </span>
+                    <button
+                      onClick={() => setShowEnemyGearModal(true)}
+                      className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border border-sky-400/40 bg-sky-500/15 hover:bg-sky-500/25 text-sky-200 transition-all hover:scale-105 flex items-center gap-1 shadow-sm cursor-pointer"
+                      title={lang === "pt" ? "Ver todos os equipamentos e mascote do oponente" : "View opponent equipment and companion"}
+                    >
+                      <span>🔍</span>
+                      <span>{lang === "pt" ? "Equipamentos" : "Gear"}</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -9724,6 +9978,25 @@ export default function MageDuel() {
                           );
                         })}
                       </div>
+
+                      {/* Enemy Gear Quick Summary */}
+                      <div
+                        onClick={() => setShowEnemyGearModal(true)}
+                        className="mt-2 p-1.5 sm:p-2 rounded-xl bg-black/35 border border-white/10 hover:border-sky-400/50 cursor-pointer transition-all flex items-center justify-between gap-2 text-[10px] font-mono group"
+                        title={lang === "pt" ? "Clique para ver detalhes completos dos equipamentos" : "Click to view full gear details"}
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0 truncate text-zinc-300">
+                          <span>🪄</span>
+                          <span className="truncate font-semibold" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color }}>{enemy.staffGear?.name}</span>
+                          {enemy.relic && <span className="truncate text-amber-300">· ✦ {enemy.relic.name}</span>}
+                          {enemy.pet && <span className="truncate text-emerald-300">· 🐾 {(lang === "pt" && enemy.pet.name_pt) ? enemy.pet.name_pt : enemy.pet.name}</span>}
+                          {enemy.offhand && <span className="truncate text-sky-300">· 🛡️ {enemy.offhand.name}</span>}
+                        </div>
+                        <span className="text-sky-300 font-bold group-hover:underline flex-shrink-0 flex items-center gap-0.5">
+                          <span>🔍</span>
+                          <span className="hidden sm:inline">{lang === "pt" ? "Ver Equipamentos" : "View Gear"}</span>
+                        </span>
+                      </div>
                     </div>
 
                     {enemy.archetype && (
@@ -9874,7 +10147,15 @@ export default function MageDuel() {
                         {enemyEl.icon} Afinidade {enemyEl.name}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <button
+                        onClick={() => setShowEnemyGearModal(true)}
+                        className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all font-bold text-sky-300 border-sky-400/40 hover:bg-sky-400/15 flex items-center gap-1 shadow-sm cursor-pointer"
+                        title={lang === "pt" ? "Inspecionar todos os equipamentos e mascote do oponente" : "Inspect all opponent equipment and pet"}
+                      >
+                        <span>🔍</span>
+                        <span>{lang === "pt" ? "Equipamentos" : "Gear"}</span>
+                      </button>
                       <button
                         onClick={() => openChat(enemy)}
                         className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono transition-all flex items-center gap-1"
@@ -9910,9 +10191,15 @@ export default function MageDuel() {
                     ) : (
                       <div className="italic text-zinc-400">"{bio || "Um mago misterioso pronto para o confronto."}"</div>
                     )}
-                    <div className="text-[10px] font-mono text-zinc-400 sm:text-right flex-shrink-0">
-                      Cajado: <span className="text-zinc-200 font-bold">{enemy.staffGear?.name}</span>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowEnemyGearModal(true)}
+                      className="text-[10px] font-mono text-zinc-400 sm:text-right flex-shrink-0 cursor-pointer hover:text-sky-300 transition-colors flex items-center gap-1 group"
+                      title={lang === "pt" ? "Clique para inspecionar todos os equipamentos" : "Click to inspect all gear"}
+                    >
+                      <span>Cajado: <span className="text-zinc-200 font-bold group-hover:underline">{enemy.staffGear?.name}</span></span>
+                      <span className="text-sky-400 font-bold underline ml-1">[🔍 {lang === "pt" ? "Inspecionar" : "Inspect"}]</span>
+                    </button>
                   </div>
 
                   {/* Enemy Spells Grid */}
@@ -10007,6 +10294,7 @@ export default function MageDuel() {
         </div>
 
         {renderGearModal()}
+        {renderEnemyGearModal()}
         {renderMatchmakingModal()}
         {renderChatModal()}
         {renderShardShopModal()}
@@ -10030,7 +10318,7 @@ export default function MageDuel() {
     if (combatStats.highestHit >= 30) badgesEarned.push({ icon: "💥", name: "Impacto Arcano", desc: `Maior golpe: ${combatStats.highestHit} de dano` });
 
     return (
-      <div className="min-h-[100dvh] h-full sm:h-[100dvh] overflow-y-auto sm:overflow-hidden relative flex items-center justify-center safe-all p-2 sm:p-4" style={{ color: T.textPrimary }}>
+      <div className="min-h-[100dvh] h-full overflow-y-auto custom-scrollbar relative flex items-center justify-center safe-all p-2 sm:p-3" style={{ color: T.textPrimary }}>
         {styles}{bg}
         <div
           className="modal-window relative z-10 text-center max-w-sm sm:max-w-md w-full max-h-[92dvh] overflow-y-auto custom-scrollbar rounded-2xl border p-4 sm:p-5 shadow-2xl"
@@ -10256,7 +10544,7 @@ export default function MageDuel() {
         {/* Turn Countdown & Arena Header Bar */}
         <TurnCountdownBar
           turnCountdown={turnCountdown}
-          maxDuration={getTodayModifier().id === "swift_duels" ? 8 : TURN_DURATION}
+          maxDuration={getTodayModifier().id === "swift_duels" ? 14 : TURN_DURATION}
           roundNum={roundNum}
           currentTurn={currentTurn}
           isTimerPaused={isTimerPaused}
@@ -10304,15 +10592,35 @@ export default function MageDuel() {
               ))}
 
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1 flex-wrap">
-                  <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.textPrimary }}>{enemy.name}</span>
-                  <ElementBadge el={enemy.affinity} />
-                  <StatusIcons mage={enemy} />
+                <div className="flex items-center justify-between gap-1.5 mb-0.5 sm:mb-1">
+                  <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
+                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.textPrimary }}>{enemy.name}</span>
+                    <ElementBadge el={enemy.affinity} />
+                    <StatusIcons mage={enemy} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowEnemyGearModal(true)}
+                    className="px-1.5 sm:px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-slate-900/90 border border-sky-400/40 text-sky-200 hover:bg-sky-500/20 hover:border-sky-400 transition-all flex items-center gap-1 shadow-sm flex-shrink-0 cursor-pointer"
+                    title={lang === "pt" ? "Inspecionar equipamentos e mascote do inimigo" : "Inspect enemy gear and companion"}
+                  >
+                    <span>🔍</span>
+                    <span className="hidden sm:inline">{lang === "pt" ? "Equipamentos" : "Gear"}</span>
+                  </button>
                 </div>
 
-                <div className="text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-75" style={{ color: RARITY[enemy.staffGear.rarity].color }}>
-                  {enemy.staffGear.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEnemyGearModal(true)}
+                  className="w-full text-left text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-80 hover:opacity-100 flex items-center gap-1 transition-opacity cursor-pointer group"
+                  style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color }}
+                  title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente" : "Click to inspect opponent gear"}
+                >
+                  <span className="truncate group-hover:underline">
+                    {enemy.staffGear?.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}{enemy.pet ? ` · 🐾 ${(lang === "pt" && enemy.pet.name_pt) ? enemy.pet.name_pt : enemy.pet.name}` : ""}
+                  </span>
+                  <span className="text-[9px] text-sky-300 opacity-70 group-hover:opacity-100 flex-shrink-0">🔍</span>
+                </button>
 
                 {/* Health & Mana with integrated Ward */}
                 <CombatBar value={enemy.hp} max={enemy.maxHp} shield={enemy.shield} type="hp" label="Health" />
@@ -10464,6 +10772,7 @@ export default function MageDuel() {
       />
       {renderChatModal()}
       {renderMasteryCelebrationModal()}
+      {renderEnemyGearModal()}
     </div>
   );
 }
