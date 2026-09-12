@@ -4609,6 +4609,9 @@ export default function MageDuel() {
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
+  const [showInspectModal, setShowInspectModal] = useState(false);
+  const [inspectFacing, setInspectFacing] = useState("right");
+  const [inspectAction, setInspectAction] = useState("idle");
   const [chatWith, setChatWith] = useState(null);
   const [chatLog, setChatLog] = useState([]);
 
@@ -7152,9 +7155,25 @@ export default function MageDuel() {
             </div>
             {/* Bottom mini actions */}
             <div className="relative z-10 flex items-center justify-center gap-1 w-full">
-              <span className="px-1.5 py-0.5 rounded text-[8px] font-sans font-medium bg-slate-900/90 border border-amber-400/40 text-amber-200 shadow-sm">
-                👤 {t("edit")}
-              </span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowInspectModal(true);
+                }}
+                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+                title={lang === "pt" ? "Ver em tela cheia" : "Inspect in fullscreen"}
+              >
+                <span>🔍</span><span>{lang === "pt" ? "Ver" : "View"}</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTab("appearance");
+                }}
+                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-medium bg-slate-900/90 border border-white/20 text-zinc-300 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+              >
+                <span>👤</span><span>{t("edit")}</span>
+              </button>
             </div>
           </div>
 
@@ -7181,8 +7200,26 @@ export default function MageDuel() {
               {/* Soft Ambient Ground Shadow */}
               <div className="w-20 sm:w-28 h-2 sm:h-2.5 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
 
-              <div className="mt-0.5 px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
-                <span>👤</span><span>{t("customize")}</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowInspectModal(true);
+                  }}
+                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 hover:bg-amber-400/30 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+                  title={lang === "pt" ? "Ver personagem maior em tela cheia" : "Inspect character fullscreen"}
+                >
+                  <span>👁️</span><span>{lang === "pt" ? "Inspecionar em Tela Cheia" : "Inspect Fullscreen"}</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTab("appearance");
+                  }}
+                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 hover:border-amber-400/50 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                >
+                  <span>👤</span><span>{t("customize")}</span>
+                </button>
               </div>
             </div>
 
@@ -7375,11 +7412,18 @@ export default function MageDuel() {
                 />
               </div>
 
-              {/* Left: Live Mage Character Sprite */}
-              <div className="relative z-10 flex items-center justify-center flex-shrink-0 pl-1 sm:pl-2">
-                <div className="scale-90 xs:scale-100 sm:scale-105 transform origin-center transition-transform">
+              {/* Left: Live Mage Character Sprite with quick fullscreen inspect */}
+              <div
+                onClick={() => setShowInspectModal(true)}
+                className="relative z-10 flex items-center justify-center flex-shrink-0 pl-1 sm:pl-2 cursor-pointer group"
+                title={lang === "pt" ? "Toque para inspecionar em tela cheia" : "Tap to inspect in fullscreen"}
+              >
+                <div className="scale-90 xs:scale-100 sm:scale-105 transform origin-center transition-transform group-hover:scale-110">
                   <MageSprite mage={previewMage} facing="right" size={1.35} />
                 </div>
+                <span className="absolute -bottom-1 -right-0.5 px-1 py-0.2 rounded-md bg-slate-900/90 border border-amber-400/40 text-[9px] text-amber-300 font-bold shadow flex items-center gap-0.5">
+                  🔍
+                </span>
               </div>
 
               {/* Right: Live Summary & Real-time Indicator */}
@@ -8856,6 +8900,210 @@ export default function MageDuel() {
     );
   }
 
+  function renderInspectModal() {
+    if (!showInspectModal) return null;
+    const previewMage = buildPreviewMage();
+    const el = ELEMENTS[affinity] || ELEMENTS.fire;
+    const relic = RELICS.find(r => r.id === relicId);
+    const hat = findItem(hatId);
+    const aura = findItem(auraId);
+    const robeSkin = findItem(robeId);
+    const cape = findItem(capeId);
+    const pet = findItem(petId);
+    const offhand = findItem(offhandId);
+    const gloves = findItem(glovesId);
+    const staff = previewMage.staffGear;
+    const skinTone = SKIN_TONES.find(s => s.id === skinToneId);
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-md safe-all overflow-y-auto custom-scrollbar"
+        onClick={() => setShowInspectModal(false)}
+      >
+        <div
+          className="relative w-full max-w-lg md:max-w-2xl bg-slate-950/95 border border-amber-500/30 rounded-3xl p-3 sm:p-5 shadow-[0_0_50px_rgba(0,0,0,0.9)] flex flex-col items-center max-h-[96dvh] overflow-y-auto custom-scrollbar"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setShowInspectModal(false)}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 z-20 w-8 h-8 rounded-full bg-slate-900/90 border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer"
+          >
+            ✕
+          </button>
+
+          {/* Modal Header */}
+          <div className="text-center w-full mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-slate-900/90 border border-amber-500/30 text-amber-300 text-[11px] font-sans font-bold shadow-sm mb-1">
+              <span>👁️</span>
+              <span>{lang === "pt" ? "Inspeção Detalhada do Personagem" : "Character Fullscreen Inspect"}</span>
+            </div>
+            <h2 className="font-serif text-xl sm:text-2xl font-black text-amber-200 tracking-wider drop-shadow-[0_2px_10px_rgba(245,158,11,0.3)]">
+              {mageName.trim() || "Mage Duel"}
+            </h2>
+            <p className="text-[11px] sm:text-xs font-sans text-zinc-400">
+              {lang === "pt" ? "Nível" : "Level"} {mageLevel} · {lang === "pt" ? "Afinidade" : "Affinity"} {getElementName(affinity, lang)} ({el.icon})
+            </p>
+          </div>
+
+          {/* Huge Sprite Stage with Dynamic Affinity Aura */}
+          <div className="relative w-full py-4 sm:py-6 flex flex-col items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-900/60 to-slate-950/90 border border-white/5 shadow-inner">
+            {/* Ambient Element Particle Glow */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35">
+              <div
+                className="w-56 h-56 sm:w-72 sm:h-72 rounded-full blur-3xl transition-all duration-700 animate-pulse"
+                style={{ background: el.color }}
+              />
+            </div>
+
+            {/* Giant Sprite */}
+            <div className="relative z-10 transition-transform duration-200">
+              <MageSprite
+                mage={previewMage}
+                facing={inspectFacing}
+                hurt={inspectAction === "hurt"}
+                casting={inspectAction === "cast"}
+                size={2.7}
+              />
+            </div>
+
+            {/* Pedestal Ground Shadow */}
+            <div
+              className="w-44 sm:w-56 h-4 sm:h-5 rounded-[50%] blur-sm pointer-events-none mt-1"
+              style={{ background: `radial-gradient(ellipse, ${el.color}66 0%, rgba(0,0,0,0.8) 70%)` }}
+            />
+
+            {/* Live Interactive Action Controls */}
+            <div className="relative z-10 flex items-center gap-1.5 sm:gap-2 mt-3 flex-wrap justify-center px-2">
+              <button
+                onClick={() => setInspectFacing(f => f === "right" ? "left" : "right")}
+                className="px-2.5 py-1 rounded-xl text-[11px] font-sans font-semibold bg-slate-900/90 border border-white/15 hover:border-amber-400/50 text-zinc-200 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+              >
+                <span>🔄</span>
+                <span>{inspectFacing === "right" ? (lang === "pt" ? "Virar p/ Esquerda" : "Turn Left") : (lang === "pt" ? "Virar p/ Direita" : "Turn Right")}</span>
+              </button>
+
+              <button
+                onClick={() => setInspectAction("idle")}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-sans font-semibold transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+                  inspectAction === "idle"
+                    ? "bg-amber-400/20 border border-amber-400 text-amber-200"
+                    : "bg-slate-900/90 border border-white/15 text-zinc-300 hover:text-white"
+                }`}
+              >
+                <span>✨</span>
+                <span>{lang === "pt" ? "Postura Normal" : "Idle"}</span>
+              </button>
+
+              <button
+                onClick={() => setInspectAction("cast")}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-sans font-semibold transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+                  inspectAction === "cast"
+                    ? "bg-amber-400/20 border border-amber-400 text-amber-200"
+                    : "bg-slate-900/90 border border-white/15 text-zinc-300 hover:text-white"
+                }`}
+              >
+                <span>🪄</span>
+                <span>{lang === "pt" ? "Lançar Feitiço" : "Casting"}</span>
+              </button>
+
+              <button
+                onClick={() => setInspectAction("hurt")}
+                className={`px-2.5 py-1 rounded-xl text-[11px] font-sans font-semibold transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95 ${
+                  inspectAction === "hurt"
+                    ? "bg-red-500/20 border border-red-400 text-red-200"
+                    : "bg-slate-900/90 border border-white/15 text-zinc-300 hover:text-white"
+                }`}
+              >
+                <span>💥</span>
+                <span>{lang === "pt" ? "Reação de Dano" : "Hurt"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Equipped Items Breakdown Grid */}
+          <div className="w-full mt-3">
+            <h3 className="text-xs font-serif font-bold text-amber-300/90 mb-1.5 flex items-center gap-1.5">
+              <span>🛡️</span>
+              <span>{lang === "pt" ? "Equipamentos e Cosméticos Ativos:" : "Equipped Gear & Cosmetics:"}</span>
+            </h3>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full">
+              {[
+                { label: lang === "pt" ? "Cajado" : "Staff", icon: "🪄", item: staff },
+                { label: lang === "pt" ? "Secundário" : "Off-hand", icon: "🛡️", item: offhand },
+                { label: lang === "pt" ? "Relíquia" : "Relic", icon: "✦", item: relic },
+                { label: lang === "pt" ? "Chapéu" : "Hat", icon: "🎩", item: hat },
+                { label: lang === "pt" ? "Capa / Asas" : "Cape/Wings", icon: "🧣", item: cape },
+                { label: lang === "pt" ? "Mascote" : "Pet", icon: "🐾", item: pet },
+                { label: lang === "pt" ? "Vestimenta" : "Robe", icon: "👘", item: robeSkin },
+                { label: lang === "pt" ? "Pele" : "Skin", icon: "👤", item: skinTone },
+              ].map(({ label, icon, item }, idx) => {
+                const isEquipped = item && item.id !== "none" && item.id !== "offhand_none" && item.id !== "armor_none";
+                const rarityColor = isEquipped && item.rarity ? (RARITY[item.rarity]?.color || "#E8B44F") : "#71717A";
+                const itemName = isEquipped ? (item.name_pt || item.name) : (lang === "pt" ? "Nenhum" : "None");
+
+                return (
+                  <div
+                    key={idx}
+                    className="p-1.5 rounded-xl bg-slate-900/80 border border-white/10 flex flex-col justify-between text-left"
+                    style={{ borderColor: isEquipped ? `${rarityColor}44` : undefined }}
+                  >
+                    <div className="flex items-center justify-between text-[10px] text-zinc-400 font-sans">
+                      <span>{icon} {label}</span>
+                      {isEquipped && item.rarity && (
+                        <span className="text-[8px] font-mono uppercase px-1 rounded" style={{ color: rarityColor, background: `${rarityColor}22` }}>
+                          {item.rarity}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] font-serif font-bold truncate mt-1" style={{ color: isEquipped ? (rarityColor !== "#71717A" ? rarityColor : "#E2E8F0") : "#71717A" }}>
+                      {itemName}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick Actions Footer */}
+          <div className="w-full flex items-center justify-between gap-2 mt-4 pt-2 border-t border-white/10 flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => {
+                  setShowInspectModal(false);
+                  setTab("appearance");
+                }}
+                className="px-3 py-1.5 rounded-xl text-xs font-serif font-bold bg-slate-900 border border-amber-400/40 text-amber-200 hover:border-amber-300 hover:text-amber-100 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>👤</span>
+                <span>{lang === "pt" ? "Editar Aparência" : "Edit Appearance"}</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowInspectModal(false);
+                  setTab("gear");
+                }}
+                className="px-3 py-1.5 rounded-xl text-xs font-serif font-bold bg-slate-900 border border-sky-400/40 text-sky-200 hover:border-sky-300 hover:text-sky-100 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+              >
+                <span>🪄</span>
+                <span>{lang === "pt" ? "Trocar Equipamentos" : "Change Gear"}</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowInspectModal(false)}
+              className="px-4 py-1.5 rounded-xl text-xs font-sans font-bold bg-amber-400 hover:bg-amber-300 text-slate-950 transition-all shadow-md cursor-pointer ml-auto"
+            >
+              {lang === "pt" ? "Fechar" : "Close"}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   function renderMasteryCelebrationModal() {
     if (!showMasteryCelebration) return null;
     const skill = showMasteryCelebration;
@@ -9707,6 +9955,7 @@ export default function MageDuel() {
         {renderBossTrialsModal()}
         {renderMasteryCelebrationModal()}
         {renderAdminModal()}
+        {renderInspectModal()}
       </div>
     );
   }
