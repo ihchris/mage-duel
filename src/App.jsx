@@ -428,12 +428,12 @@ const START_OWNED = [
   "hat_pointed", "hat_hood", "hat_circlet",
   "aura_none", "aura_ember",
   "cape_none", "cape_travel",
+  "wings_angel", "wings_demon", "wings_phoenix", "wings_fae",
   "armor_none", "armor_padded",
   "pet_none", "pet_imp",
   "robe_classic", "robe_midnight",
-  "wings_none",
   "offhand_none", "offhand_tome",
-  "gloves_leather", "gloves_bare"
+  "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare"
 ];
 const LOOTABLE = [
   "verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "hat_circlet",
@@ -468,10 +468,6 @@ const SHOP_ITEMS = [
   { id: "robe_celestial", price: 700, category: "robe" },
   { id: "cape_star",      price: 400, category: "cape" },
   { id: "cape_phoenix",   price: 700, category: "cape" },
-  { id: "wings_angel",    price: 800, category: "wings" },
-  { id: "wings_demon",    price: 800, category: "wings" },
-  { id: "wings_phoenix",  price: 900, category: "wings" },
-  { id: "wings_fae",      price: 900, category: "wings" },
   { id: "pet_wisp",       price: 600, category: "pet" },
   { id: "pet_fox",        price: 500, category: "pet" },
   // Novos Cosméticos na Loja (ZERO status de combate)
@@ -4216,7 +4212,14 @@ export default function MageDuel() {
   const [offhandId, setOffhandId] = useState(saved?.offhandId ?? "offhand_tome");
   const [glovesId, setGlovesId] = useState(saved?.glovesId ?? "gloves_arcane");
   const [createTab, setCreateTab] = useState("body");
-  const [owned, setOwned] = useState(new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED)));
+  const [owned, setOwned] = useState(() => {
+    const initial = new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED));
+    initial.add("wings_angel");
+    initial.add("wings_demon");
+    initial.add("wings_phoenix");
+    initial.add("wings_fae");
+    return initial;
+  });
   const [shards, setShards] = useState(() => saved?.shards ?? 0);
   const [premiumOwned, setPremiumOwned] = useState(new Set(saved?.premiumOwned ?? []));
 
@@ -6204,12 +6207,12 @@ export default function MageDuel() {
             >
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
                 <div
-                  className="w-24 h-24 rounded-full blur-lg"
+                  className="w-28 h-28 rounded-full blur-lg"
                   style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
                 />
               </div>
-              <div className="scale-90 transform origin-center transition-transform group-hover:scale-95">
-                <MageSprite mage={previewMage} facing="right" size={1.15} />
+              <div className="transform origin-center transition-transform group-hover:scale-105">
+                <MageSprite mage={previewMage} facing="right" size={1.4} />
               </div>
             </div>
 
@@ -6282,8 +6285,8 @@ export default function MageDuel() {
               </div>
 
               {/* Floating Mage Character Sprite */}
-              <div className="scale-95 sm:scale-105 landscape:scale-85 md:landscape:scale-105 md:scale-115 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
-                <MageSprite mage={previewMage} facing="right" size={1.65} />
+              <div className="scale-90 sm:scale-95 landscape:scale-80 md:landscape:scale-95 md:scale-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
+                <MageSprite mage={previewMage} facing="right" size={2.2} />
               </div>
 
               {/* Soft Ambient Ground Shadow */}
@@ -6485,8 +6488,8 @@ export default function MageDuel() {
 
               {/* Left: Live Mage Character Sprite */}
               <div className="relative z-10 flex items-center justify-center flex-shrink-0 pl-1 sm:pl-2">
-                <div className="scale-85 xs:scale-95 sm:scale-100 transform origin-center transition-transform">
-                  <MageSprite mage={previewMage} facing="right" size={1.05} />
+                <div className="scale-90 xs:scale-100 sm:scale-105 transform origin-center transition-transform">
+                  <MageSprite mage={previewMage} facing="right" size={1.35} />
                 </div>
               </div>
 
