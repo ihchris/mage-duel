@@ -1970,81 +1970,90 @@ function CapePhoenix({ color, dark }) {
 function WingsAngel({ color, dark }) {
   const leftWing = (
     <>
-      {/* Left Wing Under-feathers (Depth layer) */}
-      <g fill="url(#angelFeatherUnder)" stroke="#B5A48B" strokeWidth={0.8} opacity={0.92}>
-        <path d="M132 198 C 104 162 68 132 38 128 C 32 140 44 162 70 186 C 94 208 120 216 132 198 Z" />
-        <path d="M124 218 C 92 190 48 170 20 180 C 16 194 30 216 60 232 C 86 244 112 238 124 218 Z" />
-        <path d="M122 240 C 90 222 46 218 18 248 C 18 264 38 278 68 280 C 94 280 114 264 122 240 Z" />
-        <path d="M126 260 C 102 250 56 260 36 302 C 38 316 58 324 84 312 C 106 300 120 282 126 260 Z" />
-        <path d="M134 278 C 114 274 76 298 62 354 C 68 364 88 362 108 340 C 122 322 130 300 134 278 Z" />
+      {/* Deep Volumetric Under-Feathers (Depth & Heavy Silhouette) */}
+      <g opacity={0.92}>
+        <path d="M 148 206 C 136 150 102 96 66 74 C 58 86 68 112 92 144 C 114 172 136 198 148 206 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 140 210 C 114 150 72 108 26 102 C 20 116 34 140 64 172 C 90 200 120 218 140 210 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 130 218 C 96 166 44 134 6 146 C 4 162 20 188 52 212 C 84 232 114 232 130 218 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 124 230 C 86 194 34 178 4 206 C 4 222 22 244 56 252 C 86 256 112 244 124 230 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 126 248 C 90 224 36 222 12 260 C 14 276 36 290 68 288 C 96 284 116 266 126 248 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 132 266 C 102 250 52 262 30 314 C 34 328 56 336 84 320 C 110 304 124 284 132 266 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
+        <path d="M 138 284 C 114 278 72 300 58 362 C 66 372 86 370 108 344 C 126 324 136 300 138 284 Z" fill="url(#angelUnderFeather)" stroke="#8C7A65" strokeWidth={1.2} />
       </g>
 
-      {/* Main Primary Flight Feathers (Front outer layer) */}
-      {/* Feather 1 (High Scapular Crest) */}
-      <path d="M146 200 C 134 146 108 98 76 78 C 70 88 78 110 98 138 C 116 162 136 188 146 200 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M144 198 C 132 148 110 106 82 86" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-      <path d="M146 200 C 134 146 108 98 76 78" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+      {/* Primary Grand Flight Feathers (Luminous Tier with Gold Quills) */}
+      <g>
+        {/* Feather 1 (High Seraph Crest) */}
+        <path d="M 150 204 C 138 146 104 92 68 70 C 60 82 72 108 96 140 C 118 168 140 196 150 204 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 146 200 C 136 152 108 106 76 84 C 82 102 100 132 118 162 C 132 184 142 196 146 200 Z" fill="url(#angelFeatherHighlight)" opacity={0.75} />
+        <path d="M 148 202 C 134 150 106 102 72 78" stroke="url(#angelGoldQuill)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 148 202 C 134 150 106 102 72 78" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      {/* Feather 2 (Upper Primary) */}
-      <path d="M136 204 C 112 148 74 108 38 98 C 32 110 46 134 72 164 C 96 190 122 210 136 204 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M134 202 C 112 152 80 118 44 106" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-      <path d="M136 204 C 112 148 74 108 38 98" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 2 (Upper Primary) */}
+        <path d="M 142 208 C 116 148 74 104 28 98 C 22 112 36 136 66 168 C 92 196 122 216 142 208 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 138 204 C 116 154 82 118 38 108 C 46 124 68 152 90 180 C 110 200 128 208 138 204 Z" fill="url(#angelFeatherHighlight)" opacity={0.7} />
+        <path d="M 140 206 C 116 152 80 114 34 104" stroke="url(#angelGoldQuill)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 140 206 C 116 152 80 114 34 104" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      {/* Feather 3 (Apex Primary - Maximum Wingspan) */}
-      <path d="M128 214 C 98 168 52 136 16 142 C 12 158 28 182 58 204 C 86 222 114 226 128 214 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M126 212 C 98 172 58 146 24 150" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-      <path d="M128 214 C 98 168 52 136 16 142" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 3 (Apex Wingspan - Maximum Width) */}
+        <path d="M 132 216 C 98 164 46 130 8 142 C 4 158 20 184 54 208 C 84 228 116 230 132 216 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 128 212 C 98 168 54 142 18 150 C 26 168 50 192 80 212 C 102 222 120 220 128 212 Z" fill="url(#angelFeatherHighlight)" opacity={0.7} />
+        <path d="M 130 214 C 98 168 52 138 14 148" stroke="url(#angelGoldQuill)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 130 214 C 98 168 52 138 14 148" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      {/* Feather 4 (Mid Primary) */}
-      <path d="M124 228 C 92 196 42 180 12 204 C 10 220 28 240 60 248 C 88 252 112 244 124 228 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M122 226 C 92 198 48 186 20 210" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-      <path d="M124 228 C 92 196 42 180 12 204" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 4 (Mid Primary Outer) */}
+        <path d="M 126 228 C 88 192 36 174 6 202 C 4 218 22 240 56 248 C 86 252 114 242 126 228 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 122 224 C 88 196 44 184 16 208 C 26 224 50 238 78 244 C 98 246 114 238 122 224 Z" fill="url(#angelFeatherHighlight)" opacity={0.7} />
+        <path d="M 124 226 C 88 194 42 180 12 206" stroke="url(#angelGoldQuill)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 124 226 C 88 194 42 180 12 206" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      {/* Feather 5 (Mid-Lower Primary) */}
-      <path d="M126 246 C 96 226 46 224 18 256 C 18 272 38 286 70 286 C 98 282 118 266 126 246 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M124 244 C 96 228 52 230 26 262" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
-      <path d="M126 246 C 96 226 46 224 18 256" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 5 (Mid Lower Primary) */}
+        <path d="M 128 246 C 92 222 38 220 14 258 C 16 274 38 288 70 286 C 98 282 118 264 128 246 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 124 242 C 92 224 46 226 24 262 C 34 274 58 282 86 280 C 104 276 118 262 124 242 Z" fill="url(#angelFeatherHighlight)" opacity={0.7} />
+        <path d="M 126 244 C 92 224 44 224 20 260" stroke="url(#angelGoldQuill)" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+        <path d="M 126 244 C 92 224 44 224 20 260" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      {/* Feather 6 (Lower Primary) */}
-      <path d="M132 264 C 106 252 58 264 34 310 C 36 324 58 332 86 318 C 110 304 124 284 132 264 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M130 262 C 106 254 64 268 42 314" stroke="url(#angelGoldQuill)" strokeWidth={1.6} strokeLinecap="round" fill="none" />
-      <path d="M132 264 C 106 252 58 264 34 310" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 6 (Lower Primary) */}
+        <path d="M 134 264 C 104 250 54 262 32 312 C 36 326 58 334 86 318 C 112 302 126 282 134 264 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.4} />
+        <path d="M 130 260 C 104 252 62 266 42 314 C 52 322 74 324 98 312 C 114 300 124 282 130 260 Z" fill="url(#angelFeatherHighlight)" opacity={0.65} />
+        <path d="M 132 262 C 104 252 60 266 38 314" stroke="url(#angelGoldQuill)" strokeWidth={2.2} strokeLinecap="round" fill="none" />
 
-      {/* Feather 7 (Trailing Primary) */}
-      <path d="M138 282 C 118 278 78 300 62 356 C 68 366 88 366 110 342 C 126 324 136 302 138 282 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M136 280 C 118 280 84 304 70 358" stroke="url(#angelGoldQuill)" strokeWidth={1.5} strokeLinecap="round" fill="none" />
-      <path d="M138 282 C 118 278 78 300 62 356" stroke="#FFFFFF" strokeWidth={1.2} fill="none" opacity={0.9} />
+        {/* Feather 7 (Trailing Lower Primary) */}
+        <path d="M 140 282 C 116 276 74 298 60 360 C 68 370 88 368 110 342 C 128 322 138 298 140 282 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.3} />
+        <path d="M 136 280 C 116 280 82 302 68 358" stroke="url(#angelGoldQuill)" strokeWidth={2} strokeLinecap="round" fill="none" />
 
-      {/* Feather 8 (Bottom Inward Feather) */}
-      <path d="M144 296 C 132 298 100 324 90 384 C 96 392 112 390 128 366 C 140 348 146 322 144 296 Z" fill="url(#angelFeatherPrimary)" stroke="#C2B6A3" strokeWidth={1} />
-      <path d="M142 294 C 132 302 106 328 98 382" stroke="url(#angelGoldQuill)" strokeWidth={1.3} strokeLinecap="round" fill="none" />
-
-      {/* Secondary Feathers (Mid-depth body plumage) */}
-      <g fill="url(#angelFeatherSecondary)" stroke="#C9BFB0" strokeWidth={1}>
-        <path d="M142 196 C 126 158 98 128 76 118 C 72 128 82 146 100 170 C 118 190 134 202 142 196 Z" />
-        <path d="M138 210 C 116 178 82 154 52 158 C 48 168 62 188 86 206 C 108 220 128 222 138 210 Z" />
-        <path d="M134 226 C 110 204 74 192 46 210 C 44 222 58 236 86 242 C 110 246 126 238 134 226 Z" />
-        <path d="M136 244 C 112 228 76 226 52 250 C 50 262 66 272 92 272 C 114 270 128 258 136 244 Z" />
-        <path d="M140 260 C 120 250 84 258 64 292 C 66 304 82 308 106 298 C 124 288 136 274 140 260 Z" />
-        <path d="M144 276 C 128 274 98 290 84 332 C 90 340 106 338 122 322 C 134 308 142 292 144 276 Z" />
+        {/* Feather 8 (Inward Fluff Feather) */}
+        <path d="M 146 296 C 132 296 98 322 88 388 C 96 396 114 392 128 366 C 142 346 148 320 146 296 Z" fill="url(#angelFeatherPrimary)" stroke="#D4AF37" strokeWidth={1.2} />
+        <path d="M 142 294 C 132 300 106 326 96 384" stroke="url(#angelGoldQuill)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
       </g>
 
-      {/* Covert Feathers (Upper Scapular Down) */}
-      <g fill="url(#angelFeatherCovert)" stroke="#D4CABE" strokeWidth={0.9}>
-        <path d="M150 212 C 140 180 120 150 100 138 C 94 146 102 164 116 182 C 132 200 146 216 150 212 Z" />
-        <path d="M146 225 C 130 198 104 176 82 178 C 78 186 90 200 108 212 C 126 224 142 228 146 225 Z" />
-        <path d="M144 238 C 126 218 100 206 78 218 C 76 226 88 238 108 244 C 126 248 140 244 144 238 Z" />
-        <path d="M146 250 C 128 236 102 234 84 254 C 84 262 98 270 114 268 C 130 266 142 258 146 250 Z" />
+      {/* Secondary Feathers (Plump Mid-Wing Volume Tier) */}
+      <g fill="url(#angelFeatherSecondary)" stroke="#C8B896" strokeWidth={1.2}>
+        <path d="M 144 198 C 128 156 96 126 72 116 C 68 126 80 146 98 172 C 118 194 136 204 144 198 Z" />
+        <path d="M 140 212 C 116 178 80 152 48 156 C 44 168 58 190 84 210 C 108 224 130 224 140 212 Z" />
+        <path d="M 136 228 C 110 204 72 190 44 210 C 42 222 56 238 84 246 C 110 250 128 240 136 228 Z" />
+        <path d="M 138 246 C 112 230 74 228 48 254 C 48 266 64 276 90 276 C 114 274 130 260 138 246 Z" />
+        <path d="M 142 262 C 122 252 82 260 62 296 C 64 308 82 312 106 302 C 126 290 138 276 142 262 Z" />
+        <path d="M 146 278 C 130 276 96 294 82 338 C 88 346 106 344 122 326 C 136 310 144 294 146 278 Z" />
       </g>
 
-      {/* Wing Upper Bone Spar & Gold Filigree */}
-      <path d="M152 228 C 146 182 128 138 102 114" stroke="url(#angelGoldQuill)" strokeWidth={3.2} strokeLinecap="round" fill="none" />
-      <path d="M152 228 C 146 182 128 138 102 114" stroke="#FFFFFF" strokeWidth={1.2} strokeLinecap="round" fill="none" opacity={0.8} />
+      {/* Scapular Coverts (Soft Downy Upper Tier) */}
+      <g fill="url(#angelFeatherCovert)" stroke="#E5DAC8" strokeWidth={1.1}>
+        <path d="M 152 210 C 142 176 120 144 98 132 C 92 142 102 162 116 182 C 134 202 148 216 152 210 Z" />
+        <path d="M 148 224 C 130 196 102 172 78 176 C 74 186 88 202 106 216 C 126 228 144 230 148 224 Z" />
+        <path d="M 146 238 C 126 218 98 204 74 218 C 72 228 86 242 106 248 C 126 252 142 246 146 238 Z" />
+        <path d="M 148 252 C 128 238 100 236 80 258 C 80 268 96 276 114 272 C 132 268 144 260 148 252 Z" />
+      </g>
 
-      {/* Shoulder Attachment Brooch */}
-      <circle cx="152" cy="228" r="5.5" fill={GOLD} stroke={GOLD_D} strokeWidth={1.2} />
-      <circle cx="152" cy="228" r="3" fill="#FFFFFF" />
-      <polygon points="152,223 154,228 152,233 150,228" fill="#FEF08A" />
+      {/* Heavy Celestial Scapular Arch & Filigree Bone */}
+      <path d="M 152 230 C 146 180 128 132 98 108" stroke="url(#angelGoldQuill)" strokeWidth={4.5} strokeLinecap="round" fill="none" />
+      <path d="M 152 230 C 146 180 128 132 98 108" stroke="#FFFFFF" strokeWidth={1.6} strokeLinecap="round" fill="none" opacity={0.9} />
+
+      {/* Ornate Gold & Diamond Scapular Brooch */}
+      <circle cx="152" cy="230" r="7" fill="url(#angelGoldBrooch)" stroke="#92400E" strokeWidth={1.5} />
+      <circle cx="152" cy="230" r="4.2" fill="#FFFFFF" />
+      <polygon points="152,224 155,230 152,236 149,230" fill="#FDE047" />
+      <circle cx="152" cy="230" r="1.8" fill="#FFFFFF" />
     </>
   );
 
@@ -2052,62 +2061,80 @@ function WingsAngel({ color, dark }) {
     <g>
       <defs>
         <radialGradient id="angelHaloGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.38" />
-          <stop offset="45%" stopColor="#FDE047" stopOpacity="0.16" />
-          <stop offset="85%" stopColor="#E8B44F" stopOpacity="0.04" />
-          <stop offset="100%" stopColor="#E8B44F" stopOpacity="0" />
+          <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.55" />
+          <stop offset="35%" stopColor="#FDE047" stopOpacity="0.28" />
+          <stop offset="70%" stopColor="#EAB308" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#CA8A04" stopOpacity="0" />
         </radialGradient>
+
         <linearGradient id="angelFeatherPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="40%" stopColor="#FCFAF5" />
-          <stop offset="85%" stopColor={color || "#F2E9D8"} />
-          <stop offset="100%" stopColor={dark || "#E6D9C2"} />
+          <stop offset="30%" stopColor="#FFFDF7" />
+          <stop offset="70%" stopColor={color || "#F8EED9"} />
+          <stop offset="100%" stopColor={dark || "#D8C4A0"} />
         </linearGradient>
+
+        <linearGradient id="angelFeatherHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="#FEF9C3" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#FEF08A" stopOpacity="0" />
+        </linearGradient>
+
         <linearGradient id="angelFeatherSecondary" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="50%" stopColor="#F8F3E8" />
-          <stop offset="100%" stopColor={dark || "#E5D8C0"} />
+          <stop offset="45%" stopColor="#F9F4EB" />
+          <stop offset="100%" stopColor={dark || "#E0D1B8"} />
         </linearGradient>
+
         <linearGradient id="angelFeatherCovert" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="60%" stopColor="#FAF5EC" />
-          <stop offset="100%" stopColor="#EFE4D2" />
+          <stop offset="55%" stopColor="#FAF6ED" />
+          <stop offset="100%" stopColor="#EDE3CE" />
         </linearGradient>
-        <linearGradient id="angelFeatherUnder" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#EDE2D0" />
-          <stop offset="60%" stopColor="#DDCDB6" />
-          <stop offset="100%" stopColor="#CBB79C" />
+
+        <linearGradient id="angelUnderFeather" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#D8C8B0" />
+          <stop offset="60%" stopColor="#BFAF96" />
+          <stop offset="100%" stopColor="#9C886B" />
         </linearGradient>
+
         <linearGradient id="angelGoldQuill" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="25%" stopColor="#FEF08A" />
+          <stop offset="65%" stopColor="#EAB308" />
+          <stop offset="100%" stopColor="#A16207" />
+        </linearGradient>
+
+        <linearGradient id="angelGoldBrooch" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFBEB" />
-          <stop offset="35%" stopColor="#FDE047" />
-          <stop offset="75%" stopColor={GOLD} />
-          <stop offset="100%" stopColor={GOLD_D} />
+          <stop offset="40%" stopColor="#FDE047" />
+          <stop offset="85%" stopColor="#CA8A04" />
+          <stop offset="100%" stopColor="#78350F" />
         </linearGradient>
       </defs>
 
-      {/* Divine Radiant Glow Behind Wings */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#angelHaloGlow)" opacity={0.35} />
-      <circle cx="200" cy="180" r="90" fill="#FEF08A" opacity="0.08" />
+      {/* Glorious Seraphic Light Aura */}
+      <ellipse cx="200" cy="210" rx="150" ry="120" fill="url(#angelHaloGlow)" opacity={0.6} />
+      <circle cx="200" cy="180" r="105" fill="#FEF08A" opacity="0.14" />
 
       {/* Left Wing */}
       <g className="angelWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      {/* Right Wing (Clean Symmetrical Mirror across X=200) */}
       <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
         <g className="angelWingL">{leftWing}</g>
       </g>
 
-      {/* Floating Sacred Sparkles */}
+      {/* Floating Sacred Diamond & Gold Stars */}
       <g fill="#FFFBEB">
-        <path className="holySparkle" d="M36 100 L38 94 L40 100 L46 102 L40 104 L38 110 L36 104 L30 102 Z" fill="#FEF08A" />
-        <path className="holySparkle" style={{ animationDelay: "0.8s" }} d="M14 148 L15.5 143 L17 148 L22 149.5 L17 151 L15.5 156 L14 151 L9 149.5 Z" fill="#FFFFFF" />
-        <path className="holySparkle" style={{ animationDelay: "1.4s" }} d="M12 210 L13.5 205 L15 210 L20 211.5 L15 213 L13.5 218 L12 213 L7 211.5 Z" fill="#FDE047" />
-        <path className="holySparkle" style={{ animationDelay: "0.4s" }} d="M66 360 L67.5 355 L69 360 L74 361.5 L69 363 L67.5 368 L66 363 L61 361.5 Z" fill="#FEF08A" />
-        <path className="holySparkle" style={{ animationDelay: "0.5s" }} d="M364 100 L362 94 L360 100 L354 102 L360 104 L362 110 L364 104 L370 102 Z" fill="#FEF08A" />
-        <path className="holySparkle" style={{ animationDelay: "1.2s" }} d="M386 148 L384.5 143 L383 148 L378 149.5 L383 151 L384.5 156 L386 151 L391 149.5 Z" fill="#FFFFFF" />
-        <path className="holySparkle" style={{ animationDelay: "0.2s" }} d="M388 210 L386.5 205 L385 210 L380 211.5 L385 213 L386.5 218 L388 213 L393 211.5 Z" fill="#FDE047" />
-        <path className="holySparkle" style={{ animationDelay: "1.6s" }} d="M334 360 L332.5 355 L331 360 L326 361.5 L331 363 L332.5 368 L334 363 L339 361.5 Z" fill="#FEF08A" />
+        <path className="holySparkle" d="M 36 96 L 38 88 L 40 96 L 48 98 L 40 100 L 38 108 L 36 100 L 28 98 Z" fill="#FEF08A" />
+        <path className="holySparkle" style={{ animationDelay: "0.8s" }} d="M 12 144 L 14 138 L 16 144 L 22 146 L 16 148 L 14 154 L 12 148 L 6 146 Z" fill="#FFFFFF" />
+        <path className="holySparkle" style={{ animationDelay: "1.4s" }} d="M 10 208 L 12 202 L 14 208 L 20 210 L 14 212 L 12 218 L 10 212 L 4 210 Z" fill="#FDE047" />
+        <path className="holySparkle" style={{ animationDelay: "0.4s" }} d="M 64 362 L 66 356 L 68 362 L 74 364 L 68 366 L 66 372 L 64 366 L 58 364 Z" fill="#FEF08A" />
+        <path className="holySparkle" style={{ animationDelay: "0.5s" }} d="M 364 96 L 362 88 L 360 96 L 352 98 L 360 100 L 362 108 L 364 100 L 372 98 Z" fill="#FEF08A" />
+        <path className="holySparkle" style={{ animationDelay: "1.2s" }} d="M 388 144 L 386 138 L 384 144 L 378 146 L 384 148 L 386 154 L 388 148 L 394 146 Z" fill="#FFFFFF" />
+        <path className="holySparkle" style={{ animationDelay: "0.2s" }} d="M 390 208 L 388 202 L 386 208 L 380 210 L 386 212 L 388 218 L 390 212 L 396 210 Z" fill="#FDE047" />
+        <path className="holySparkle" style={{ animationDelay: "1.6s" }} d="M 336 362 L 334 356 L 332 362 L 326 364 L 332 366 L 334 372 L 336 366 L 342 364 Z" fill="#FEF08A" />
       </g>
     </g>
   );
@@ -2116,140 +2143,172 @@ function WingsAngel({ color, dark }) {
 function WingsDemon({ color, dark }) {
   const leftWing = (
     <>
-      {/* Infernal Leathery Webbed Membranes (Curved organic scalloping) */}
-      <g stroke="#140306" strokeWidth={1.4}>
-        <path d="M102 118 L 38 122 C 40 148 32 168 20 185 L 102 118 Z" fill="url(#demonMembrane)" />
-        <path d="M102 118 L 20 185 C 38 220 36 250 32 275 L 102 118 Z" fill="url(#demonMembrane)" />
-        <path d="M102 118 L 32 275 C 58 310 62 332 70 350 L 102 118 Z" fill="url(#demonMembrane)" />
-        <path d="M102 118 L 70 350 C 104 340 128 320 146 290 L 152 238 Z" fill="url(#demonMembrane)" />
+      {/* Deep Under-Membrane Shading (Massive 3D Volume & Tension) */}
+      <g opacity={0.95}>
+        <path d="M 100 116 C 68 124 48 122 34 122 C 38 148 30 172 16 186 C 40 170 68 152 100 116 Z" fill="#120306" />
+        <path d="M 100 116 C 65 145 36 165 16 186 C 36 220 34 252 26 276 C 48 230 76 180 100 116 Z" fill="#180408" />
+        <path d="M 100 116 C 68 175 46 230 26 276 C 54 314 58 336 64 354 C 82 280 92 205 100 116 Z" fill="#1F060B" />
+        <path d="M 100 116 C 92 195 82 278 64 354 C 104 344 128 322 146 290 L 152 238 C 132 186 114 148 100 116 Z" fill="#150307" />
       </g>
 
-      {/* Translucent crimson leathery rim glow on scalloped borders */}
-      <path d="M38 122 C 40 148 32 168 20 185 M20 185 C 38 220 36 250 32 275 M32 275 C 58 310 62 332 70 350 M70 350 C 104 340 128 320 146 290" stroke="#EF4444" strokeWidth={1.6} fill="none" opacity={0.65} />
-      <path d="M38 122 C 40 148 32 168 20 185 M20 185 C 38 220 36 250 32 275 M32 275 C 58 310 62 332 70 350" stroke="#FDE047" strokeWidth={0.8} fill="none" opacity={0.4} />
-
-      {/* Leathery tension shadows / stretch folds */}
-      <g stroke="#0D0204" strokeWidth={1.8} fill="none" opacity={0.65}>
-        <path d="M100 122 C 75 140 50 152 28 162" />
-        <path d="M98 126 C 72 165 52 205 30 238" />
-        <path d="M96 130 C 82 190 70 250 48 305" />
-        <path d="M102 134 C 105 190 108 260 96 325" />
+      {/* Draconic Leathery Scalloped Membranes with Rich Molten Crimson */}
+      <g stroke="#260408" strokeWidth={1.5}>
+        {/* Cell 1: Thumb to Digit 1 */}
+        <path d="M 100 116 Q 66 118 34 122 Q 44 146 16 186 Q 62 148 100 116 Z" fill="url(#demonMembraneMain)" />
+        {/* Cell 2: Digit 1 to 2 */}
+        <path d="M 100 116 Q 60 148 16 186 Q 40 226 26 276 Q 68 190 100 116 Z" fill="url(#demonMembraneMain)" />
+        {/* Cell 3: Digit 2 to 3 */}
+        <path d="M 100 116 Q 66 195 26 276 Q 60 318 64 354 Q 86 240 100 116 Z" fill="url(#demonMembraneMain)" />
+        {/* Cell 4: Digit 3 to Trailing Flank */}
+        <path d="M 100 116 Q 88 235 64 354 C 102 342 128 322 146 290 L 152 238 C 130 186 112 146 100 116 Z" fill="url(#demonMembraneMain)" />
       </g>
 
-      {/* Pulsing Molten Lava Veins */}
-      <g stroke="url(#demonLavaVein)" fill="none" opacity={0.88}>
-        <path d="M98 124 Q 68 132 46 138 Q 38 148 28 160" strokeWidth={1.3} />
-        <path d="M68 132 Q 52 126 40 128" strokeWidth={0.8} />
-        <path d="M96 128 Q 62 170 36 215 Q 28 238 26 255" strokeWidth={1.6} />
-        <path d="M72 160 Q 50 185 30 198" strokeWidth={1.0} />
-        <path d="M52 195 Q 40 220 32 240" strokeWidth={0.9} />
-        <path d="M94 132 Q 74 195 56 265 Q 52 295 56 320" strokeWidth={1.4} />
-        <path d="M76 210 Q 64 245 44 285" strokeWidth={0.9} />
-        <path d="M98 136 Q 106 200 102 270 Q 112 295 125 315" strokeWidth={1.2} />
+      {/* Luminous Crimson & Fiery Scallop Rim Highlights */}
+      <path d="M 34 122 Q 44 146 16 186 Q 40 226 26 276 Q 60 318 64 354 C 102 342 128 322 146 290" stroke="url(#demonRimFlame)" strokeWidth={2.4} fill="none" opacity={0.88} />
+      <path d="M 34 122 Q 44 146 16 186 Q 40 226 26 276 Q 60 318 64 354" stroke="#FDE047" strokeWidth={0.9} fill="none" opacity={0.65} />
+
+      {/* Realistic Leathery Tension Shadows */}
+      <g stroke="#080102" strokeWidth={2.2} fill="none" opacity={0.7}>
+        <path d="M 98 120 C 72 138 48 150 26 162" />
+        <path d="M 96 124 C 70 165 48 205 26 238" />
+        <path d="M 94 128 C 80 190 68 250 44 306" />
+        <path d="M 100 132 C 104 190 106 260 92 325" />
       </g>
 
-      {/* Articulated Draconic Finger Struts (Heavy bone phalanges) */}
-      {/* Digit 1 (Top strut) */}
-      <path d="M102 118 C 76 114 54 116 38 122" stroke="url(#demonBone)" strokeWidth={3.2} strokeLinecap="round" fill="none" />
-      <path d="M102 118 C 76 114 54 116 38 122" stroke="url(#demonBoneHighlight)" strokeWidth={1.4} strokeLinecap="round" fill="none" />
-      <path d="M38 122 C 30 120 24 116 18 114 C 22 122 28 126 38 124 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={0.8} />
-      <circle cx="68" cy="116" r={2.2} fill="#22080D" />
+      {/* Pulsing Liquid Molten Lava Vein Lattice */}
+      <g stroke="url(#demonLavaVein)" fill="none" opacity={0.95}>
+        <path d="M 98 122 Q 68 130 46 138 Q 36 148 26 162" strokeWidth={1.8} />
+        <path d="M 68 130 Q 52 124 40 126" strokeWidth={1.1} />
+        <path d="M 96 126 Q 62 170 34 216 Q 26 240 24 256" strokeWidth={2.2} />
+        <path d="M 72 160 Q 48 186 28 200" strokeWidth={1.4} />
+        <path d="M 52 196 Q 38 222 30 242" strokeWidth={1.2} />
+        <path d="M 94 130 Q 72 196 54 266 Q 50 296 54 322" strokeWidth={2} />
+        <path d="M 76 212 Q 62 248 42 288" strokeWidth={1.2} />
+        <path d="M 98 134 Q 106 202 102 272 Q 112 298 126 318" strokeWidth={1.6} />
+      </g>
 
-      {/* Digit 2 (Main outward strut - Longest reach) */}
-      <path d="M102 118 C 66 142 38 162 20 185" stroke="url(#demonBone)" strokeWidth={3.6} strokeLinecap="round" fill="none" />
-      <path d="M102 118 C 66 142 38 162 20 185" stroke="url(#demonBoneHighlight)" strokeWidth={1.5} strokeLinecap="round" fill="none" />
-      <path d="M20 185 C 14 186 10 184 6 182 C 9 190 15 194 20 187 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={0.8} />
-      <circle cx="56" cy="152" r={2.4} fill="#22080D" />
+      {/* Articulated Draconic Bone Phalanges (Heavy 3D Skeleton) */}
+      {/* Digit 1 (Top Wing Bone) */}
+      <path d="M 100 116 C 74 112 52 114 34 122" stroke="url(#demonBoneGrad)" strokeWidth={4.2} strokeLinecap="round" fill="none" />
+      <path d="M 100 116 C 74 112 52 114 34 122" stroke="url(#demonBoneSpine)" strokeWidth={1.6} strokeLinecap="round" fill="none" />
+      {/* Talon 1 */}
+      <path d="M 34 122 C 26 120 18 116 12 112 C 16 122 24 126 34 124 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={0.9} />
+      <circle cx="66" cy="115" r={2.8} fill="#20060A" />
 
-      {/* Digit 3 (Mid-lower strut) */}
-      <path d="M102 118 C 72 170 48 225 32 275" stroke="url(#demonBone)" strokeWidth={3.4} strokeLinecap="round" fill="none" />
-      <path d="M102 118 C 72 170 48 225 32 275" stroke="url(#demonBoneHighlight)" strokeWidth={1.4} strokeLinecap="round" fill="none" />
-      <path d="M32 275 C 26 280 20 284 16 290 C 23 290 28 286 34 277 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={0.8} />
-      <circle cx="64" cy="200" r={2.2} fill="#22080D" />
+      {/* Digit 2 (Apex Reach Bone - Maximum Wingspan) */}
+      <path d="M 100 116 C 64 140 34 162 16 186" stroke="url(#demonBoneGrad)" strokeWidth={4.6} strokeLinecap="round" fill="none" />
+      <path d="M 100 116 C 64 140 34 162 16 186" stroke="url(#demonBoneSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+      {/* Talon 2 */}
+      <path d="M 16 186 C 10 186 4 184 0 180 C 4 190 12 194 18 187 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={0.9} />
+      <circle cx="54" cy="152" r={3} fill="#20060A" />
 
-      {/* Digit 4 (Bottom trailing strut) */}
-      <path d="M102 118 C 92 195 82 275 70 350" stroke="url(#demonBone)" strokeWidth={3.2} strokeLinecap="round" fill="none" />
-      <path d="M102 118 C 92 195 82 275 70 350" stroke="url(#demonBoneHighlight)" strokeWidth={1.3} strokeLinecap="round" fill="none" />
-      <path d="M70 350 C 66 360 62 368 58 376 C 66 372 70 364 72 352 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={0.8} />
-      <circle cx="84" cy="245" r={2.2} fill="#22080D" />
+      {/* Digit 3 (Mid-Lower Bone) */}
+      <path d="M 100 116 C 70 170 44 225 26 276" stroke="url(#demonBoneGrad)" strokeWidth={4.4} strokeLinecap="round" fill="none" />
+      <path d="M 100 116 C 70 170 44 225 26 276" stroke="url(#demonBoneSpine)" strokeWidth={1.7} strokeLinecap="round" fill="none" />
+      {/* Talon 3 */}
+      <path d="M 26 276 C 20 282 14 286 8 292 C 16 292 22 288 28 278 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={0.9} />
+      <circle cx="62" cy="202" r={2.8} fill="#20060A" />
 
-      {/* Heavy Muscular Forearm Bone (Shoulder to Wrist) */}
-      <path d="M152 238 C 146 195 132 152 102 118 C 96 122 108 160 136 244 Z" fill="url(#demonBone)" stroke="#120306" strokeWidth={1.5} />
-      <path d="M150 236 C 144 196 130 155 102 118" stroke="url(#demonBoneHighlight)" strokeWidth={2.2} strokeLinecap="round" fill="none" />
+      {/* Digit 4 (Trailing Lower Bone) */}
+      <path d="M 100 116 C 90 196 78 276 64 354" stroke="url(#demonBoneGrad)" strokeWidth={4} strokeLinecap="round" fill="none" />
+      <path d="M 100 116 C 90 196 78 276 64 354" stroke="url(#demonBoneSpine)" strokeWidth={1.5} strokeLinecap="round" fill="none" />
+      {/* Talon 4 */}
+      <path d="M 64 354 C 60 364 54 372 48 380 C 58 376 64 366 66 356 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={0.9} />
+      <circle cx="82" cy="248" r={2.8} fill="#20060A" />
 
-      {/* Forearm Spikes / Horns */}
-      <path d="M128 162 L 120 144 L 134 156 Z" fill="url(#demonClawGrad)" stroke="#120306" strokeWidth={0.8} />
-      <path d="M116 138 L 106 122 L 122 132 Z" fill="url(#demonClawGrad)" stroke="#120306" strokeWidth={0.8} />
+      {/* Muscular Forearm Bone (Shoulder to Wrist) */}
+      <path d="M 152 238 C 146 194 130 150 100 116 C 94 120 108 160 136 244 Z" fill="url(#demonBoneGrad)" stroke="#160307" strokeWidth={1.8} />
+      <path d="M 150 236 C 144 195 128 153 100 116" stroke="url(#demonBoneSpine)" strokeWidth={2.8} strokeLinecap="round" fill="none" />
+
+      {/* Forearm Armor Barbs & Spikes */}
+      <path d="M 128 160 L 118 140 L 134 154 Z" fill="url(#demonTalonGrad)" stroke="#120306" strokeWidth={1} />
+      <path d="M 116 136 L 104 118 L 122 130 Z" fill="url(#demonTalonGrad)" stroke="#120306" strokeWidth={1} />
 
       {/* Apex Wrist Raptor Talon Hook */}
-      <path d="M104 120 C 100 96 88 82 74 78 C 80 92 90 106 100 122 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={1.0} />
-      <path d="M102 118 L 110 110 L 108 122 Z" fill="url(#demonClawGrad)" stroke="#0F172A" strokeWidth={0.8} />
+      <path d="M 102 118 C 98 92 84 76 68 72 C 76 88 88 104 98 120 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={1.2} />
+      <path d="M 100 116 L 110 106 L 106 120 Z" fill="url(#demonTalonGrad)" stroke="#090D16" strokeWidth={0.9} />
 
-      {/* Wrist Joint Armored Sphere & Demonic Eye Core */}
-      <circle cx="102" cy="120" r={5} fill="#22080D" stroke="#5A121A" strokeWidth={1.2} />
-      <circle cx="102" cy="120" r={3} fill="#DC2626" />
-      <circle cx="102" cy="120" r={1.4} fill="#FDE047" />
+      {/* Wrist Knuckle Armor Sphere & Glowing Demonic Eye Core */}
+      <circle cx="100" cy="118" r={6.5} fill="#20060A" stroke="#7F1D1D" strokeWidth={1.5} />
+      <circle cx="100" cy="118" r={4} fill="#DC2626" />
+      <circle cx="100" cy="118" r={2} fill="#FDE047" />
+      <circle cx="100" cy="118" r={1} fill="#FFFFFF" />
     </>
   );
 
   return (
     <g>
       <defs>
-        <radialGradient id="demonAbyssGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#DC2626" stopOpacity="0.32" />
-          <stop offset="50%" stopColor="#7F1D1D" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#1E0A0F" stopOpacity="0" />
+        <radialGradient id="demonAbyssAura" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#DC2626" stopOpacity="0.45" />
+          <stop offset="45%" stopColor="#7F1D1D" stopOpacity="0.25" />
+          <stop offset="85%" stopColor="#1E0A0F" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#0B0204" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="demonMembrane" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#180508" />
-          <stop offset="35%" stopColor={dark || "#320C13"} />
-          <stop offset="75%" stopColor={color || "#4C131D"} />
-          <stop offset="100%" stopColor="#751A27" />
+
+        <linearGradient id="demonMembraneMain" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#1B0508" />
+          <stop offset="35%" stopColor={dark || "#3B0D14"} />
+          <stop offset="75%" stopColor={color || "#581420"} />
+          <stop offset="100%" stopColor="#8A1E2E" />
         </linearGradient>
-        <linearGradient id="demonBone" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3A121A" />
-          <stop offset="60%" stopColor="#22080D" />
-          <stop offset="100%" stopColor="#140306" />
+
+        <linearGradient id="demonBoneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#45141E" />
+          <stop offset="55%" stopColor="#2A0B12" />
+          <stop offset="100%" stopColor="#160307" />
         </linearGradient>
-        <linearGradient id="demonBoneHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#991B1B" />
-          <stop offset="70%" stopColor="#65151D" />
-          <stop offset="100%" stopColor="#320A0E" />
+
+        <linearGradient id="demonBoneSpine" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#EF4444" />
+          <stop offset="50%" stopColor="#991B1B" />
+          <stop offset="100%" stopColor="#450A10" />
         </linearGradient>
-        <linearGradient id="demonClawGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#F8FAFC" />
-          <stop offset="45%" stopColor="#CBD5E1" />
-          <stop offset="85%" stopColor="#475569" />
-          <stop offset="100%" stopColor="#1E293B" />
-        </linearGradient>
-        <linearGradient id="demonLavaVein" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FDE047" />
+
+        <linearGradient id="demonRimFlame" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FEF08A" />
           <stop offset="40%" stopColor="#F97316" />
-          <stop offset="100%" stopColor="#EF4444" />
+          <stop offset="80%" stopColor="#DC2626" />
+          <stop offset="100%" stopColor="#7F1D1D" />
+        </linearGradient>
+
+        <linearGradient id="demonTalonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="35%" stopColor="#E2E8F0" />
+          <stop offset="70%" stopColor="#475569" />
+          <stop offset="100%" stopColor="#0F172A" />
+        </linearGradient>
+
+        <linearGradient id="demonLavaVein" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="25%" stopColor="#FEF08A" />
+          <stop offset="65%" stopColor="#F97316" />
+          <stop offset="100%" stopColor="#DC2626" />
         </linearGradient>
       </defs>
 
-      {/* Abyssal Crimson Glow */}
-      <ellipse cx="200" cy="220" rx="140" ry="110" fill="url(#demonAbyssGlow)" opacity={0.45} />
+      {/* Abyssal Crimson Hellfire Aura */}
+      <ellipse cx="200" cy="220" rx="150" ry="120" fill="url(#demonAbyssAura)" opacity={0.65} />
+      <circle cx="200" cy="210" r="90" fill="#7F1D1D" opacity="0.18" />
 
       {/* Left Wing */}
       <g className="demonWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      {/* Right Wing (Clean Symmetrical Mirror across X=200) */}
       <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
         <g className="demonWingL">{leftWing}</g>
       </g>
 
       {/* Rising Infernal Embers */}
       <g fill="#EF4444">
-        <circle className="wingEmber" cx="24" cy="175" r={2.2} fill="#FDE047" />
-        <circle className="wingEmber" style={{ animationDelay: "0.7s" }} cx="44" cy="245" r={1.8} fill="#F97316" />
-        <circle className="wingEmber" style={{ animationDelay: "1.3s" }} cx="76" cy="325" r={2} fill="#EF4444" />
-        <circle className="wingEmber" style={{ animationDelay: "0.3s" }} cx="18" cy="120" r={1.6} fill="#FDE047" />
-        <circle className="wingEmber" style={{ animationDelay: "0.9s" }} cx="376" cy="175" r={2.2} fill="#FDE047" />
-        <circle className="wingEmber" style={{ animationDelay: "1.5s" }} cx="356" cy="245" r={1.8} fill="#F97316" />
-        <circle className="wingEmber" style={{ animationDelay: "0.5s" }} cx="324" cy="325" r={2} fill="#EF4444" />
-        <circle className="wingEmber" style={{ animationDelay: "1.1s" }} cx="382" cy="120" r={1.6} fill="#FDE047" />
+        <circle className="wingEmber" cx="24" cy="175" r={2.5} fill="#FDE047" />
+        <circle className="wingEmber" style={{ animationDelay: "0.7s" }} cx="44" cy="245" r={2} fill="#F97316" />
+        <circle className="wingEmber" style={{ animationDelay: "1.3s" }} cx="76" cy="325" r={2.2} fill="#EF4444" />
+        <circle className="wingEmber" style={{ animationDelay: "0.3s" }} cx="18" cy="120" r={1.8} fill="#FDE047" />
+        <circle className="wingEmber" style={{ animationDelay: "0.9s" }} cx="376" cy="175" r={2.5} fill="#FDE047" />
+        <circle className="wingEmber" style={{ animationDelay: "1.5s" }} cx="356" cy="245" r={2} fill="#F97316" />
+        <circle className="wingEmber" style={{ animationDelay: "0.5s" }} cx="324" cy="325" r={2.2} fill="#EF4444" />
+        <circle className="wingEmber" style={{ animationDelay: "1.1s" }} cx="382" cy="120" r={1.8} fill="#FDE047" />
       </g>
     </g>
   );
@@ -2258,52 +2317,79 @@ function WingsDemon({ color, dark }) {
 function WingsPhoenix({ color, dark }) {
   const leftWing = (
     <>
-      {/* Left Wing Fiery Under-Plumage */}
-      <g fill="url(#phoenixFlame2)" stroke="#7F1D1D" strokeWidth={0.8} opacity={0.9}>
-        <path d="M134 200 C 104 162 68 132 38 128 C 32 140 44 162 70 186 C 94 208 120 216 134 200 Z" />
-        <path d="M124 218 C 92 190 48 170 20 180 C 16 194 30 216 60 232 C 86 244 112 238 124 218 Z" />
-        <path d="M122 240 C 90 222 46 218 18 248 C 18 264 38 278 68 280 C 94 280 114 264 122 240 Z" />
-        <path d="M126 260 C 102 250 56 260 36 302 C 38 316 58 324 84 312 C 106 300 120 282 126 260 Z" />
-        <path d="M134 278 C 114 274 76 298 62 354 C 68 364 88 362 108 340 C 122 322 130 300 134 278 Z" />
+      {/* Deep Magma Fire Under-Plumage (Volumetric Silhouette Tier) */}
+      <g fill="url(#phoenixMagmaBack)" stroke="#5A0B0B" strokeWidth={1.2} opacity={0.94}>
+        <path d="M 148 206 C 134 148 100 96 64 74 C 56 86 68 112 92 144 C 114 172 136 198 148 206 Z" />
+        <path d="M 140 210 C 114 150 72 108 26 102 C 20 116 34 140 64 172 C 90 200 120 218 140 210 Z" />
+        <path d="M 130 218 C 96 166 44 134 6 146 C 4 162 20 188 52 212 C 84 232 114 232 130 218 Z" />
+        <path d="M 124 230 C 86 194 34 178 4 206 C 4 222 22 244 56 252 C 86 256 112 244 124 230 Z" />
+        <path d="M 126 248 C 90 224 36 222 12 260 C 14 276 36 290 68 288 C 96 284 116 266 126 248 Z" />
+        <path d="M 132 266 C 102 250 52 262 30 314 C 34 328 56 336 84 320 C 110 304 124 284 132 266 Z" />
+        <path d="M 138 284 C 114 278 72 300 58 362 C 68 372 88 370 110 344 C 128 324 138 300 138 284 Z" />
       </g>
 
-      {/* Primary Solar Flame Feathers */}
-      <path d="M146 200 C 134 146 108 98 76 78 C 70 88 78 110 98 138 C 116 162 136 188 146 200 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M144 198 C 132 148 110 106 82 86" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+      {/* Primary Blazing Solar Flame Feathers */}
+      <g>
+        {/* Flame 1 (High Solar Flare Feather) */}
+        <path d="M 150 204 C 138 146 104 92 68 70 C 60 82 72 108 96 140 C 118 168 140 196 150 204 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 146 200 C 136 152 108 106 76 84 C 82 102 100 132 118 162 C 132 184 142 196 146 200 Z" fill="url(#phoenixFlameCore)" opacity={0.85} />
+        <path d="M 148 202 C 134 150 106 102 72 78" stroke="url(#phoenixGoldSpine)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 148 202 C 134 150 106 102 72 78" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      <path d="M136 204 C 112 148 74 108 38 98 C 32 110 46 134 72 164 C 96 190 122 210 136 204 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M134 202 C 112 152 80 118 44 106" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+        {/* Flame 2 (Upper Flame Tongue) */}
+        <path d="M 142 208 C 116 148 74 104 28 98 C 22 112 36 136 66 168 C 92 196 122 216 142 208 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 138 204 C 116 154 82 118 38 108 C 46 124 68 152 90 180 C 110 200 128 208 138 204 Z" fill="url(#phoenixFlameCore)" opacity={0.8} />
+        <path d="M 140 206 C 116 152 80 114 34 104" stroke="url(#phoenixGoldSpine)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 140 206 C 116 152 80 114 34 104" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      <path d="M128 214 C 98 168 52 136 16 142 C 12 158 28 182 58 204 C 86 222 114 226 128 214 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M126 212 C 98 172 58 146 24 150" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+        {/* Flame 3 (Apex Solar Firestorm - Broadest Reach) */}
+        <path d="M 132 216 C 98 164 46 130 8 142 C 4 158 20 184 54 208 C 84 228 116 230 132 216 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 128 212 C 98 168 54 142 18 150 C 26 168 50 192 80 212 C 102 222 120 220 128 212 Z" fill="url(#phoenixFlameCore)" opacity={0.8} />
+        <path d="M 130 214 C 98 168 52 138 14 148" stroke="url(#phoenixGoldSpine)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 130 214 C 98 168 52 138 14 148" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      <path d="M124 228 C 92 196 42 180 12 204 C 10 220 28 240 60 248 C 88 252 112 244 124 228 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M122 226 C 92 198 48 186 20 210" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+        {/* Flame 4 (Mid Outer Solar Flare) */}
+        <path d="M 126 228 C 88 192 36 174 6 202 C 4 218 22 240 56 248 C 86 252 114 242 126 228 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 122 224 C 88 196 44 184 16 208 C 26 224 50 238 78 244 C 98 246 114 238 122 224 Z" fill="url(#phoenixFlameCore)" opacity={0.8} />
+        <path d="M 124 226 C 88 194 42 180 12 206" stroke="url(#phoenixGoldSpine)" strokeWidth={2.6} strokeLinecap="round" fill="none" />
+        <path d="M 124 226 C 88 194 42 180 12 206" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      <path d="M126 246 C 96 226 46 224 18 256 C 18 272 38 286 70 286 C 98 282 118 266 126 246 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M124 244 C 96 228 52 230 26 262" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+        {/* Flame 5 (Mid Lower Flare) */}
+        <path d="M 128 246 C 92 222 38 220 14 258 C 16 274 38 288 70 286 C 98 282 118 264 128 246 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 124 242 C 92 224 46 226 24 262 C 34 274 58 282 86 280 C 104 276 118 262 124 242 Z" fill="url(#phoenixFlameCore)" opacity={0.8} />
+        <path d="M 126 244 C 92 224 44 224 20 260" stroke="url(#phoenixGoldSpine)" strokeWidth={2.4} strokeLinecap="round" fill="none" />
+        <path d="M 126 244 C 92 224 44 224 20 260" stroke="#FFFFFF" strokeWidth={1} strokeLinecap="round" fill="none" opacity={0.9} />
 
-      <path d="M132 264 C 106 252 58 264 34 310 C 36 324 58 332 86 318 C 110 304 124 284 132 264 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M130 262 C 106 254 64 268 42 314" stroke="url(#phoenixGoldSpine)" strokeWidth={1.6} strokeLinecap="round" fill="none" />
+        {/* Flame 6 (Lower Flame Tongue) */}
+        <path d="M 134 264 C 104 250 54 262 32 312 C 36 326 58 334 86 318 C 112 302 126 282 134 264 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.4} />
+        <path d="M 130 260 C 104 252 62 266 42 314 C 52 322 74 324 98 312 C 114 300 124 282 130 260 Z" fill="url(#phoenixFlameCore)" opacity={0.75} />
+        <path d="M 132 262 C 104 252 60 266 38 314" stroke="url(#phoenixGoldSpine)" strokeWidth={2.2} strokeLinecap="round" fill="none" />
 
-      <path d="M138 282 C 118 278 78 300 62 356 C 68 366 88 366 110 342 C 126 324 136 302 138 282 Z" fill="url(#phoenixFlame1)" stroke="#B91C1C" strokeWidth={1} />
-      <path d="M136 280 C 118 280 84 304 70 358" stroke="url(#phoenixGoldSpine)" strokeWidth={1.5} strokeLinecap="round" fill="none" />
+        {/* Flame 7 (Trailing Fire Tongue) */}
+        <path d="M 140 282 C 116 276 74 298 60 360 C 68 370 88 368 110 342 C 128 322 138 298 140 282 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.3} />
+        <path d="M 136 280 C 116 280 82 302 68 358" stroke="url(#phoenixGoldSpine)" strokeWidth={2} strokeLinecap="round" fill="none" />
 
-      {/* Inner Leaping Flame Tongues */}
-      <g fill="url(#phoenixFlameCore)" opacity={0.95}>
-        <path d="M148 214 C 132 176 108 142 86 130 C 84 140 94 158 112 180 C 128 200 142 216 148 214 Z" />
-        <path d="M142 228 C 122 195 92 172 66 174 C 64 184 76 198 98 210 C 118 222 136 226 142 228 Z" />
-        <path d="M138 244 C 118 218 88 210 66 228 C 66 238 78 248 100 252 C 120 254 134 248 138 244 Z" />
-        <path d="M142 260 C 122 242 94 246 76 274 C 78 284 94 288 114 278 C 128 272 138 264 142 260 Z" />
+        {/* Flame 8 (Inward Embers) */}
+        <path d="M 146 296 C 132 296 98 322 88 388 C 96 396 114 392 128 366 C 142 346 148 320 146 296 Z" fill="url(#phoenixFlameMain)" stroke="#B91C1C" strokeWidth={1.2} />
+        <path d="M 142 294 C 132 300 106 326 96 384" stroke="url(#phoenixGoldSpine)" strokeWidth={1.8} strokeLinecap="round" fill="none" />
       </g>
 
-      {/* Solar Wing Crest Spar */}
-      <path d="M152 228 C 146 182 128 138 102 114" stroke="#FEF08A" strokeWidth={3.2} strokeLinecap="round" fill="none" />
-      <path d="M152 228 C 146 182 128 138 102 114" stroke="#FFFFFF" strokeWidth={1.4} strokeLinecap="round" fill="none" />
+      {/* Middle Roaring Flame Tongues */}
+      <g fill="url(#phoenixFlameMid)" opacity={0.96}>
+        <path d="M 148 214 C 132 176 108 142 86 130 C 84 140 94 158 112 180 C 128 200 142 216 148 214 Z" />
+        <path d="M 142 228 C 122 195 92 172 66 174 C 64 184 76 198 98 210 C 118 222 136 226 142 228 Z" />
+        <path d="M 138 244 C 118 218 88 210 66 228 C 66 238 78 248 100 252 C 120 254 134 248 138 244 Z" />
+        <path d="M 142 260 C 122 242 94 246 76 274 C 78 284 94 288 114 278 C 128 272 138 264 142 260 Z" />
+      </g>
 
-      {/* Solar Core Brooch */}
-      <circle cx="152" cy="228" r="6" fill="#EA580C" stroke="#FEF08A" strokeWidth={1.4} />
-      <circle cx="152" cy="228" r="3.2" fill="#FFFFFF" />
+      {/* Solar Crest Wing Spar & Burning Gold Filigree */}
+      <path d="M 152 230 C 146 180 128 134 98 110" stroke="#FEF08A" strokeWidth={4.5} strokeLinecap="round" fill="none" />
+      <path d="M 152 230 C 146 180 128 134 98 110" stroke="#FFFFFF" strokeWidth={1.8} strokeLinecap="round" fill="none" />
+
+      {/* Blazing Sunburst Brooch */}
+      <circle cx="152" cy="230" r="7" fill="#EA580C" stroke="#FEF08A" strokeWidth={1.6} />
+      <circle cx="152" cy="230" r="4.2" fill="#FDE047" />
+      <circle cx="152" cy="230" r="2" fill="#FFFFFF" />
     </>
   );
 
@@ -2311,56 +2397,68 @@ function WingsPhoenix({ color, dark }) {
     <g>
       <defs>
         <radialGradient id="phoenixSunGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FDE047" stopOpacity="0.35" />
-          <stop offset="45%" stopColor="#EA580C" stopOpacity="0.2" />
-          <stop offset="85%" stopColor="#991B1B" stopOpacity="0.05" />
+          <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.55" />
+          <stop offset="40%" stopColor="#EA580C" stopOpacity="0.3" />
+          <stop offset="75%" stopColor="#991B1B" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#7F1D1D" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="phoenixFlame1" x1="0%" y1="0%" x2="100%" y2="100%">
+
+        <linearGradient id="phoenixFlameMain" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
           <stop offset="25%" stopColor="#FEF08A" />
           <stop offset="60%" stopColor={color || "#F97316"} />
           <stop offset="100%" stopColor={dark || "#DC2626"} />
         </linearGradient>
-        <linearGradient id="phoenixFlame2" x1="0%" y1="0%" x2="100%" y2="100%">
+
+        <linearGradient id="phoenixFlameCore" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#FEF08A" />
+          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+        </linearGradient>
+
+        <linearGradient id="phoenixFlameMid" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FEF08A" />
           <stop offset="40%" stopColor={color || "#F97316"} />
           <stop offset="80%" stopColor="#C2410C" />
           <stop offset="100%" stopColor={dark || "#991B1B"} />
         </linearGradient>
-        <linearGradient id="phoenixFlameCore" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="40%" stopColor="#FDE047" />
-          <stop offset="100%" stopColor="#EA580C" />
+
+        <linearGradient id="phoenixMagmaBack" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#B91C1C" />
+          <stop offset="50%" stopColor="#7F1D1D" />
+          <stop offset="100%" stopColor="#450A0A" />
         </linearGradient>
+
         <linearGradient id="phoenixGoldSpine" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="50%" stopColor="#FDE047" />
+          <stop offset="35%" stopColor="#FEF08A" />
+          <stop offset="75%" stopColor="#F59E0B" />
           <stop offset="100%" stopColor="#D97706" />
         </linearGradient>
       </defs>
 
-      {/* Solar Halo Glow */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#phoenixSunGlow)" opacity={0.4} />
+      {/* Blinding Solar Halo */}
+      <ellipse cx="200" cy="210" rx="150" ry="120" fill="url(#phoenixSunGlow)" opacity={0.65} />
+      <circle cx="200" cy="190" r="100" fill="#F59E0B" opacity="0.16" />
 
       {/* Left Wing */}
       <g className="phoenixWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      {/* Right Wing (Clean Symmetrical Mirror across X=200) */}
       <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
         <g className="phoenixWingL">{leftWing}</g>
       </g>
 
       {/* Floating Solar Flame Embers */}
       <g fill="#F59E0B">
-        <circle className="wingEmber" cx="28" cy="165" r={2.2} fill="#FEF08A" />
-        <circle className="wingEmber" style={{ animationDelay: "0.8s" }} cx="48" cy="235" r={1.8} fill="#F97316" />
-        <circle className="wingEmber" style={{ animationDelay: "1.2s" }} cx="72" cy="315" r={2} fill="#EA580C" />
-        <circle className="wingEmber" style={{ animationDelay: "0.4s" }} cx="20" cy="115" r={1.6} fill="#FFFFFF" />
-        <circle className="wingEmber" style={{ animationDelay: "0.6s" }} cx="372" cy="165" r={2.2} fill="#FEF08A" />
-        <circle className="wingEmber" style={{ animationDelay: "1.4s" }} cx="352" cy="235" r={1.8} fill="#F97316" />
-        <circle className="wingEmber" style={{ animationDelay: "1.0s" }} cx="328" cy="315" r={2} fill="#EA580C" />
-        <circle className="wingEmber" style={{ animationDelay: "0.2s" }} cx="380" cy="115" r={1.6} fill="#FFFFFF" />
+        <circle className="wingEmber" cx="28" cy="165" r={2.5} fill="#FEF08A" />
+        <circle className="wingEmber" style={{ animationDelay: "0.8s" }} cx="48" cy="235" r={2} fill="#F97316" />
+        <circle className="wingEmber" style={{ animationDelay: "1.2s" }} cx="72" cy="315" r={2.2} fill="#EA580C" />
+        <circle className="wingEmber" style={{ animationDelay: "0.4s" }} cx="20" cy="115" r={1.8} fill="#FFFFFF" />
+        <circle className="wingEmber" style={{ animationDelay: "0.6s" }} cx="372" cy="165" r={2.5} fill="#FEF08A" />
+        <circle className="wingEmber" style={{ animationDelay: "1.4s" }} cx="352" cy="235" r={2} fill="#F97316" />
+        <circle className="wingEmber" style={{ animationDelay: "1.0s" }} cx="328" cy="315" r={2.2} fill="#EA580C" />
+        <circle className="wingEmber" style={{ animationDelay: "0.2s" }} cx="380" cy="115" r={1.8} fill="#FFFFFF" />
       </g>
     </g>
   );
@@ -2369,53 +2467,63 @@ function WingsPhoenix({ color, dark }) {
 function WingsFae({ color, dark }) {
   const leftWing = (
     <>
-      {/* Upper Large Gossamer Wing */}
+      {/* Upper Grand Gossamer Wing (Forewing) */}
       <g>
-        <path d="M150 224 C 136 170 105 105 56 74 C 44 86 38 120 44 165 C 50 205 75 235 146 230 Z" fill="url(#faeGlass1)" stroke="#38BDF8" strokeWidth={1.2} />
-        <path d="M144 220 C 132 172 104 116 62 88 C 66 110 74 145 92 180 C 110 210 130 222 144 220 Z" fill="#FFFFFF" opacity={0.38} />
+        {/* Main Translucent Glass Body */}
+        <path d="M 150 224 C 136 168 104 100 54 70 C 40 84 34 120 42 168 C 50 210 76 238 146 230 Z" fill="url(#faeGlassUpper)" stroke="#38BDF8" strokeWidth={1.4} />
+        {/* Specular Prism Refraction Layer */}
+        <path d="M 144 220 C 130 170 102 112 58 84 C 64 108 72 144 90 180 C 110 212 130 224 144 220 Z" fill="url(#faeSpecularLayer)" opacity={0.65} />
 
-        <g stroke="url(#faeVein)" strokeWidth={0.9} fill="none" opacity={0.85}>
-          <path d="M150 224 C 128 178 94 130 56 74" strokeWidth={1.6} />
-          <path d="M148 226 C 118 190 82 155 44 165" strokeWidth={1.3} />
-          <path d="M146 228 C 114 218 86 215 50 205" strokeWidth={1.2} />
+        {/* Curved Organic Bioluminescent Dragonfly Venation Lattice */}
+        <g stroke="url(#faeVeinGlow)" strokeWidth={1.1} fill="none" opacity={0.92}>
+          {/* Main Primary Vein Ribs */}
+          <path d="M 150 224 C 126 174 92 126 54 70" strokeWidth={2.2} />
+          <path d="M 148 226 C 116 186 80 152 42 168" strokeWidth={1.6} />
+          <path d="M 146 228 C 112 216 84 214 48 206" strokeWidth={1.4} />
 
-          <line x1="120" y1="172" x2="105" y2="188" />
-          <line x1="96" y1="134" x2="78" y2="152" />
-          <line x1="74" y1="102" x2="58" y2="122" />
-          <line x1="108" y1="202" x2="94" y2="216" />
-          <line x1="82" y1="176" x2="68" y2="194" />
-          <line x1="62" y1="145" x2="48" y2="162" />
-          <line x1="126" y1="192" x2="118" y2="214" />
-          <line x1="100" y1="156" x2="90" y2="182" />
-          <line x1="76" y1="124" x2="66" y2="152" />
+          {/* Organic Curved Cross-Vein Cells */}
+          <path d="M 122 170 C 116 178 108 184 102 190" />
+          <path d="M 98 132 C 92 140 84 146 76 154" />
+          <path d="M 76 100 C 70 108 64 116 56 124" />
+          <path d="M 110 200 C 104 206 98 212 92 218" />
+          <path d="M 84 174 C 78 182 72 188 66 196" />
+          <path d="M 64 142 C 58 150 52 156 46 164" />
+          <path d="M 128 190 C 122 198 118 208 116 216" />
+          <path d="M 102 154 C 96 164 92 174 88 184" />
+          <path d="M 78 122 C 72 132 68 142 64 154" />
         </g>
 
+        {/* Sparkling Bioluminescent Pearl Nodes at Vein Junctions */}
         <g fill="#FFFFFF">
-          <circle cx="56" cy="74" r={2.2} />
-          <circle cx="44" cy="165" r={1.8} />
-          <circle cx="96" cy="134" r={1.4} />
-          <circle cx="78" cy="152" r={1.4} />
-          <circle cx="120" cy="172" r={1.5} />
+          <circle cx="54" cy="70" r={2.6} />
+          <circle cx="42" cy="168" r={2.2} />
+          <circle cx="98" cy="132" r={1.8} />
+          <circle cx="76" cy="154" r={1.8} />
+          <circle cx="122" cy="170" r={2} />
+          <circle cx="102" cy="190" r={1.6} />
+          <circle cx="76" cy="100" r={1.8} />
+          <circle cx="84" cy="174" r={1.6} />
         </g>
       </g>
 
-      {/* Lower Secondary Gossamer Wing */}
+      {/* Lower Secondary Gossamer Wing (Hindwing) */}
       <g>
-        <path d="M148 234 C 130 248 100 278 68 335 C 72 344 86 345 106 330 C 130 308 144 275 150 238 Z" fill="url(#faeGlass2)" stroke="#A855F7" strokeWidth={1.2} />
-        <g stroke="url(#faeVein)" strokeWidth={0.8} fill="none" opacity={0.8}>
-          <path d="M148 234 C 122 268 96 302 68 335" strokeWidth={1.4} />
-          <path d="M148 236 C 134 275 118 310 106 330" />
-          <line x1="124" y1="270" x2="134" y2="288" />
-          <line x1="104" y1="298" x2="116" y2="315" />
-          <line x1="88" y1="322" x2="96" y2="332" />
+        <path d="M 148 234 C 130 248 98 280 66 338 C 70 348 86 348 108 332 C 132 310 144 276 150 238 Z" fill="url(#faeGlassLower)" stroke="#A855F7" strokeWidth={1.4} />
+        <g stroke="url(#faeVeinGlow)" strokeWidth={1} fill="none" opacity={0.88}>
+          <path d="M 148 234 C 120 268 94 304 66 338" strokeWidth={1.8} />
+          <path d="M 148 236 C 134 276 118 312 108 332" strokeWidth={1.3} />
+          <path d="M 124 268 C 128 276 132 284 134 290" />
+          <path d="M 104 296 C 108 304 112 312 116 318" />
+          <path d="M 86 320 C 90 326 94 330 96 334" />
         </g>
-        <circle cx="68" cy="335" r={1.8} fill="#FFFFFF" />
-        <circle cx="106" cy="330" r={1.5} fill="#FFFFFF" />
+        <circle cx="66" cy="338" r={2.4} fill="#FFFFFF" />
+        <circle cx="108" cy="332" r={2} fill="#FFFFFF" />
+        <circle cx="104" cy="296" r={1.6} fill="#FFFFFF" />
       </g>
 
-      {/* Wing Base Crystal Jewel */}
-      <polygon points="150,224 154,230 150,236 146,230" fill="#67E8F9" stroke="#FFFFFF" strokeWidth={0.8} />
-      <circle cx="150" cy="230" r={1.5} fill="#FFFFFF" />
+      {/* Wing Base Crystal Brooch */}
+      <polygon points="150,222 156,230 150,238 144,230" fill="#67E8F9" stroke="#FFFFFF" strokeWidth={1.2} />
+      <circle cx="150" cy="230" r="2.2" fill="#FFFFFF" />
     </>
   );
 
@@ -2423,48 +2531,59 @@ function WingsFae({ color, dark }) {
     <g>
       <defs>
         <radialGradient id="faePrismGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.32" />
-          <stop offset="45%" stopColor="#C084FC" stopOpacity="0.18" />
-          <stop offset="85%" stopColor="#F472B6" stopOpacity="0.05" />
+          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.45" />
+          <stop offset="40%" stopColor="#C084FC" stopOpacity="0.25" />
+          <stop offset="75%" stopColor="#F472B6" stopOpacity="0.08" />
           <stop offset="100%" stopColor="#38BDF8" stopOpacity="0" />
         </radialGradient>
-        <linearGradient id="faeGlass1" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#E0F2FE" stopOpacity="0.9" />
-          <stop offset="35%" stopColor={color || "#BAE6FD"} stopOpacity="0.82" />
-          <stop offset="70%" stopColor="#DDD6FE" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#FBCFE8" stopOpacity="0.85" />
+
+        <linearGradient id="faeGlassUpper" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#F0FDF4" stopOpacity="0.95" />
+          <stop offset="30%" stopColor={color || "#BAE6FD"} stopOpacity="0.88" />
+          <stop offset="65%" stopColor="#DDD6FE" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#FBCFE8" stopOpacity="0.9" />
         </linearGradient>
-        <linearGradient id="faeGlass2" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.85" />
-          <stop offset="50%" stopColor="#E9D5FF" stopOpacity="0.8" />
-          <stop offset="100%" stopColor={dark || "#C4B5FD"} stopOpacity="0.85" />
+
+        <linearGradient id="faeGlassLower" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#BAE6FD" stopOpacity="0.9" />
+          <stop offset="50%" stopColor="#E9D5FF" stopOpacity="0.85" />
+          <stop offset="100%" stopColor={dark || "#C4B5FD"} stopOpacity="0.9" />
         </linearGradient>
-        <linearGradient id="faeVein" x1="0%" y1="0%" x2="100%" y2="100%">
+
+        <linearGradient id="faeSpecularLayer" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="50%" stopColor="#E0F2FE" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.05" />
+        </linearGradient>
+
+        <linearGradient id="faeVeinGlow" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="50%" stopColor="#7DD3FC" />
-          <stop offset="100%" stopColor="#A855F7" />
+          <stop offset="35%" stopColor="#7DD3FC" />
+          <stop offset="75%" stopColor="#C084FC" />
+          <stop offset="100%" stopColor="#F472B6" />
         </linearGradient>
       </defs>
 
-      {/* Prismatic Fae Aura */}
-      <ellipse cx="200" cy="210" rx="140" ry="110" fill="url(#faePrismGlow)" opacity={0.45} />
+      {/* Prismatic Mystical Aura */}
+      <ellipse cx="200" cy="210" rx="150" ry="120" fill="url(#faePrismGlow)" opacity={0.65} />
+      <circle cx="200" cy="190" r="95" fill="#38BDF8" opacity="0.14" />
 
       {/* Left Wing */}
       <g className="faeWingL">{leftWing}</g>
 
-      {/* Right Wing (Mirrored cleanly across X=200 with isolated animation) */}
+      {/* Right Wing (Clean Symmetrical Mirror across X=200) */}
       <g transform="translate(200, 0) scale(-1, 1) translate(-200, 0)">
         <g className="faeWingL">{leftWing}</g>
       </g>
 
       {/* Shimmering Starlight Sparkles */}
       <g fill="#BAE6FD">
-        <circle className="holySparkle" cx="50" cy="70" r={2.2} fill="#FFFFFF" />
-        <circle className="holySparkle" style={{ animationDelay: "0.6s" }} cx="38" cy="160" r={1.8} fill="#67E8F9" />
-        <circle className="holySparkle" style={{ animationDelay: "1.1s" }} cx="64" cy="330" r={2} fill="#C084FC" />
-        <circle className="holySparkle" style={{ animationDelay: "0.3s" }} cx="350" cy="70" r={2.2} fill="#FFFFFF" />
-        <circle className="holySparkle" style={{ animationDelay: "0.9s" }} cx="362" cy="160" r={1.8} fill="#67E8F9" />
-        <circle className="holySparkle" style={{ animationDelay: "1.4s" }} cx="336" cy="330" r={2} fill="#C084FC" />
+        <circle className="holySparkle" cx="50" cy="68" r={2.5} fill="#FFFFFF" />
+        <circle className="holySparkle" style={{ animationDelay: "0.6s" }} cx="36" cy="158" r={2} fill="#67E8F9" />
+        <circle className="holySparkle" style={{ animationDelay: "1.1s" }} cx="62" cy="332" r={2.2} fill="#C084FC" />
+        <circle className="holySparkle" style={{ animationDelay: "0.3s" }} cx="350" cy="68" r={2.5} fill="#FFFFFF" />
+        <circle className="holySparkle" style={{ animationDelay: "0.9s" }} cx="364" cy="158" r={2} fill="#67E8F9" />
+        <circle className="holySparkle" style={{ animationDelay: "1.4s" }} cx="338" cy="332" r={2.2} fill="#C084FC" />
       </g>
     </g>
   );
