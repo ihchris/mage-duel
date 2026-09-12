@@ -76,12 +76,296 @@ export const T = {
   legendary: "#E8B44F",
 };
 
+// ================= LOCALIZATION (PT-BR / EN) =================
+export const I18N = {
+  pt: {
+    // General
+    langName: "Português (BR)",
+    langFlag: "🇧🇷",
+    level: "Nv.",
+    xp: "XP",
+    cancel: "Cancelar",
+    confirm: "Confirmar",
+    back: "Voltar",
+    close: "Fechar",
+    save: "Salvar",
+    edit: "Editar",
+    customize: "Personalizar",
+    previewLive: "Prévia em Tempo Real",
+    tapToEquip: "Toque para equipar",
+    shards: "Shards",
+    coins: "Moedas",
+
+    // Creation Screen
+    createTitle: "Crie seu Arquimago",
+    createSubtitle: "Forje seu legado arcano e domine os elementos",
+    createNameLabel: "Nome do Mago",
+    createNamePlaceholder: "Ex: Ignis, Zephyr, Astraea...",
+    createRandomName: "Gerar Nome",
+    createRandomLook: "Aleatório",
+    createRandomMage: "Sorteio Aleatório",
+    createSuggestions: "Sugestões:",
+    createAffinityLabel: "Afinidade Elemental",
+    createAffinityDesc: "+25% dano nos feitiços do elemento",
+    createGenderLabel: "Gênero do Personagem",
+    male: "Masculino",
+    female: "Feminino",
+    maleSymbol: "♂ Masculino",
+    femaleSymbol: "♀ Feminino",
+    beginJourney: "⚔️ Iniciar Jornada",
+    enterNamePrompt: "⚠️ Digite o nome do seu mago para iniciar a jornada",
+    newMage: "Novo Mago",
+
+    // Tabs
+    tabIdentity: "Identidade",
+    tabBody: "Rosto & Pele",
+    tabHair: "Cabelo & Estilo",
+    tabBodySkin: "Corpo & Pele",
+    tabHairBeard: "Cabelo & Barba",
+    tabFaceJewelry: "Rosto & Joias",
+
+    // Customization Categories
+    skinTone: "Tom de Pele",
+    faceShape: "Formato do Rosto",
+    eyeColor: "Cor dos Olhos",
+    gloves: "Luvas & Manoplas",
+    hairColor: "Cor do Cabelo",
+    hairstyle: "Penteado",
+    beardStyle: "Estilo de Barba",
+    earrings: "Brincos",
+    noseRing: "Piercing de Nariz",
+
+    // Elements
+    elFire: "Fogo",
+    elIce: "Gelo",
+    elNature: "Natureza",
+    elArcane: "Arcano",
+    fireRole: "Explosão & Queimadura",
+    iceRole: "Controle & Congelamento",
+    natureRole: "Cura Vital & Enraizamento",
+    arcaneRole: "Mana & Feitiços Puros",
+
+    // Hub Portals & Header
+    grimoire: "Grimório",
+    grimoireSub: "Magias",
+    gear: "Equipamento",
+    gearSub: "Cajado & Relíquia",
+    style: "Cosméticos",
+    styleSub: "Auras, Pets & Capas",
+    shop: "Loja Arcana",
+    pass: "Passe Batalha",
+    appearance: "Aparência",
+    appearanceSub: "Customizar Mago",
+    findDuel: "ENCONTRAR OPONENTE",
+    searchingOpponent: "Buscando oponente nos leylines...",
+    matchFound: "Oponente Encontrado!",
+    bossTrials: "Provas de Arquimagos",
+    bossTrialsSub: "Treinamento de Mestres Elementais",
+    tutorial: "Tutorial",
+    dailyModifier: "Modificador Diário",
+    spellSlots: "Slots de Feitiço",
+    fullGrimoire: "📖 Grimório Completo",
+    friends: "Amigos",
+    settings: "Configurações",
+
+    // Modals
+    grimoireTitle: "Grimório de Feitiços",
+    gearTitle: "Equipamentos de Combate",
+    styleTitle: "Cosméticos & Estilo",
+    appearanceTitle: "Aparência do Mago",
+    shopTitle: "Loja Arcana",
+    passTitle: "Passe de Batalha: Season of Embers",
+    settingsTitle: "Configurações & Painel Administrativo",
+    languageSection: "Idioma do Jogo",
+    languageSectionSub: "Selecione o idioma de exibição do jogo",
+
+    // Pre-Battle Scout
+    duelConfrontation: "Confronto de Magos",
+    duelMatchmaking: "Pareamento de Duelo",
+    inspectSpells: "Ver Magias & Loadout",
+    editDeck: "Ajustar meu Deck",
+    enterCombat: "ENTRAR NA ARENA",
+    newOpponent: "Novo Oponente",
+    forfeit: "Render-se",
+    viewBoth: "Ambos",
+    viewYourLoadout: "Seu Loadout",
+    viewEnemy: "Inimigo",
+    backHub: "← Hub",
+
+    // Combat
+    yourTurn: "Seu Turno",
+    enemyTurn: "Turno do Inimigo",
+    focusAction: "Foco (+12 Mana) [Espaço]",
+    surrenderConfirmTitle: "Deseja render-se do duelo?",
+    surrenderConfirmText: "A rendição contará como derrota e encerrará a batalha imediatamente.",
+    surrenderKeepFighting: "Continuar Lutando",
+    surrenderYes: "Sim, Render-se",
+    combatLogTitle: "Crônica Arcana",
+
+    // Results
+    gloriousVictory: "VITÓRIA GLORIOSA!",
+    defeat: "DERROTA",
+    victorySub: "Você dominou as artes arcanas e superou seu oponente!",
+    defeatSub: "Seus feitiços falharam desta vez, mas a sabedoria vem do combate.",
+    nextDuel: "Próximo Duelo",
+    returnHub: "Voltar ao Hub",
+    rewards: "Recompensas Obtidas",
+    xpEarned: "XP do Mago",
+    shardsEarned: "Shards Arcanos",
+    trainingComplete: "Treinamento Concluído!",
+    archmageDefeated: "Arquimago Derrotado!",
+  },
+  en: {
+    // General
+    langName: "English",
+    langFlag: "🇺🇸",
+    level: "Lv.",
+    xp: "XP",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    back: "Back",
+    close: "Close",
+    save: "Save",
+    edit: "Edit",
+    customize: "Customize",
+    previewLive: "Real-time Preview",
+    tapToEquip: "Tap to equip",
+    shards: "Shards",
+    coins: "Coins",
+
+    // Creation Screen
+    createTitle: "Create your Archmage",
+    createSubtitle: "Forge your arcane legacy and master the elements",
+    createNameLabel: "Mage Name",
+    createNamePlaceholder: "E.g. Ignis, Zephyr, Astraea...",
+    createRandomName: "Random Name",
+    createRandomLook: "Randomize",
+    createRandomMage: "Randomize Look",
+    createSuggestions: "Suggestions:",
+    createAffinityLabel: "Elemental Affinity",
+    createAffinityDesc: "+25% matching spell damage",
+    createGenderLabel: "Character Gender",
+    male: "Male",
+    female: "Female",
+    maleSymbol: "♂ Male",
+    femaleSymbol: "♀ Female",
+    beginJourney: "⚔️ Begin Journey",
+    enterNamePrompt: "⚠️ Enter your mage's name to begin the journey",
+    newMage: "New Mage",
+
+    // Tabs
+    tabIdentity: "Identity",
+    tabBody: "Face & Skin",
+    tabHair: "Hair & Style",
+    tabBodySkin: "Body & Skin",
+    tabHairBeard: "Hair & Beard",
+    tabFaceJewelry: "Face & Jewelry",
+
+    // Customization Categories
+    skinTone: "Skin Tone",
+    faceShape: "Face Shape",
+    eyeColor: "Eye Color",
+    gloves: "Gloves & Gauntlets",
+    hairColor: "Hair Color",
+    hairstyle: "Hairstyle",
+    beardStyle: "Beard Style",
+    earrings: "Earrings",
+    noseRing: "Nose Ring",
+
+    // Elements
+    elFire: "Fire",
+    elIce: "Ice",
+    elNature: "Nature",
+    elArcane: "Arcane",
+    fireRole: "Burst & Burn",
+    iceRole: "Control & Freeze",
+    natureRole: "Vital Heal & Root",
+    arcaneRole: "Pure Mana & Burst",
+
+    // Hub Portals & Header
+    grimoire: "Grimoire",
+    grimoireSub: "Spells",
+    gear: "Gear",
+    gearSub: "Staff & Relic",
+    style: "Cosmetics",
+    styleSub: "Auras, Pets & Capes",
+    shop: "Arcane Shop",
+    pass: "Battle Pass",
+    appearance: "Appearance",
+    appearanceSub: "Customize Mage",
+    findDuel: "FIND OPPONENT",
+    searchingOpponent: "Searching arcane leylines for duelists...",
+    matchFound: "Opponent Found!",
+    bossTrials: "Archmage Trials",
+    bossTrialsSub: "Master Training & Tier 3 Spells",
+    tutorial: "Tutorial",
+    dailyModifier: "Daily Leyline",
+    spellSlots: "Spell Sockets",
+    fullGrimoire: "📖 Full Grimoire",
+    friends: "Friends",
+    settings: "Settings",
+
+    // Modals
+    grimoireTitle: "Spell Grimoire",
+    gearTitle: "Combat Gear",
+    styleTitle: "Cosmetics & Style",
+    appearanceTitle: "Mage Appearance",
+    shopTitle: "Arcane Shop",
+    passTitle: "Battle Pass: Season of Embers",
+    settingsTitle: "Developer Tools & Settings",
+    languageSection: "Game Language",
+    languageSectionSub: "Select the display language for the game interface",
+
+    // Pre-Battle Scout
+    duelConfrontation: "Mage Confrontation",
+    duelMatchmaking: "Duel Matchmaking",
+    inspectSpells: "Inspect Spells & Loadout",
+    editDeck: "Edit My Deck",
+    enterCombat: "ENTER THE ARENA",
+    newOpponent: "New Opponent",
+    forfeit: "Forfeit",
+    viewBoth: "Both",
+    viewYourLoadout: "Your Loadout",
+    viewEnemy: "Enemy",
+    backHub: "← Hub",
+
+    // Combat
+    yourTurn: "Your Turn",
+    enemyTurn: "Enemy Turn",
+    focusAction: "Focus (+12 Mana) [Space]",
+    surrenderConfirmTitle: "Surrender from duel?",
+    surrenderConfirmText: "Surrendering counts as a defeat and ends the battle immediately.",
+    surrenderKeepFighting: "Keep Fighting",
+    surrenderYes: "Yes, Surrender",
+    combatLogTitle: "Arcane Chronicle",
+
+    // Results
+    gloriousVictory: "GLORIOUS VICTORY!",
+    defeat: "DEFEAT",
+    victorySub: "You mastered the arcane arts and bested your opponent!",
+    defeatSub: "Your spells fell short this time, but wisdom is forged in combat.",
+    nextDuel: "Next Duel",
+    returnHub: "Return to Hub",
+    rewards: "Rewards Earned",
+    xpEarned: "Mage XP",
+    shardsEarned: "Arcane Shards",
+    trainingComplete: "Training Completed!",
+    archmageDefeated: "Archmage Defeated!",
+  },
+};
+
+export const getElementName = (elKey, lang = "pt") => {
+  const el = ELEMENTS[elKey];
+  if (!el) return elKey;
+  return lang === "pt" ? (el.ptName || el.name) : (el.enName || el.name);
+};
+
 // ================= GAME DATA =================
 const ELEMENTS = {
-  fire:   { name: "Fire",   color: T.fire,   icon: "▲" },
-  ice:    { name: "Ice",    color: T.ice,    icon: "◆" },
-  nature: { name: "Nature", color: T.nature, icon: "❋" },
-  arcane: { name: "Arcane", color: T.arcane, icon: "✶" },
+  fire:   { name: "Fire", ptName: "Fogo", enName: "Fire", color: T.fire, icon: "▲" },
+  ice:    { name: "Ice", ptName: "Gelo", enName: "Ice", color: T.ice, icon: "◆" },
+  nature: { name: "Nature", ptName: "Natureza", enName: "Nature", color: T.nature, icon: "❋" },
+  arcane: { name: "Arcane", ptName: "Arcano", enName: "Arcane", color: T.arcane, icon: "✶" },
 };
 
 const SKIN_TONES = [
@@ -4191,6 +4475,9 @@ function RarityCard({ item, selected, locked, onClick, subtitle }) {
 // ================= MAIN =================
 export default function MageDuel() {
   const [saved] = useState(() => loadSave());
+  const [lang, setLang] = useState(() => saved?.lang ?? "pt");
+  const t = (k) => I18N[lang]?.[k] || I18N.pt[k] || k;
+  const toggleLang = () => setLang(l => (l === "pt" ? "en" : "pt"));
   const [phase, setPhase] = useState(saved ? "loadout" : "create");
   const [tab, setTab] = useState(null);
   const [mageName, setMageName] = useState(saved?.mageName ?? "");
@@ -4273,6 +4560,7 @@ export default function MageDuel() {
 
   useEffect(() => {
     const data = {
+      lang,
       mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId,
       earringId, noseRingId, offhandId, glovesId,
@@ -4290,7 +4578,7 @@ export default function MageDuel() {
       bossesDefeated: [...bossesDefeated],
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -5867,10 +6155,10 @@ export default function MageDuel() {
     const QUICK_NAMES = ["Ignis", "Zephyr", "Astraea", "Kaelen", "Morrigan"];
 
     const ELEMENT_PERKS = {
-      fire:   { role: "Explosão & Queimadura", perk: "+25% Dano de Fogo", badge: "Ataque Contínuo" },
-      ice:    { role: "Controle & Congelamento", perk: "+25% Dano de Gelo", badge: "Paralisia de Turno" },
-      nature: { role: "Cura Vital & Enraizamento", perk: "+25% Dano da Natureza", badge: "Sustentação" },
-      arcane: { role: "Mana & Feitiços Puros", perk: "+25% Dano Arcano", badge: "Dano Mágico Alto" },
+      fire:   { role: lang === "pt" ? "Explosão & Queimadura" : "Burst & Burn", perk: lang === "pt" ? "+25% Dano de Fogo" : "+25% Fire Damage", badge: lang === "pt" ? "Ataque Contínuo" : "Continuous Burn" },
+      ice:    { role: lang === "pt" ? "Controle & Congelamento" : "Control & Freeze", perk: lang === "pt" ? "+25% Dano de Gelo" : "+25% Ice Damage", badge: lang === "pt" ? "Paralisia de Turno" : "Turn Freeze" },
+      nature: { role: lang === "pt" ? "Cura Vital & Enraizamento" : "Vital Heal & Root", perk: lang === "pt" ? "+25% Dano da Natureza" : "+25% Nature Damage", badge: lang === "pt" ? "Sustentação" : "Sustain" },
+      arcane: { role: lang === "pt" ? "Mana & Feitiços Puros" : "Pure Mana & Burst", perk: lang === "pt" ? "+25% Dano Arcano" : "+25% Arcane Damage", badge: lang === "pt" ? "Dano Mágico Alto" : "High Arcane Damage" },
     };
 
     const desktopTab = (createTab === "identity" ? "body" : createTab);
@@ -5881,21 +6169,21 @@ export default function MageDuel() {
         <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
           <div className="flex items-center justify-between mb-1.5">
             <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>✍️</span><span>Nome do Mago</span>
+              <span>✍️</span><span>{t("createNameLabel")}</span>
             </label>
             <button
               onClick={rollRandomName}
               className="px-2 py-0.5 rounded-full text-[10px] font-mono text-amber-300 hover:text-amber-200 bg-amber-500/15 border border-amber-400/30 flex items-center gap-1 transition-all active:scale-95"
-              title="Gerar nome de fantasia aleatório"
+              title={t("createRandomName")}
             >
-              <span>🎲</span><span>Gerar Nome</span>
+              <span>🎲</span><span>{t("createRandomName")}</span>
             </button>
           </div>
           <div className="relative">
             <input
               value={mageName}
               onChange={(e) => setMageName(e.target.value.slice(0, 18))}
-              placeholder="Ex: Ignis, Zephyr, Astraea..."
+              placeholder={t("createNamePlaceholder")}
               className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9 shadow-inner"
             />
             <button
@@ -5908,7 +6196,7 @@ export default function MageDuel() {
           </div>
 
           <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-            <span className="text-[10px] font-sans text-zinc-400">Sugestões:</span>
+            <span className="text-[10px] font-sans text-zinc-400">{t("createSuggestions")}</span>
             {QUICK_NAMES.map(qName => (
               <button
                 key={qName}
@@ -5929,10 +6217,10 @@ export default function MageDuel() {
         <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
           <div className="flex items-center justify-between mb-2">
             <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>🔮</span><span>Afinidade Elemental</span>
+              <span>🔮</span><span>{t("createAffinityLabel")}</span>
             </label>
             <span className="text-[10px] font-mono text-zinc-400">
-              +25% dano correspondente
+              {t("createAffinityDesc")}
             </span>
           </div>
 
@@ -5961,7 +6249,7 @@ export default function MageDuel() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-[12px] font-bold truncate flex items-center justify-between" style={{ color: isSel ? e.color : T.textPrimary }}>
-                      <span>{e.name}</span>
+                      <span>{getElementName(key, lang)}</span>
                       {isSel && <span className="text-[10px]">✓</span>}
                     </div>
                     <div className="text-[9px] text-zinc-400 truncate mt-0.5">
@@ -5977,7 +6265,7 @@ export default function MageDuel() {
         {/* Gender Toggle */}
         <div className="card-surface rounded-2xl p-3 sm:p-4 border border-white/10 shadow-sm">
           <label className="font-serif text-[12px] sm:text-[13px] font-bold text-amber-200 mb-2 flex items-center gap-1.5">
-            <span>👤</span><span>Gênero do Personagem</span>
+            <span>👤</span><span>{t("createGenderLabel")}</span>
           </label>
           <div className="grid grid-cols-2 gap-2">
             {GENDERS.map(g => (
@@ -5991,7 +6279,7 @@ export default function MageDuel() {
                 }`}
               >
                 <span>{g.id === "gender_female" ? "♀" : "♂"}</span>
-                <span>{g.name}</span>
+                <span>{g.id === "gender_female" ? t("female") : t("male")}</span>
               </button>
             ))}
           </div>
@@ -6004,7 +6292,7 @@ export default function MageDuel() {
         {/* Gender Selector */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>👤</span><span>Gênero</span>
+            <span>👤</span><span>{t("createGenderLabel")}</span>
           </p>
           <div className="grid grid-cols-2 gap-2">
             {GENDERS.map(g => (
@@ -6018,7 +6306,7 @@ export default function MageDuel() {
                 }`}
               >
                 <span>{g.id === "gender_female" ? "♀" : "♂"}</span>
-                <span>{g.name}</span>
+                <span>{g.id === "gender_female" ? t("female") : t("male")}</span>
               </button>
             ))}
           </div>
@@ -6028,7 +6316,7 @@ export default function MageDuel() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>🎨</span><span>Tom de Pele</span>
+              <span>🎨</span><span>{t("skinTone")}</span>
             </p>
             <span className="text-[11px] font-mono text-zinc-400">
               {SKIN_TONES.find(s => s.id === skinToneId)?.name}
@@ -6061,7 +6349,7 @@ export default function MageDuel() {
         {/* Face Shape */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>🎭</span><span>Formato do Rosto</span>
+            <span>🎭</span><span>{t("faceShape")}</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {FACES.map(f => (
@@ -6084,7 +6372,7 @@ export default function MageDuel() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>👁️</span><span>Cor dos Olhos</span>
+              <span>👁️</span><span>{t("eyeColor")}</span>
             </p>
             <span className="text-[11px] font-mono text-zinc-400">
               {EYE_COLORS.find(e => e.id === eyeColorId)?.name}
@@ -6117,7 +6405,7 @@ export default function MageDuel() {
         {/* Gloves */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>🧤</span><span>Luvas & Manoplas</span>
+            <span>🧤</span><span>{t("gloves")}</span>
           </p>
           <div className="grid grid-cols-2 gap-2">
             {GLOVES.map(gl => (
@@ -6144,7 +6432,7 @@ export default function MageDuel() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>🎨</span><span>Cor do Cabelo</span>
+              <span>🎨</span><span>{t("hairColor")}</span>
             </p>
             <span className="text-[11px] font-mono text-zinc-400">
               {HAIR_COLORS.find(h => h.id === hairColorId)?.name}
@@ -6177,7 +6465,7 @@ export default function MageDuel() {
         {/* Hairstyle */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>✂</span><span>Penteado</span>
+            <span>✂</span><span>{t("hairstyle")}</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {HAIR_STYLES.map(hs => (
@@ -6199,7 +6487,7 @@ export default function MageDuel() {
         {/* Beard Style */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>🧔</span><span>Estilo de Barba</span>
+            <span>🧔</span><span>{t("beardStyle")}</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {BEARD_STYLES.map(b => (
@@ -6221,7 +6509,7 @@ export default function MageDuel() {
         {/* Earrings */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>💎</span><span>Brincos</span>
+            <span>💎</span><span>{t("earrings")}</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {EARRINGS.map(e => (
@@ -6243,7 +6531,7 @@ export default function MageDuel() {
         {/* Nose Rings */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>✨</span><span>Piercing de Nariz</span>
+            <span>✨</span><span>{t("noseRing")}</span>
           </p>
           <div className="grid grid-cols-3 gap-2">
             {NOSE_RINGS.map(n => (
@@ -6270,7 +6558,7 @@ export default function MageDuel() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="font-serif text-[12px] font-bold text-amber-200 flex items-center gap-1.5">
-              <span>👁️</span><span>Cor dos Olhos</span>
+              <span>👁️</span><span>{t("eyeColor")}</span>
             </p>
             <span className="text-[11px] font-mono text-zinc-400">
               {EYE_COLORS.find(e => e.id === eyeColorId)?.name}
@@ -6303,7 +6591,7 @@ export default function MageDuel() {
         {/* Earrings */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>💎</span><span>Brincos</span>
+            <span>💎</span><span>{t("earrings")}</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {EARRINGS.map(e => (
@@ -6325,7 +6613,7 @@ export default function MageDuel() {
         {/* Nose Rings */}
         <div>
           <p className="font-serif text-[12px] font-bold mb-2 text-amber-200 flex items-center gap-1.5">
-            <span>✨</span><span>Piercing de Nariz</span>
+            <span>✨</span><span>{t("noseRing")}</span>
           </p>
           <div className="grid grid-cols-3 gap-2">
             {NOSE_RINGS.map(n => (
@@ -6377,21 +6665,30 @@ export default function MageDuel() {
                     style={{ color: el.color, borderColor: `${el.color}55`, backgroundColor: `${el.color}15` }}
                   >
                     <span>{el.icon}</span>
-                    <span>{el.name}</span>
+                    <span>{getElementName(affinity, lang)}</span>
                   </span>
                   <span className="text-[10px] font-sans text-zinc-400">
-                    · +25% dano
+                    · +25% {lang === "pt" ? "dano" : "dmg"}
                   </span>
                 </div>
 
-                <button
-                  onClick={rollRandomLook}
-                  className="px-2.5 py-1 rounded-full text-[11px] font-sans font-bold bg-amber-500/20 border border-amber-400/40 text-amber-300 hover:bg-amber-500/30 transition-all flex items-center gap-1 shadow-sm active:scale-95"
-                  title="Sortear aparência e nome aleatórios"
-                >
-                  <span>🎲</span>
-                  <span>Aleatório</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={toggleLang}
+                    className="px-2 py-1 rounded-full text-[10px] font-mono font-bold bg-slate-900 border border-white/20 text-zinc-200 hover:border-amber-400/50 transition-all flex items-center gap-1 shadow-sm active:scale-95"
+                    title={lang === "pt" ? "Alterar para Inglês" : "Switch to Portuguese"}
+                  >
+                    <span>{lang === "pt" ? "🇧🇷 PT" : "🇺🇸 EN"}</span>
+                  </button>
+                  <button
+                    onClick={rollRandomLook}
+                    className="px-2.5 py-1 rounded-full text-[11px] font-sans font-bold bg-amber-500/20 border border-amber-400/40 text-amber-300 hover:bg-amber-500/30 transition-all flex items-center gap-1 shadow-sm active:scale-95"
+                    title={t("createRandomLook")}
+                  >
+                    <span>🎲</span>
+                    <span>{t("createRandomLook")}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Centered Mage Sprite */}
@@ -6405,7 +6702,7 @@ export default function MageDuel() {
                   onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
                   className="px-2 py-0.5 rounded-full text-[10px] font-sans font-medium bg-slate-900 border border-white/15 text-zinc-300 active:scale-95 flex items-center gap-1 shadow-sm"
                 >
-                  <span>{genderId === "gender_female" ? "♀ Feminino" : "♂ Masculino"}</span>
+                  <span>{genderId === "gender_female" ? t("femaleSymbol") : t("maleSymbol")}</span>
                 </button>
 
                 <div className="flex items-center gap-1">
@@ -6414,7 +6711,7 @@ export default function MageDuel() {
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 font-bold truncate max-w-[120px]">
-                    {trimmedName || "Novo Mago"}
+                    {trimmedName || t("newMage")}
                   </span>
                 </div>
               </div>
@@ -6423,15 +6720,15 @@ export default function MageDuel() {
             {/* 2. Sub-Tabs Bar */}
             <div className="flex-shrink-0 grid grid-cols-3 gap-1.5 p-2 bg-slate-900/90 border-b border-white/10 z-10">
               {[
-                ["identity", "Identidade", "⚔️"],
-                ["body", "Rosto & Pele", "🎨"],
-                ["hair", "Cabelo & Estilo", "✂"],
-              ].map(([t, label, icon]) => (
+                ["identity", t("tabIdentity"), "⚔️"],
+                ["body", t("tabBody"), "🎨"],
+                ["hair", t("tabHair"), "✂"],
+              ].map(([tKey, label, icon]) => (
                 <button
-                  key={t}
-                  onClick={() => setCreateTab(t)}
+                  key={tKey}
+                  onClick={() => setCreateTab(tKey)}
                   className={`py-1.5 px-1 rounded-xl font-mono text-[11px] font-bold flex items-center justify-center gap-1 transition-all border ${
-                    createTab === t
+                    createTab === tKey
                       ? "bg-amber-500/20 border-amber-400/60 text-amber-200 shadow-[0_0_12px_rgba(245,158,11,0.2)]"
                       : "bg-slate-950/60 border-white/5 text-zinc-400 hover:text-zinc-200"
                   }`}
@@ -6453,7 +6750,7 @@ export default function MageDuel() {
             <div className="flex-shrink-0 w-full p-2.5 sm:p-3 bg-slate-950/95 border-t border-white/10 safe-all z-20 shadow-2xl flex flex-col gap-1">
               {!trimmedName && (
                 <span className="text-center text-[10px] font-sans text-amber-400/90 font-medium animate-pulse">
-                  ⚠️ Digite o nome do seu mago para iniciar a jornada
+                  {t("enterNamePrompt")}
                 </span>
               )}
               <button
@@ -6461,7 +6758,7 @@ export default function MageDuel() {
                 disabled={!trimmedName}
                 className="btn-king w-full rounded-xl py-3 font-serif text-[15px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
               >
-                <span>⚔️ Iniciar Jornada</span>
+                <span>{t("beginJourney")}</span>
               </button>
             </div>
           </div>
@@ -6470,12 +6767,29 @@ export default function MageDuel() {
           <div className="hidden md:flex landscape:flex w-full h-full flex-row overflow-hidden">
             {/* Left Column: Studio Sanctuary, Name, Affinity, Launch */}
             <div className="w-full landscape:w-5/12 md:w-5/12 flex flex-col justify-between border-r border-white/10 p-5 md:p-6 bg-slate-950/60 flex-shrink-0">
-              <div className="w-full text-center">
-                <h1 className="font-serif text-[26px] md:text-[28px] font-bold text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.35)]">
-                  Crie seu Arquimago
+              <div className="w-full">
+                <div className="flex items-center justify-between mb-2">
+                  <button
+                    onClick={() => setShowAdminModal(true)}
+                    className="text-[12px] font-mono text-zinc-400 hover:text-zinc-200 flex items-center gap-1 transition-colors"
+                    title={t("settings")}
+                  >
+                    <span>⚙️</span>
+                  </button>
+                  <button
+                    onClick={toggleLang}
+                    className="px-2.5 py-1 rounded-full text-[11px] font-sans font-bold bg-slate-900/90 border border-white/20 text-zinc-200 hover:border-amber-400/60 hover:text-amber-200 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                    title={lang === "pt" ? "Mudar para Inglês (Switch to English)" : "Mudar para Português (Switch to Portuguese)"}
+                  >
+                    <span>{lang === "pt" ? "🇧🇷 Português" : "🇺🇸 English"}</span>
+                    <span className="text-[9px] text-amber-400">⇄</span>
+                  </button>
+                </div>
+                <h1 className="font-serif text-[26px] md:text-[28px] font-bold text-center text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.35)]">
+                  {t("createTitle")}
                 </h1>
                 <p className="text-center text-[12px] font-sans text-zinc-400 mt-1">
-                  Forje seu legado arcano e domine os elementos
+                  {t("createSubtitle")}
                 </p>
               </div>
 
@@ -6499,7 +6813,7 @@ export default function MageDuel() {
                   className="mt-2 px-3 py-1 rounded-full text-[11px] font-sans font-bold bg-slate-900/90 border border-amber-400/40 text-amber-200 hover:bg-amber-400/20 hover:border-amber-400 transition-all flex items-center gap-1.5 shadow-md active:scale-95"
                 >
                   <span>🎲</span>
-                  <span>Sorteio Aleatório</span>
+                  <span>{t("createRandomMage")}</span>
                 </button>
               </div>
 
@@ -6508,22 +6822,22 @@ export default function MageDuel() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <label className="font-serif text-[12px] font-bold text-amber-200">
-                      Nome do Mago
+                      {t("createNameLabel")}
                     </label>
                     <button
                       onClick={rollRandomName}
                       className="text-[11px] font-mono text-amber-400 hover:text-amber-200 flex items-center gap-1 transition-colors"
-                      title="Gerar nome de fantasia aleatório"
+                      title={t("createRandomName")}
                     >
                       <span>🎲</span>
-                      <span>Nome Aleatório</span>
+                      <span>{t("createRandomName")}</span>
                     </button>
                   </div>
                   <div className="relative">
                     <input
                       value={mageName}
                       onChange={(e) => setMageName(e.target.value.slice(0, 18))}
-                      placeholder="Digite o nome arcano..."
+                      placeholder={t("createNamePlaceholder")}
                       className="w-full rounded-xl border border-white/10 px-3.5 py-2.5 font-sans text-[14px] outline-none transition-all bg-slate-950/80 text-zinc-100 placeholder-zinc-500 focus:border-amber-400/60 focus:ring-1 focus:ring-amber-400/40 pr-9"
                     />
                     <button
@@ -6539,10 +6853,10 @@ export default function MageDuel() {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="font-serif text-[12px] font-bold text-amber-200">
-                      Afinidade Elemental
+                      {t("createAffinityLabel")}
                     </label>
                     <span className="text-[11px] font-mono text-zinc-400">
-                      +25% dano
+                      {t("createAffinityDesc")}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
@@ -6570,7 +6884,7 @@ export default function MageDuel() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="text-[12px] font-bold truncate" style={{ color: isSel ? e.color : T.textPrimary }}>
-                              {e.name}
+                              {getElementName(key, lang)}
                             </div>
                             <div className="text-[9px] text-zinc-400 truncate">
                               {perkInfo?.role}
@@ -6587,7 +6901,7 @@ export default function MageDuel() {
                   disabled={!trimmedName}
                   className="btn-king w-full rounded-xl py-3 font-serif text-[16px] font-bold transition-all shadow-xl flex items-center justify-center gap-2"
                 >
-                  <span>⚔️ Iniciar Jornada</span>
+                  <span>{t("beginJourney")}</span>
                 </button>
               </div>
             </div>
@@ -6597,15 +6911,15 @@ export default function MageDuel() {
               {/* Sub-Tabs Header */}
               <div className="grid grid-cols-3 gap-2 p-3 sm:p-4 pb-3 border-b border-white/10 flex-shrink-0 bg-slate-950/40">
                 {[
-                  ["body", "Corpo & Pele", "👤"],
-                  ["hair", "Cabelo & Barba", "✂"],
-                  ["details", "Rosto & Joias", "✨"],
-                ].map(([t, label, icon]) => (
+                  ["body", t("tabBodySkin"), "👤"],
+                  ["hair", t("tabHairBeard"), "✂"],
+                  ["details", t("tabFaceJewelry"), "✨"],
+                ].map(([tKey, label, icon]) => (
                   <button
-                    key={t}
-                    onClick={() => setCreateTab(t)}
+                    key={tKey}
+                    onClick={() => setCreateTab(tKey)}
                     className={`btn-surface rounded-xl py-2 px-1 font-mono text-[12px] flex items-center justify-center gap-1.5 transition-all border ${
-                      desktopTab === t
+                      desktopTab === tKey
                         ? "border-amber-400/80 text-amber-300 font-bold bg-amber-500/15 shadow-sm"
                         : "text-zinc-400 hover:text-zinc-200"
                     }`}
@@ -6662,12 +6976,12 @@ export default function MageDuel() {
     });
 
     const HUB_PORTALS = [
-      { id: "skills", label: "Grimório", sub: `${unlockedSkills.size}/36 Magias`, icon: "⚔️", color: "#E8B44F" },
-      { id: "gear", label: "Equipamento", sub: previewMage.staffGear?.name || "Cajado & Relíquia", icon: "🪄", color: "#38BDF8" },
-      { id: "style", label: "Cosméticos", sub: "Auras, Pets & Capas", icon: "✨", color: "#A855F7" },
-      { id: "shop", label: "Loja Arcana", sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
-      { id: "pass", label: "Passe Batalha", sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
-      { id: "appearance", label: "Aparência", sub: "Customizar Mago", icon: "👤", color: "#10B981" },
+      { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "⚔️", color: "#E8B44F" },
+      { id: "gear", label: t("gear"), sub: previewMage.staffGear?.name || t("gearSub"), icon: "🪄", color: "#38BDF8" },
+      { id: "style", label: t("style"), sub: t("styleSub"), icon: "✨", color: "#A855F7" },
+      { id: "shop", label: t("shop"), sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
+      { id: "pass", label: t("pass"), sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
+      { id: "appearance", label: t("appearance"), sub: t("appearanceSub"), icon: "👤", color: "#10B981" },
     ];
 
     return (
@@ -6697,13 +7011,13 @@ export default function MageDuel() {
             <div className="flex-1 min-w-0 flex flex-col justify-center">
               <div className="flex items-center justify-between gap-1 mb-1">
                 <span className="font-serif text-[13px] font-bold text-amber-200 truncate">
-                  {mageName.trim() || "Mago Arcano"}
+                  {mageName.trim() || t("newMage")}
                 </span>
                 <button
                   onClick={() => setTab("appearance")}
                   className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium bg-slate-900 border border-amber-400/40 text-amber-200 flex items-center gap-1 shadow-sm flex-shrink-0"
                 >
-                  <span>👤</span><span>Editar</span>
+                  <span>👤</span><span>{t("edit")}</span>
                 </button>
               </div>
 
@@ -6714,7 +7028,7 @@ export default function MageDuel() {
                   style={{ color: el.color, borderColor: `${el.color}44` }}
                 >
                   <span>{el.icon}</span>
-                  <span>{el.name}</span>
+                  <span>{getElementName(affinity, lang)}</span>
                 </span>
 
                 <button
@@ -6723,7 +7037,7 @@ export default function MageDuel() {
                   className="px-2 py-0.5 rounded-full text-[9px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 flex items-center gap-1 shadow-sm"
                 >
                   <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
-                  <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
+                  <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
                 </button>
 
                 {relic && relic.id !== "none" && (
@@ -6770,7 +7084,7 @@ export default function MageDuel() {
               <div className="w-24 sm:w-36 h-2.5 sm:h-3 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
 
               <div className="mt-1 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 group-hover:border-amber-400/50 group-hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm">
-                <span>👤</span><span>Personalizar</span>
+                <span>👤</span><span>{t("customize")}</span>
               </div>
             </div>
 
@@ -6781,7 +7095,7 @@ export default function MageDuel() {
                 style={{ color: el.color, borderColor: `${el.color}44` }}
               >
                 <span>{el.icon}</span>
-                <span>{el.name}</span>
+                <span>{getElementName(affinity, lang)}</span>
               </span>
 
               <button
@@ -6790,7 +7104,7 @@ export default function MageDuel() {
                 className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
               >
                 <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
-                <span>{genderId === "gender_female" ? "Feminino" : "Masculino"}</span>
+                <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
               </button>
 
               {relic && relic.id !== "none" && (
@@ -6932,7 +7246,7 @@ export default function MageDuel() {
 
   function renderGearModal() {
     if (!tab) return null;
-    const panelTitle = { skills: "Grimório de Feitiços", gear: "Equipamentos de Combate", style: "Cosméticos & Estilo", appearance: "Aparência do Mago", shop: "Loja Arcana", pass: "Passe de Batalha: Season of Embers" }[tab];
+    const panelTitle = { skills: t("grimoireTitle"), gear: t("gearTitle"), style: t("styleTitle"), appearance: t("appearanceTitle"), shop: t("shopTitle"), pass: t("passTitle") }[tab];
     const previewMage = buildPreviewMage();
     const el = ELEMENTS[affinity] || ELEMENTS.fire;
     const relic = RELICS.find(r => r.id === relicId);
@@ -6978,10 +7292,10 @@ export default function MageDuel() {
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_#10B981]"></span>
                   </span>
                   <span className="text-[10px] sm:text-[11px] font-sans font-bold uppercase tracking-wider text-emerald-300">
-                    Prévia em Tempo Real
+                    {t("previewLive")}
                   </span>
                   <span className="text-[9px] font-mono text-zinc-400 hidden xs:inline sm:inline">
-                    · Toque para equipar
+                    · {t("tapToEquip")}
                   </span>
                 </div>
 
@@ -8498,13 +8812,13 @@ export default function MageDuel() {
                 className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono font-bold border mb-1"
                 style={{ background: `${T.arcane}18`, borderColor: `${T.arcane}55`, color: T.arcane }}
               >
-                <span>⚡ PAINEL DE CONTROLE ADM</span>
+                <span>⚡ {lang === "pt" ? "PAINEL DE CONTROLE ADM" : "ADM CONTROL PANEL"}</span>
               </div>
               <h2 className="font-serif text-[20px] sm:text-[24px] font-bold" style={{ color: T.textPrimary }}>
-                Ferramentas de Desenvolvedor
+                {t("settingsTitle")}
               </h2>
               <p className="text-[12px] font-mono mt-0.5" style={{ color: T.textSecondary }}>
-                Desbloqueie itens, feitiços, moedas ou teste a progressão livremente.
+                {lang === "pt" ? "Gerencie o idioma, desbloqueie itens, feitiços ou teste a progressão livremente." : "Manage language, unlock items, spells, or test progression freely."}
               </p>
             </div>
             <button
@@ -8513,6 +8827,55 @@ export default function MageDuel() {
             >
               ✕
             </button>
+          </div>
+
+          {/* Language Selector Card */}
+          <div
+            className="card-surface rounded-xl p-3.5 sm:p-4 mb-4 border transition-all shadow-md"
+            style={{ borderColor: `${T.gold}55`, background: "rgba(15, 23, 42, 0.75)" }}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌐</span>
+                <div>
+                  <h3 className="font-serif font-bold text-[14px] sm:text-[15px]" style={{ color: T.goldLight }}>
+                    {t("languageSection")}
+                  </h3>
+                  <p className="text-[11px] font-sans text-zinc-400">
+                    {t("languageSectionSub")}
+                  </p>
+                </div>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border bg-amber-500/15 border-amber-400/40 text-amber-300">
+                {lang === "pt" ? "🇧🇷 Português (BR)" : "🇺🇸 English (US)"}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                onClick={() => setLang("pt")}
+                className={`py-2 px-3 rounded-xl font-sans text-[12px] font-bold transition-all flex items-center justify-center gap-2 border ${
+                  lang === "pt"
+                    ? "bg-amber-500/25 border-amber-400 text-amber-200 shadow-md scale-[1.01]"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200 hover:border-white/20"
+                }`}
+              >
+                <span className="text-base">🇧🇷</span>
+                <span>Português (Brasil)</span>
+                {lang === "pt" && <span className="text-emerald-400 ml-1">✓</span>}
+              </button>
+              <button
+                onClick={() => setLang("en")}
+                className={`py-2 px-3 rounded-xl font-sans text-[12px] font-bold transition-all flex items-center justify-center gap-2 border ${
+                  lang === "en"
+                    ? "bg-amber-500/25 border-amber-400 text-amber-200 shadow-md scale-[1.01]"
+                    : "bg-slate-900/80 border-white/10 text-zinc-400 hover:text-zinc-200 hover:border-white/20"
+                }`}
+              >
+                <span className="text-base">🇺🇸</span>
+                <span>English (US)</span>
+                {lang === "en" && <span className="text-emerald-400 ml-1">✓</span>}
+              </button>
+            </div>
           </div>
 
           {/* Action Cards Grid */}
@@ -8698,7 +9061,7 @@ export default function MageDuel() {
                 </h1>
                 {/* Ultra-slim XP Badge & Bar */}
                 <div className="px-2.5 py-1 rounded-full bg-slate-900/90 border border-amber-500/25 flex items-center gap-2 shadow-sm">
-                  <span className="font-bold text-amber-300 text-[11px] font-sans">Nv. {mageLevel}</span>
+                  <span className="font-bold text-amber-300 text-[11px] font-sans">{t("level")} {mageLevel}</span>
                   <div className="w-16 sm:w-24 h-1 rounded-full overflow-hidden bg-slate-950 border border-white/10">
                     <div
                       className="h-full rounded-full transition-all duration-300"
@@ -8708,11 +9071,11 @@ export default function MageDuel() {
                 </div>
               </div>
               <p className="text-[10px] sm:text-[11px] font-sans text-zinc-400 mt-0.5">
-                Afinidade {ELEMENTS[affinity]?.name || "Fogo"} +25% · {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP
+                {lang === "pt" ? "Afinidade" : "Affinity"} {getElementName(affinity, lang)} +25% · {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP
               </p>
             </div>
 
-            {/* Right Controls: Minimalist Currency, Friends & Settings Gear */}
+            {/* Right Controls: Minimalist Currency, Language, Friends & Settings Gear */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {pendingLevelDraft && (
                 <button
@@ -8724,10 +9087,19 @@ export default function MageDuel() {
                 </button>
               )}
 
+              {/* Language Switcher Pill */}
+              <button
+                onClick={toggleLang}
+                title={lang === "pt" ? "Mudar para Inglês (Switch to English)" : "Mudar para Português (Switch to Portuguese)"}
+                className="px-2.5 py-1 rounded-full bg-slate-900/90 border border-white/15 hover:border-amber-400/50 text-zinc-200 hover:text-amber-200 text-xs font-sans font-bold transition-all shadow-sm flex items-center gap-1.5 hover:-translate-y-0.5 active:scale-95"
+              >
+                <span>{lang === "pt" ? "🇧🇷 PT" : "🇺🇸 EN"}</span>
+              </button>
+
               {/* Minimalist Shards Counter: icon + amount */}
               <button
                 onClick={() => setTab("shop")}
-                title="Abrir Loja Arcana"
+                title={t("shopTitle")}
                 className="px-2.5 sm:px-3 py-1 rounded-full bg-slate-900/90 border border-amber-500/25 hover:border-amber-400/50 text-amber-300 text-xs font-mono font-bold transition-all flex items-center gap-1.5 shadow-sm hover:-translate-y-0.5"
               >
                 <span className="text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">✦</span>
@@ -8737,7 +9109,7 @@ export default function MageDuel() {
               {/* Friends Pill */}
               <button
                 onClick={() => setShowFriends(true)}
-                title="Lista de Amigos"
+                title={t("friends")}
                 className="px-2.5 py-1 rounded-full bg-slate-900/90 border border-white/10 hover:border-white/25 text-zinc-300 text-xs font-sans transition-all shadow-sm flex items-center gap-1.5 hover:-translate-y-0.5"
               >
                 <span>👥</span>
@@ -8748,7 +9120,7 @@ export default function MageDuel() {
               <button
                 onClick={() => setShowAdminModal(true)}
                 className="p-1.5 rounded-xl bg-slate-900/90 border border-white/10 hover:border-amber-400/50 text-zinc-300 hover:text-white transition-all shadow-sm flex items-center justify-center text-sm hover:-translate-y-0.5"
-                title="Configurações & Painel Administrativo"
+                title={t("settings")}
               >
                 <span>⚙️</span>
               </button>
@@ -8775,7 +9147,7 @@ export default function MageDuel() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="text-[9px] font-sans uppercase tracking-widest font-bold text-amber-400/90">
-                        Modificador Diário
+                        {t("dailyModifier")}
                       </span>
                       <span className="text-zinc-500">·</span>
                       <span className="text-xs sm:text-sm font-serif font-bold text-zinc-100 truncate">
@@ -8807,17 +9179,17 @@ export default function MageDuel() {
               <div className="flex items-center gap-2">
                 <span className="font-serif font-bold flex items-center gap-1.5 text-amber-300">
                   <span>🔮</span>
-                  <span>Slots de Feitiço ({chosen.length}/{maxSlots})</span>
+                  <span>{t("spellSlots")} ({chosen.length}/{maxSlots})</span>
                 </span>
                 <span className="text-[10px] text-zinc-500 hidden sm:inline">
-                  {maxSlots < 7 ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : "· Todos os 7 slots liberados!"}
+                  {maxSlots < 7 ? (lang === "pt" ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : `· Lv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} unlocks next socket`) : (lang === "pt" ? "· Todos os 7 slots liberados!" : "· All 7 sockets unlocked!")}
                 </span>
               </div>
               <button
                 onClick={() => setTab("skills")}
                 className="text-[11px] font-sans font-medium text-amber-300/80 hover:text-amber-200 transition-colors flex items-center gap-1"
               >
-                <span>📖 Grimório Completo</span>
+                <span>{t("fullGrimoire")}</span>
               </button>
             </div>
 
@@ -8893,7 +9265,7 @@ export default function MageDuel() {
                 title="Treinamento com Espantalho Arcano"
               >
                 <span className="text-sm sm:text-base">🎯</span>
-                <span>Tutorial</span>
+                <span>{t("tutorial")}</span>
               </button>
               <button
                 onClick={() => setShowBossTrialsModal(true)}
@@ -8901,8 +9273,7 @@ export default function MageDuel() {
                 title="Treinamento de Mestres Elementais"
               >
                 <span className="text-sm sm:text-base">👑</span>
-                <span className="hidden md:inline">Provas de Arquimagos</span>
-                <span className="md:hidden">Provas</span>
+                <span>{t("bossTrials")}</span>
               </button>
             </div>
             <button
@@ -8911,7 +9282,7 @@ export default function MageDuel() {
               className="btn-king w-full sm:flex-1 rounded-xl py-2.5 sm:py-3.5 px-4 text-[13px] sm:text-[16px] md:text-[18px] flex items-center justify-center gap-2"
             >
               <span className="text-base sm:text-xl">⚔️</span>
-              <span>ENCONTRAR OPONENTE</span>
+              <span>{t("findDuel")}</span>
             </button>
           </div>
         </div>
@@ -8955,10 +9326,10 @@ export default function MageDuel() {
               className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-1 shadow-sm"
               style={{ borderColor: `${T.success}66`, background: `${T.success}18`, color: T.success }}
             >
-              <span>✓</span><span>Oponente Encontrado · Pareamento de Duelo</span>
+              <span>✓</span><span>{t("matchFound")} · {t("duelMatchmaking")}</span>
             </div>
             <h1 className="font-serif text-[22px] sm:text-[26px] font-bold tracking-wide" style={{ color: T.gold, textShadow: `0 0 24px ${T.gold}44` }}>
-              Confronto de Magos
+              {t("duelConfrontation")}
             </h1>
           </div>
 
@@ -8987,7 +9358,7 @@ export default function MageDuel() {
               >
                 <div className="w-full flex items-center justify-between gap-1 mb-1">
                   <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: T.textPrimary }}>
-                    {mageName.trim() || "Você"}
+                    {mageName.trim() || (lang === "pt" ? "Você" : "You")}
                   </span>
                   <ElementBadge el={affinity} />
                 </div>
@@ -9011,16 +9382,16 @@ export default function MageDuel() {
                       title="Clique para abrir o Grimório e escolher seus feitiços"
                     >
                       <span>📖</span>
-                      <span>{playerSkills.length}/{maxSlots} Feitiços</span>
+                      <span>{playerSkills.length}/{maxSlots} {lang === "pt" ? "Feitiços" : "Spells"}</span>
                       <span className="opacity-70">✏️</span>
                     </button>
                     <button
                       onClick={() => setTab("gear")}
                       className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white transition-all hover:scale-105 flex items-center gap-1 shadow-sm"
-                      title="Clique para trocar cajado, relíquia e itens de combate"
+                      title={t("gearTitle")}
                     >
                       <span>🛡️</span>
-                      <span className="hidden sm:inline">Equip.</span>
+                      <span className="hidden sm:inline">{t("gear")}</span>
                     </button>
                   </div>
                 </div>
@@ -9070,7 +9441,7 @@ export default function MageDuel() {
                       className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border"
                       style={{ borderColor: `${enemyEl.color}55`, background: `${enemyEl.color}14`, color: enemyEl.color }}
                     >
-                      ⚔️ {foeSkills.length} Feitiços
+                      ⚔️ {foeSkills.length} {lang === "pt" ? "Feitiços" : "Spells"}
                     </span>
                   </div>
                 </div>
@@ -9093,7 +9464,7 @@ export default function MageDuel() {
                     }`}
                   >
                     <span>⚔️</span>
-                    <span>Ambos</span>
+                    <span>{t("viewBoth")}</span>
                   </button>
                   <button
                     onClick={() => setScoutView("player")}
@@ -9104,7 +9475,7 @@ export default function MageDuel() {
                     }`}
                   >
                     <span>🧙‍♂️</span>
-                    <span>Seu Loadout ({playerSkills.length}/{maxSlots})</span>
+                    <span>{t("viewYourLoadout")} ({playerSkills.length}/{maxSlots})</span>
                   </button>
                   <button
                     onClick={() => setScoutView("enemy")}
@@ -9115,7 +9486,7 @@ export default function MageDuel() {
                     }`}
                   >
                     <span>👁️</span>
-                    <span>Inimigo ({foeSkills.length})</span>
+                    <span>{t("viewEnemy")} ({foeSkills.length})</span>
                   </button>
                 </div>
 
@@ -9123,18 +9494,18 @@ export default function MageDuel() {
                   <button
                     onClick={() => setTab("skills")}
                     className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-amber-300 border border-amber-400/30 hover:border-amber-400/70 hover:bg-amber-400/10 transition-all flex items-center gap-1 shadow-sm"
-                    title="Abrir o Grimório para escolher e equipar feitiços"
+                    title={t("grimoireTitle")}
                   >
                     <span>📖</span>
-                    <span>Grimório</span>
+                    <span>{t("grimoire")}</span>
                   </button>
                   <button
                     onClick={() => setTab("gear")}
                     className="btn-surface rounded-lg px-2.5 py-1 text-[11px] font-mono font-bold text-zinc-300 hover:text-white transition-all flex items-center gap-1 shadow-sm"
-                    title="Alterar Cajado, Relíquia e Cosméticos"
+                    title={t("gearTitle")}
                   >
                     <span>🛡️</span>
-                    <span>Equipamento</span>
+                    <span>{t("gear")}</span>
                   </button>
                 </div>
               </div>
@@ -9526,32 +9897,32 @@ export default function MageDuel() {
             <button
               onClick={() => setPhase("loadout")}
               className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1"
-              title="Voltar para a tela inicial do personagem"
+              title={t("backHub")}
             >
-              ← Hub
+              {t("backHub")}
             </button>
             <button
               onClick={() => setTab("skills")}
               className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all text-amber-300 border-amber-500/30 flex items-center justify-center gap-1 shadow-sm"
-              title="Abrir o Grimório para equipar ou desequipar feitiços"
+              title={t("grimoireTitle")}
             >
               <span>📖</span>
-              <span>Grimório</span>
+              <span>{t("grimoire")}</span>
             </button>
             <button
               onClick={() => setTab("gear")}
               className="btn-surface rounded-xl px-3.5 py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all text-zinc-300 hover:text-white flex items-center justify-center gap-1 shadow-sm"
-              title="Trocar cajado, relíquia e equipamentos"
+              title={t("gearTitle")}
             >
               <span>🛡️</span>
-              <span>Equipamento</span>
+              <span>{t("gear")}</span>
             </button>
             <button
               onClick={findOpponent}
               className="btn-surface flex-1 rounded-xl py-2.5 font-serif text-[12px] sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1"
             >
               <span>🔄</span>
-              <span>Novo Oponente</span>
+              <span>{t("newOpponent")}</span>
             </button>
             <button
               onClick={confirmDuel}
@@ -9559,9 +9930,9 @@ export default function MageDuel() {
               className={`btn-gold flex-2 rounded-xl py-2.5 px-4 sm:px-6 font-serif text-[14px] sm:text-[16px] font-black shadow-xl transition-all ${
                 !canEnterArena ? "opacity-50 cursor-not-allowed filter grayscale" : "hover:brightness-110"
               }`}
-              title={!canEnterArena ? "Equipe ao menos 4 feitiços para iniciar o duelo" : "Entrar na arena de combate"}
+              title={!canEnterArena ? (lang === "pt" ? "Equipe ao menos 4 feitiços para iniciar o duelo" : "Equip at least 4 spells to start duel") : t("enterCombat")}
             >
-              ⚔️ ENTRAR NA ARENA
+              ⚔️ {t("enterCombat")}
             </button>
           </div>
         </div>
@@ -9604,7 +9975,7 @@ export default function MageDuel() {
             className="font-serif text-[26px] sm:text-[32px] mb-1 font-black"
             style={{ color: isWin ? T.gold : T.danger, textShadow: isWin ? `0 0 24px ${T.gold}55` : "none" }}
           >
-            {isWin ? (isTutorial ? "Treinamento Concluído!" : bossEncounter ? "Arquimago Derrotado!" : "Vitória Arcana!") : "Derrota"}
+            {isWin ? (isTutorial ? t("trainingComplete") : bossEncounter ? t("archmageDefeated") : t("gloriousVictory")) : t("defeat")}
           </h1>
           <p className="font-mono text-[11px] sm:text-[12px] mb-3" style={{ color: T.textSecondary }}>
             {isWin
@@ -9714,7 +10085,7 @@ export default function MageDuel() {
               className="rounded-xl border card-surface p-3 mb-3 flex items-center justify-between text-[12px] font-mono"
               style={{ borderColor: `${T.gold}44` }}
             >
-              <span style={{ color: T.textSecondary }}>Arcane Shards Obtidos:</span>
+              <span style={{ color: T.textSecondary }}>{t("shardsEarned")}:</span>
               <span className="font-bold flex items-center gap-1" style={{ color: T.gold }}>
                 <span>✦</span><span>+5 Shards</span>
               </span>
@@ -9766,13 +10137,13 @@ export default function MageDuel() {
               onClick={findOpponent}
               className="btn-gold flex-1 rounded-xl py-3 font-serif text-[13px] sm:text-[14px] font-bold shadow-md"
             >
-              ⚔️ Próximo Duelo
+              ⚔️ {t("nextDuel")}
             </button>
             <button
               onClick={() => setPhase("loadout")}
               className="btn-surface flex-1 rounded-xl py-3 font-serif text-[13px] sm:text-[14px] font-bold transition-all"
             >
-              🏰 Sanctum
+              🏰 {t("returnHub")}
             </button>
           </div>
         </div>
