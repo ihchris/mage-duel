@@ -44,6 +44,13 @@ import {
   LeaderboardResultBanner,
 } from "./LeaderboardSystem.jsx";
 
+import {
+  RINGS,
+  findRing,
+  RingVectorIcon,
+  JewelryGearSection,
+} from "./JewelrySystem.jsx";
+
 // ================= DESIGN SYSTEM TOKENS =================
 export const T = {
   // Backgrounds (hierarquia de profundidade)
@@ -734,7 +741,8 @@ const START_OWNED = [
   "pet_none", "pet_imp",
   "robe_classic", "robe_midnight",
   "offhand_none", "offhand_tome",
-  "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare"
+  "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare",
+  "ring_none", "ring_cinder", "ring_glacier"
 ];
 const LOOTABLE = [
   "verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "hat_circlet",
@@ -746,9 +754,12 @@ const LOOTABLE = [
   "stormcaller", "bloodpact", "coral_scepter", "soulstone", "chronoloop", "twinfang",
   "hat_warlord", "hat_laurel", "hat_jester", "cape_banner", "cape_fur", "cape_void",
   "robe_sunburst", "robe_frostveil", "robe_verdant", "offhand_buckler", "offhand_skull", "offhand_prism",
-  "pet_dragon", "pet_owl", "pet_mushroom", "aura_starlight", "aura_bloodmoon"
+  "pet_dragon", "pet_owl", "pet_mushroom", "aura_starlight", "aura_bloodmoon",
+  // Anéis Arcanos (Jewelry)
+  "ring_cinder", "ring_combustion", "ring_glacier", "ring_shatter", "ring_spore", "ring_ironroot",
+  "ring_runic", "ring_singularity", "ring_chronos", "ring_prismatic"
 ];
-const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES];
+const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES, ...RINGS];
 const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
 
 // ================= TABELA DE ITENS DA LOJA (100% COSMÉTICO) =================
@@ -1007,24 +1018,43 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
   mult *= comboMult;
+  // Ring Damage & Elemental Multipliers
+  const atkRings = [atk.ring1, atk.ring2].filter(Boolean);
+  for (const ring of atkRings) {
+    if (ring.allDmg) mult *= 1 + ring.allDmg;
+    if (ring.el === skill.el && ring.elBonus) mult *= 1 + ring.elBonus;
+    if (ring.offAffinityBonus && skill.el !== atk.affinity && skill.dmg > 0) {
+      mult *= 1 + ring.offAffinityBonus;
+    }
+    if (ring.crit) critChance += ring.crit;
+  }
+
   if (def.armor?.dmgReduction) mult *= 1 - def.armor.dmgReduction;
   // Offhand Buckler: 5% damage reduction
   if (def.offhand?.dmgReduction) mult *= (1 - def.offhand.dmgReduction);
   // Pet Sporeling: 3% damage reduction
   if (def.pet?.dmgReduction) mult *= (1 - def.pet.dmgReduction);
+  // Defensive Rings
+  const defRings = [def.ring1, def.ring2].filter(Boolean);
+  for (const ring of defRings) {
+    if (ring.dmgReduction) mult *= (1 - ring.dmgReduction);
+  }
+
   const dmg = Math.max(1, Math.round(skill.dmg * mult * rand(0.92, 1.08)) + bonusFlat);
   return { dmg, crit, chilled };
 }
 
-function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId) {
+function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId, ring1Id = "ring_none", ring2Id = "ring_none") {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
   const pet = PETS.find(p => p.id === petId && p.id !== "pet_none") || null;
-  let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0);
+  const ring1 = RINGS.find(r => r.id === ring1Id && r.id !== "ring_none") || null;
+  const ring2 = RINGS.find(r => r.id === ring2Id && r.id !== "ring_none") || null;
+  let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0) + (ring1?.maxHpBonus || 0) + (ring2?.maxHpBonus || 0);
   // Bloodpact Spike tradeoff: -8 Max HP
   if (staffId === "bloodpact") maxHp -= 8;
   const relic = RELICS.find(r => r.id === relicId && r.id !== "none") || null;
-  const startShield = (relic?.startShield || 0) + (pet?.startShield || 0);
-  const maxMana = MAX_MANA + (pet?.maxManaBonus || 0);
+  const startShield = (relic?.startShield || 0) + (pet?.startShield || 0) + (ring1?.startShield || 0) + (ring2?.startShield || 0);
+  const maxMana = MAX_MANA + (pet?.maxManaBonus || 0) + (ring1?.maxManaBonus || 0) + (ring2?.maxManaBonus || 0);
   return {
     name, affinity, skills,
     staffGear: STAFFS.find(s => s.id === staffId) || null,
@@ -1033,6 +1063,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     cape: CAPES.find(c => c.id === capeId && c.id !== "cape_none") || null,
     offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
     pet,
+    ring1, ring2, ring1Id: ring1Id || "ring_none", ring2Id: ring2Id || "ring_none",
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     gloves: glovesId || look?.gloves || "gloves_arcane",
     skinTone: look?.skinTone || "skin_fair", hairColor: look?.hairColor || "hair_white",
@@ -1064,8 +1095,10 @@ function makeEnemy() {
       noseRing: Math.random() < 0.15 ? pick(NOSE_RINGS.filter(x => x.id !== "nosering_none")).id : "nosering_none",
     },
     Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none",
-    pick(["gloves_arcane", "gloves_leather", "gloves_wraps"]));
-  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0);
+    pick(["gloves_arcane", "gloves_leather", "gloves_wraps"]),
+    Math.random() < 0.7 ? pick(RINGS.filter(r => r.id !== "ring_none" && (!r.el || r.el === affinity))).id : "ring_none",
+    Math.random() < 0.5 ? pick(RINGS.filter(r => r.id !== "ring_none")).id : "ring_none");
+  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0) + (e.ring1?.startShield || 0) + (e.ring2?.startShield || 0);
   const archKeys = Object.keys(ARCHETYPES);
   e.archetype = ARCHETYPES[pick(archKeys)];
   return e;
@@ -4416,6 +4449,21 @@ function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1
               <Offhand look={look} offhand={mage.offhand} gloves={mage.gloves} affinity={mage.affinity} />
             </g>
           )}
+          {/* Subtle Runic Ring Gleams on Hands */}
+          {mage.ring1 && mage.ring1.id !== "ring_none" && (
+            <g transform="translate(317 288)">
+              <circle cx="0" cy="0" r="4.5" fill={mage.ring1.gemColor || "#F59E0B"} opacity="0.4" className="matchPulse" />
+              <circle cx="0" cy="0" r="2.2" fill={mage.ring1.gemColor || "#F59E0B"} />
+              <circle cx="-0.6" cy="-0.6" r="0.8" fill="#FFFFFF" />
+            </g>
+          )}
+          {mage.ring2 && mage.ring2.id !== "ring_none" && (
+            <g transform="translate(94 288)">
+              <circle cx="0" cy="0" r="4.5" fill={mage.ring2.gemColor || "#38BDF8"} opacity="0.4" className="matchPulse" />
+              <circle cx="0" cy="0" r="2.2" fill={mage.ring2.gemColor || "#38BDF8"} />
+              <circle cx="-0.6" cy="-0.6" r="0.8" fill="#FFFFFF" />
+            </g>
+          )}
           {Hat && <Hat p={p} />}
         </g>
 
@@ -4531,6 +4579,9 @@ export default function MageDuel() {
   const [chosen, setChosen] = useState(saved?.chosen ?? ["fireball", "emberjab", "ward", "surge"]);
   const [staffId, setStaffId] = useState(saved?.staffId ?? "ashwood");
   const [relicId, setRelicId] = useState(saved?.relicId ?? "wardsigil");
+  const [ring1Id, setRing1Id] = useState(saved?.ring1Id ?? "ring_cinder");
+  const [ring2Id, setRing2Id] = useState(saved?.ring2Id ?? "ring_glacier");
+  const [gearSubTab, setGearSubTab] = useState("rings"); // 'weapons' | 'rings' | 'relics'
   const [hatId, setHatId] = useState(saved?.hatId ?? "hat_pointed");
   const [auraId, setAuraId] = useState(saved?.auraId ?? "aura_ember");
   const [capeId, setCapeId] = useState(saved?.capeId ?? "wings_angel");
@@ -4621,6 +4672,7 @@ export default function MageDuel() {
       mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId,
       earringId, noseRingId, offhandId, glovesId,
+      ring1Id, ring2Id,
       owned: [...owned],
       shards,
       premiumOwned: [...premiumOwned],
@@ -4640,7 +4692,7 @@ export default function MageDuel() {
       claimedTierRewards: [...claimedTierRewards],
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -4668,6 +4720,21 @@ export default function MageDuel() {
   }, [friends]);
 
   // Leaderboard & Rank Helpers
+  function handleEquipRing(ringId, slot) {
+    if (slot === 1) {
+      if (ring2Id === ringId) setRing2Id("ring_none");
+      setRing1Id(ringId);
+    } else {
+      if (ring1Id === ringId) setRing1Id("ring_none");
+      setRing2Id(ringId);
+    }
+  }
+
+  function handleUnequipRing(slot) {
+    if (slot === 1) setRing1Id("ring_none");
+    else setRing2Id("ring_none");
+  }
+
   const playerDataForLeaderboard = useMemo(() => ({
     name: mageName,
     affinity,
@@ -4677,6 +4744,8 @@ export default function MageDuel() {
     winStreak,
     staffId,
     relicId,
+    ring1Id,
+    ring2Id,
     hatId,
     auraId,
     capeId,
@@ -4684,7 +4753,7 @@ export default function MageDuel() {
     petId,
     look: { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId },
     chosen,
-  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
+  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, ring1Id, ring2Id, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
 
   const { playerRank, playerTier } = useMemo(() => buildRankedLadder(playerDataForLeaderboard), [playerDataForLeaderboard]);
 
@@ -4716,7 +4785,9 @@ export default function MageDuel() {
       rival.robeId || "robe_classic",
       rival.look,
       "offhand_none",
-      "gloves_arcane"
+      "gloves_arcane",
+      rival.ring1Id || "ring_none",
+      rival.ring2Id || "ring_none"
     );
     rivalMage.trophies = rival.trophies;
     rivalMage.archetype = rival.archetype;
@@ -5018,7 +5089,7 @@ export default function MageDuel() {
 
   function confirmDuel() {
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
-      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId);
+      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id);
     if (p.relic?.startShield) p.shield = p.relic.startShield;
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setShowSurrenderModal(false);
@@ -5100,6 +5171,16 @@ export default function MageDuel() {
       a.mana = Math.min(MAX_MANA, a.mana + skill.restore);
       lines.push(`+${skill.restore} mana.`);
       addFloat(side, `+${skill.restore} 💧`, "#38BDF8", false);
+
+      // Ring Proc: Time Weaver Band (cooldown reduction on Focus)
+      const chronosRings = [a.ring1, a.ring2].filter(r => r?.focusCdReduction);
+      if (chronosRings.length > 0) {
+        const cdRed = chronosRings.reduce((sum, r) => sum + r.focusCdReduction, 0);
+        for (const k in a.cds) {
+          if (a.cds[k] > 0) a.cds[k] = Math.max(0, a.cds[k] - cdRed);
+        }
+        lines.push(`💍 Aliança do Tecelão Temporal: Foco acelerou as recargas em -${cdRed} turno(s)!`);
+      }
     }
     if (skill.shield) {
       const shieldVal = todayMod.id === "runic_bulwark" ? Math.round(skill.shield * 1.4) : skill.shield;
@@ -5127,16 +5208,37 @@ export default function MageDuel() {
         isCombo = true;
         lines.push("⚡ COMBO: Quebra de Gelo! O gelo estilhaça no alvo congelado (+50% de dano)!");
         addFloat(side === "p" ? "e" : "p", "QUEBRA DE GELO!", "#4FA3D1", true, "⚡ COMBO!", "#38BDF8");
+        // Ring Proc: Band of the Rime Piercer (+6 bonus pierce damage)
+        const shatterRings = [a.ring1, a.ring2].filter(r => r?.freezeShatterBonus);
+        if (shatterRings.length > 0) {
+          const shatterBonus = shatterRings.reduce((sum, r) => sum + r.freezeShatterBonus, 0);
+          bonusFlatDmg += shatterBonus;
+          lines.push(`💍 Aliança do Perfurador Glacial: +${shatterBonus} de dano perfurante!`);
+        }
       }
 
       // Combo 2: Burn + Fireball / Fire ("Detonação Ígnea")
       if (d.status.burn > 0 && skill.el === "fire") {
-        const burnBonus = d.status.burn * 8;
+        let burnBonus = d.status.burn * 8;
+        // Ring Proc: Seal of Fast Combustion (+30% detonation damage)
+        const combustionRings = [a.ring1, a.ring2].filter(r => r?.burnDetonateBonus);
+        if (combustionRings.length > 0) {
+          const mult = combustionRings.reduce((sum, r) => sum + r.burnDetonateBonus, 0);
+          burnBonus = Math.round(burnBonus * (1 + mult));
+          lines.push(`💍 Selo da Combustão: Detonação amplificada em +${Math.round(mult * 100)}%!`);
+        }
         d.status.burn = 0;
         bonusFlatDmg += burnBonus;
         isCombo = true;
         lines.push(`💥 COMBO: Detonação Ígnea! Queimadura consumida para causar +${burnBonus} de dano explosivo!`);
         addFloat(side === "p" ? "e" : "p", `+${burnBonus} EXPLOSÃO!`, "#FF6B3D", true, "💥 COMBO!", "#F97316");
+      }
+
+      // Ring Proc: Cinder Spark Ring (+1 mana on casting Fire at burning target)
+      const cinderRings = [a.ring1, a.ring2].filter(r => r?.burnManaRestore);
+      if (cinderRings.length > 0 && d.status.burn > 0 && skill.el === "fire") {
+        a.mana = Math.min(a.maxMana, a.mana + cinderRings.length);
+        lines.push(`💍 Anel da Fagulha: +${cinderRings.length} de Mana restaurada pelo calor das chamas!`);
       }
 
       // Combo 3: Entangle + Thorns / Nature ("Espinhos Entrelaçados")
@@ -5174,6 +5276,28 @@ export default function MageDuel() {
       didDamage = true;
       lines.push(`${crit ? "CRITICAL HIT! " : ""}${remaining} damage.`);
       addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : "#F2EAD8", crit, isCombo ? "COMBO!" : crit ? "CRIT!" : null);
+
+      // Ring Proc: Void Singularity Ring (restore +2 mana on crit)
+      if (crit) {
+        const singRings = [a.ring1, a.ring2].filter(r => r?.critManaRestore);
+        if (singRings.length > 0) {
+          const manaGain = singRings.reduce((sum, r) => sum + r.critManaRestore, 0);
+          a.mana = Math.min(a.maxMana, a.mana + manaGain);
+          lines.push(`💍 Anel da Singularidade: Acerto crítico restaurou +${manaGain} de Mana!`);
+          addFloat(side, `+${manaGain} 💧`, "#C084FC", false);
+        }
+      }
+
+      // Ring Proc: Band of Vital Spores (Heal +4 HP on Nature attack while shielded)
+      if (a.shield > 0 && skill.el === "nature") {
+        const sporeRings = [a.ring1, a.ring2].filter(r => r?.natureShieldHeal);
+        if (sporeRings.length > 0) {
+          const healGain = sporeRings.reduce((sum, r) => sum + r.natureShieldHeal, 0);
+          a.hp = Math.min(a.maxHp, a.hp + healGain);
+          lines.push(`💍 Banda dos Esporos: Barreira ativa concedeu +${healGain} de Cura Vital!`);
+          addFloat(side, `+${healGain} 🌿`, "#72C063", false);
+        }
+      }
 
       // Track combat statistics
       if (side === "p") {
@@ -7247,6 +7371,10 @@ export default function MageDuel() {
       cape: CAPES.find(c => c.id === activeCape),
       pet: PETS.find(p => p.id === activePet),
       offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
+      ring1: findRing(ring1Id),
+      ring2: findRing(ring2Id),
+      ring1Id,
+      ring2Id,
       gloves: activeGloves,
       skinTone: skinToneId, hairColor: activeHairColor, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: activeEyeColor, gender: genderId,
       face: faceId, earrings: activeEarring, noseRing: activeNoseRing,
@@ -7929,30 +8057,91 @@ export default function MageDuel() {
 
           {tab === "gear" && (
             <div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "bônus passivo de combate" : "passive combat bonus"})</span></p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
-                {PETS.map(pt => (
-                  <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} lang={lang} />
-                ))}
+              {/* Modern Gear Sub-tab Pill Switcher */}
+              <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-white/10 mb-3 flex-shrink-0">
+                <button
+                  onClick={() => setGearSubTab("weapons")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    gearSubTab === "weapons"
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 border border-transparent"
+                  }`}
+                >
+                  <span>🪄</span>
+                  <span>{lang === "pt" ? "Armas & Mão" : "Weapons"}</span>
+                </button>
+                <button
+                  onClick={() => setGearSubTab("rings")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    gearSubTab === "rings"
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 border border-transparent"
+                  }`}
+                >
+                  <span>💍</span>
+                  <span>{lang === "pt" ? "Anéis (2)" : "Rings (2)"}</span>
+                </button>
+                <button
+                  onClick={() => setGearSubTab("relics")}
+                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    gearSubTab === "relics"
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 border border-transparent"
+                  }`}
+                >
+                  <span>🔮</span>
+                  <span>{lang === "pt" ? "Relíquias & Mascotes" : "Relics & Pets"}</span>
+                </button>
               </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Staff <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-              <div className="grid gap-2 mb-4">
-                {STAFFS.map(s => (
-                  <RarityCard key={s.id} item={s} selected={staffId === s.id} locked={!owned.has(s.id)} onClick={() => owned.has(s.id) && setStaffId(s.id)} />
-                ))}
-              </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Relic <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-              <div className="grid gap-2 mb-4">
-                {RELICS.map(r => (
-                  <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
-                ))}
-              </div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Off-hand <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
-              <div className="grid gap-2">
-                {OFFHANDS.map(o => (
-                  <RarityCard key={o.id} item={o} selected={offhandId === o.id} locked={!owned.has(o.id)} onClick={() => owned.has(o.id) && setOffhandId(o.id)} />
-                ))}
-              </div>
+
+              {/* 1. Weapons & Offhand Sub-tab */}
+              {gearSubTab === "weapons" && (
+                <div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Cajado Principal <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2 mb-4">
+                    {STAFFS.map(s => (
+                      <RarityCard key={s.id} item={s} selected={staffId === s.id} locked={!owned.has(s.id)} onClick={() => owned.has(s.id) && setStaffId(s.id)} />
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Mão Secundária <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2">
+                    {OFFHANDS.map(o => (
+                      <RarityCard key={o.id} item={o} selected={offhandId === o.id} locked={!owned.has(o.id)} onClick={() => owned.has(o.id) && setOffhandId(o.id)} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Arcane Rings Sub-tab (Dual Slots) */}
+              {gearSubTab === "rings" && (
+                <JewelryGearSection
+                  ring1Id={ring1Id}
+                  ring2Id={ring2Id}
+                  onEquipRing={handleEquipRing}
+                  onUnequipRing={handleUnequipRing}
+                  ownedRingIds={owned}
+                  lang={lang}
+                  RARITY={RARITY}
+                />
+              )}
+
+              {/* 3. Relics & Companions Sub-tab */}
+              {gearSubTab === "relics" && (
+                <div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Relíquia Maior <span style={{ color: "#B7AE95" }}>(equip 1)</span></p>
+                  <div className="grid gap-2 mb-4">
+                    {RELICS.map(r => (
+                      <RarityCard key={r.id} item={r} selected={relicId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRelicId(r.id)} />
+                    ))}
+                  </div>
+                  <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Mascote Companheiro" : "Companion"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "bônus passivo de combate" : "passive combat bonus"})</span></p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {PETS.map(pt => (
+                      <RarityCard key={pt.id} item={pt} selected={petId === pt.id} locked={!owned.has(pt.id)} onClick={() => owned.has(pt.id) && setPetId(pt.id)} lang={lang} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
