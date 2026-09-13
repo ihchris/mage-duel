@@ -28,6 +28,8 @@ import {
   ImpactFX,
   SelfCastFX,
   ModernSkillCard,
+  FocoActionTile,
+  MochilaActionTile,
   ArcaneChronicle,
   SurrenderModal,
 } from "./BattleFX.jsx";
@@ -6935,24 +6937,62 @@ export default function MageDuel() {
     return () => clearInterval(interval);
   }, [phase, busy, currentTurn, result, isTimerPaused, player, enemy]);
 
-  // Keyboard Shortcuts (1-5, Spacebar)
+  // Keyboard Shortcuts (QWER, 1-7, Spacebar, F, B, M, I, Escape)
   useEffect(() => {
     if (phase !== "battle" || busy || currentTurn !== "player" || !player) return;
 
     function handleKeyDown(e) {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      const skills = [...player.skills, FOCUS];
-      if (e.key >= "1" && e.key <= String(skills.length)) {
-        const idx = parseInt(e.key) - 1;
-        const s = skills[idx];
+      const key = e.key.toLowerCase();
+      const code = e.code;
+
+      // Spell Key Mapping (QWERTY / 1-7)
+      const spellMap = {
+        "1": 0, "q": 0,
+        "2": 1, "w": 1,
+        "3": 2, "e": 2,
+        "4": 3, "r": 3,
+        "5": 4, "t": 4,
+        "6": 5, "y": 5,
+        "7": 6, "u": 6,
+      };
+
+      if (spellMap[key] !== undefined) {
+        const idx = spellMap[key];
+        const s = player.skills[idx];
         if (s && player.mana >= s.mana && !player.cds[s.id]) {
+          e.preventDefault();
           playerAction(s);
+          return;
         }
-      } else if (e.code === "Space") {
+      }
+
+      // Spacebar or F -> Focus (Restore Mana)
+      if (code === "Space" || key === "f") {
         e.preventDefault();
         playerAction(FOCUS);
-      } else if (e.key === "b" || e.key === "B" || e.key === "m" || e.key === "M") {
+        return;
+      }
+
+      // B or M -> Consumable Potions Bag
+      if (key === "b" || key === "m") {
+        e.preventDefault();
         setShowBattleBagModal(prev => !prev);
+        return;
+      }
+
+      // I -> Inspect Opponent Gear
+      if (key === "i") {
+        e.preventDefault();
+        setShowEnemyGearModal(prev => !prev);
+        return;
+      }
+
+      // Escape -> Open Surrender Confirmation Modal
+      if (key === "escape") {
+        e.preventDefault();
+        setShowSurrenderModal(prev => !prev);
+        return;
       }
     }
 
@@ -7442,44 +7482,25 @@ export default function MageDuel() {
         padding-right: max(0.5rem, env(safe-area-inset-right, 0px));
       }
 
-      /* Responsive Projectile Travel (Vertical on mobile portrait, Horizontal on landscape or tablet/desktop) */
+      /* Responsive Projectile Travel across the Arcane Arena Stage */
       @keyframes spellFlyPtoE {
-        0% { top: 76%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+        0% { left: 24%; top: 52%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
         15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        100% { top: 24%; left: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
+        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        100% { left: 76%; top: 52%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
       }
       @keyframes spellFlyEtoP {
-        0% { top: 24%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+        0% { left: 76%; top: 52%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
         15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        100% { top: 76%; left: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
-      }
-
-      @media (min-width: 768px), (orientation: landscape) {
-        @keyframes spellFlyPtoE {
-          0% { left: 24%; top: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
-          15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-          100% { left: 76%; top: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
-        }
-        @keyframes spellFlyEtoP {
-          0% { left: 76%; top: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
-          15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-          85% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-          100% { left: 24%; top: 50%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
-        }
+        85% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        100% { left: 24%; top: 52%; transform: translate(-50%, -50%) scale(1.25); opacity: 1; }
       }
 
       .spell-proj-p { animation: spellFlyPtoE 0.46s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
       .spell-proj-e { animation: spellFlyEtoP 0.46s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
-      .anchor-pos-p { top: 76%; left: 50%; transform: translate(-50%, -50%); }
-      .anchor-pos-e { top: 24%; left: 50%; transform: translate(-50%, -50%); }
-      @media (min-width: 768px), (orientation: landscape) {
-        .anchor-pos-p { top: 50%; left: 24%; transform: translate(-50%, -50%); }
-        .anchor-pos-e { top: 50%; left: 76%; transform: translate(-50%, -50%); }
-      }
+      .anchor-pos-p { top: 52%; left: 24%; transform: translate(-50%, -50%); }
+      .anchor-pos-e { top: 52%; left: 76%; transform: translate(-50%, -50%); }
 
       @keyframes fireExplosionAnim {
         0% { transform: scale(0.2); opacity: 1; }
@@ -8946,25 +8967,31 @@ export default function MageDuel() {
 
     return (
       <div className="w-full flex flex-row sm:flex-row landscape:flex-row md:flex-row items-stretch justify-between gap-1.5 sm:gap-4 md:gap-5 my-0.5 sm:my-1 flex-shrink-0">
-        {/* Left Character Stage: Compact Card on Mobile, Floating on Desktop */}
-        <div className="w-[33%] xs:w-[35%] sm:w-5/12 landscape:w-5/12 md:w-5/12 flex-shrink-0 flex flex-col justify-center">
+        {/* Left Character Stage: Focused Hero Podium */}
+        <div className="w-[38%] xs:w-[40%] sm:w-5/12 landscape:w-5/12 md:w-5/12 flex-shrink-0 flex flex-col justify-center">
           {/* Mobile Portrait Character Card */}
           <div
             onClick={() => setTab("appearance")}
-            className="flex sm:hidden landscape:hidden flex-col items-center justify-between p-1 rounded-xl glass-panel w-full h-full shadow-md border border-white/10 relative overflow-hidden cursor-pointer group select-none"
-            title={lang === "pt" ? "Toque para personalizar aparência" : "Tap to customize appearance"}
+            className="flex sm:hidden landscape:hidden flex-col items-center justify-between p-1.5 rounded-xl glass-panel w-full h-full shadow-lg border relative overflow-hidden cursor-pointer group select-none"
+            style={{
+              borderColor: `${el.color}66`,
+              boxShadow: `0 4px 18px rgba(0,0,0,0.45), 0 0 16px ${el.color}25`,
+            }}
+            title={lang === "pt" ? "Toque para personalizar aparência & skins" : "Tap to customize looks & skins"}
           >
+            {/* Ambient Background Aura */}
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
               <div
-                className="w-16 h-16 rounded-full blur-md"
+                className="w-20 h-20 rounded-full blur-lg"
                 style={{ background: el.color }}
               />
             </div>
-            {/* Top mini header: Affinity icon & Name */}
+
+            {/* Top Header: Affinity & Name */}
             <div className="relative z-10 flex flex-col items-center justify-center w-full px-0.5">
               <div className="flex items-center justify-between w-full px-0.5">
-                <span className="text-[11px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
-                <span className="text-[8.5px] font-sans font-bold text-amber-200 truncate max-w-[55px]">
+                <span className="text-[11.5px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                <span className="text-[9px] font-sans font-black text-amber-200 truncate max-w-[80px]">
                   {mageName.trim() || t("newMage")}
                 </span>
               </div>
@@ -8972,62 +8999,64 @@ export default function MageDuel() {
                 <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={(e) => { e.stopPropagation(); setShowHeroJourneyModal(true); }} />
               </div>
             </div>
-            {/* Mage Avatar */}
-            <div className="relative z-10 transform origin-center scale-100 transition-transform group-hover:scale-105 my-0.5">
-              <MageSprite mage={previewMage} facing="right" size={1.28} />
+
+            {/* Focused Character Avatar on Mobile */}
+            <div className="relative z-10 transform origin-center scale-100 transition-transform group-hover:scale-105 my-0.5 flex items-center justify-center">
+              <MageSprite mage={previewMage} facing="right" size={1.38} />
             </div>
-            {/* Bottom mini actions */}
-            <div className="relative z-10 flex items-center justify-center gap-1 w-full">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowInspectModal(true);
-                }}
-                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
-                title={lang === "pt" ? "Ver em tela cheia" : "Inspect in fullscreen"}
-              >
-                <span>🔍</span><span>{lang === "pt" ? "Ver" : "View"}</span>
-              </button>
+
+            {/* Bottom Actions: Skins & Equip */}
+            <div className="relative z-10 flex items-center justify-center gap-1 w-full mt-0.5">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   setTab("appearance");
                 }}
-                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-slate-900/90 border border-pink-500/40 text-pink-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
-                title={lang === "pt" ? "Personalizar Aparência" : "Customize Appearance"}
+                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-indigo-950/90 border border-pink-500/50 text-pink-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+                title={lang === "pt" ? "Skins & Transmog" : "Skins & Transmog"}
               >
-                <span>🪞</span><span>{lang === "pt" ? "Aparência" : "Look"}</span>
+                <span>🪞</span><span>{lang === "pt" ? "Skins" : "Skins"}</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTab("gear");
+                }}
+                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-indigo-950/90 border border-sky-400/50 text-sky-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+                title={lang === "pt" ? "Equipamentos & Stats" : "Gear & Stats"}
+              >
+                <span>🛡️</span><span>{lang === "pt" ? "Equip." : "Gear"}</span>
               </button>
             </div>
           </div>
 
           {/* Tablet / Desktop / Landscape layout */}
-          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-0.5 sm:py-1">
+          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-1">
             <div
-              className="flex flex-col items-center justify-center cursor-pointer group relative py-0.5 sm:py-1 select-none"
+              className="flex flex-col items-center justify-center cursor-pointer group relative py-1 select-none"
               onClick={() => setTab("appearance")}
-              title={lang === "pt" ? "Clique para customizar aparência" : "Click to customize appearance"}
+              title={lang === "pt" ? "Clique para customizar aparência & skins" : "Click to customize appearance & skins"}
             >
               {/* Atmospheric Ambient Glow behind mage */}
-              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35">
                 <div
-                  className="w-28 h-28 sm:w-36 sm:h-36 rounded-full blur-xl transition-all duration-500"
-                  style={{ background: `radial-gradient(circle, ${el.color}77 0%, transparent 70%)` }}
+                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl transition-all duration-500"
+                  style={{ background: `radial-gradient(circle, ${el.color}88 0%, transparent 70%)` }}
                 />
               </div>
 
               {/* Floating Mage Character Sprite */}
-              <div className="scale-80 sm:scale-85 md:scale-90 lg:scale-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
-                <MageSprite mage={previewMage} facing="right" size={1.65} />
+              <div className="scale-90 sm:scale-100 md:scale-105 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
+                <MageSprite mage={previewMage} facing="right" size={1.75} />
               </div>
 
               {/* Luminous Elemental Pedestal Glow */}
               <div
-                className="w-24 sm:w-32 h-3 sm:h-3.5 rounded-[50%] blur-sm pointer-events-none mt-0.5 transition-all duration-300"
-                style={{ background: `radial-gradient(ellipse, ${el.color}AA 0%, rgba(147, 51, 234, 0.45) 50%, transparent 75%)` }}
+                className="w-32 sm:w-40 h-3.5 sm:h-4 rounded-[50%] blur-sm pointer-events-none mt-1 transition-all duration-300"
+                style={{ background: `radial-gradient(ellipse, ${el.color}CC 0%, rgba(147, 51, 234, 0.55) 50%, transparent 75%)` }}
               />
 
-              <div className="flex items-center gap-1.5 mt-0.5">
+              <div className="flex items-center gap-1.5 mt-1">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -9043,10 +9072,20 @@ export default function MageDuel() {
                     e.stopPropagation();
                     setTab("appearance");
                   }}
-                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-pink-500/40 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                  title={lang === "pt" ? "Personalizar Aparência" : "Customize Appearance"}
+                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-pink-500/50 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                  title={lang === "pt" ? "Skins & Transmog" : "Skins & Transmog"}
                 >
-                  <span>🪞</span><span>{lang === "pt" ? "Aparência" : "Appearance"}</span>
+                  <span>🪞</span><span>{lang === "pt" ? "Skins" : "Skins"}</span>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setTab("gear");
+                  }}
+                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-sky-400/50 text-sky-200 hover:border-sky-300 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                  title={lang === "pt" ? "Equipamentos & Stats" : "Gear & Stats"}
+                >
+                  <span>🛡️</span><span>{lang === "pt" ? "Equipamentos" : "Equipment"}</span>
                 </button>
               </div>
             </div>
@@ -14163,26 +14202,44 @@ export default function MageDuel() {
           playerHp={player?.hp}
           enemyHp={enemy?.hp}
           onForceFinish={() => finishBattle((enemy?.hp || 0) <= 0)}
+          onSurrender={() => setShowSurrenderModal(true)}
+          lang={lang}
         />
 
-        {/* Arena Combat Stage Area */}
-        <div className="relative w-full flex-shrink-0 my-0.5 sm:my-1">
-          <div className="grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-1.5 sm:gap-2.5">
-            {/* Enemy Card */}
+        {/* Grand Arcane Arena Stage */}
+        <div
+          className="relative w-full flex-shrink-0 my-0.5 sm:my-1 rounded-2xl border glass-panel p-2 sm:p-3 overflow-hidden shadow-2xl transition-all"
+          style={{
+            background: "radial-gradient(ellipse at 50% 50%, rgba(35, 27, 85, 0.85) 0%, rgba(18, 14, 48, 0.95) 100%)",
+            borderColor: "rgba(167, 139, 250, 0.32)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12)",
+          }}
+        >
+          {/* Subtle Ambient Rune Wheel */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-10">
+            <svg viewBox="0 0 200 200" className="w-96 h-96 matchSpin text-indigo-400">
+              <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="10 6" />
+              <polygon points="100,15 175,145 25,145" fill="none" stroke="currentColor" strokeWidth="1" />
+              <polygon points="100,185 25,55 175,55" fill="none" stroke="currentColor" strokeWidth="1" />
+              <circle cx="100" cy="100" r="45" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="6 4" />
+            </svg>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 items-center relative z-10">
+            {/* Player Fighter Dais (Left) */}
             <div
-              className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-1 landscape:order-2 md:order-2 transition-all shadow-lg"
-              style={{
-                borderColor: currentTurn === "enemy" ? "#EF4444" : "rgba(167, 139, 250, 0.28)",
-                boxShadow: currentTurn === "enemy" ? "0 0 24px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(255,255,255,0.15)" : "0 4px 20px rgba(10, 8, 32, 0.35)",
-              }}
+              className={`rounded-xl border p-1.5 xs:p-2 sm:p-2.5 flex flex-col justify-between relative transition-all duration-300 ${
+                currentTurn === "player" ? "turn-halo-player bg-indigo-950/70" : "border-indigo-500/20 bg-indigo-950/40"
+              }`}
             >
-              {floats.filter(f => f.side === "e").map(f => (
+              {/* Player Floating Damage Numbers */}
+              {floats.filter(f => f.side === "p").map(f => (
                 <div
                   key={f.id}
                   className="dmgFloat font-mono absolute flex flex-col items-center pointer-events-none"
                   style={{
                     left: `${f.left}%`,
-                    top: 6,
+                    top: -10,
                     color: f.color,
                     fontSize: f.big ? 26 : 18,
                     fontWeight: 800,
@@ -14203,33 +14260,124 @@ export default function MageDuel() {
                 </div>
               ))}
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-1.5 mb-0.5 sm:mb-1">
-                  <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate text-white">{enemy.name}</span>
+              {/* Player Top HUD */}
+              <div className="w-full mb-1 flex-shrink-0">
+                <div className="flex items-center justify-between gap-1 mb-0.5 flex-wrap">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate text-amber-200" title={player.name}>
+                      {player.name}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30">
+                      Nv.{player.level || mageLevel}
+                    </span>
+                    <ElementBadge el={player.affinity} />
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {currentTurn === "player" && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 font-mono text-[8.5px] font-bold animate-pulse">
+                        ⚡ {lang === "pt" ? "SEU TURNO" : "YOUR TURN"}
+                      </span>
+                    )}
+                    <StatusIcons mage={player} />
+                  </div>
+                </div>
+
+                <div className="text-[9.5px] sm:text-[10.5px] font-mono mb-1 truncate opacity-75" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity]?.color : T.textMuted }}>
+                  {player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}{player.necklace && player.necklace.id !== "necklace_none" ? ` · 📿 ${(lang === "pt" && player.necklace.name_pt) ? player.necklace.name_pt : player.necklace.name}` : ""}
+                </div>
+
+                {/* Health & Mana Gauges */}
+                <CombatBar value={player.hp} max={player.maxHp} shield={player.shield} type="hp" label="Health" />
+                <CombatBar value={player.mana} max={MAX_MANA} type="mana" label="Mana" />
+              </div>
+
+              {/* Player Character Sprite on Pedestal */}
+              <div className="relative flex items-center justify-center py-1 sm:py-2 min-h-[95px] xs:min-h-[115px] sm:min-h-[135px]">
+                {/* Glowing runic pedestal ring at feet */}
+                <div
+                  className="pedestal-ring"
+                  style={{
+                    background: `radial-gradient(ellipse, ${ELEMENTS[player.affinity]?.color || "#F59E0B"}88 0%, rgba(147, 51, 234, 0.45) 50%, transparent 75%)`,
+                    boxShadow: currentTurn === "player" ? `0 0 24px ${ELEMENTS[player.affinity]?.color || "#F59E0B"}88` : undefined,
+                  }}
+                />
+                <div className="scale-90 xs:scale-100 sm:scale-110 md:scale-120 transform origin-bottom transition-transform duration-200">
+                  <MageSprite mage={player} facing="right" hurt={hurtP} casting={castP} damageFlash={damageFlashP} size={1.18} easterEgg={easterEgg} />
+                </div>
+              </div>
+            </div>
+
+            {/* Enemy Fighter Dais (Right) */}
+            <div
+              className={`rounded-xl border p-1.5 xs:p-2 sm:p-2.5 flex flex-col justify-between relative transition-all duration-300 ${
+                currentTurn === "enemy" ? "turn-halo-enemy bg-red-950/40" : "border-indigo-500/20 bg-indigo-950/40"
+              }`}
+            >
+              {/* Enemy Floating Damage Numbers */}
+              {floats.filter(f => f.side === "e").map(f => (
+                <div
+                  key={f.id}
+                  className="dmgFloat font-mono absolute flex flex-col items-center pointer-events-none"
+                  style={{
+                    left: `${f.left}%`,
+                    top: -10,
+                    color: f.color,
+                    fontSize: f.big ? 26 : 18,
+                    fontWeight: 800,
+                    WebkitTextStroke: "1.2px #000000",
+                    textShadow: "0 2px 10px #000000",
+                    zIndex: 25,
+                  }}
+                >
+                  {(f.badge || f.big) && (
+                    <span
+                      className="text-[10px] font-black tracking-widest px-1.5 py-0.2 rounded border transform -rotate-6 animate-bounce"
+                      style={{ background: "#000000CC", borderColor: f.badgeColor || T.gold, color: f.badgeColor || T.gold }}
+                    >
+                      {f.badge || "CRIT!"}
+                    </span>
+                  )}
+                  <span>{f.text}</span>
+                </div>
+              ))}
+
+              {/* Enemy Top HUD */}
+              <div className="w-full mb-1 flex-shrink-0">
+                <div className="flex items-center justify-between gap-1 mb-0.5 flex-wrap">
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate text-white" title={enemy.name}>
+                      {enemy.name}
+                    </span>
                     <span className="px-1.5 py-0.2 rounded bg-indigo-950/80 text-zinc-200 font-mono text-[9px] font-bold border border-indigo-400/30">
                       Nv.{enemy.level || 1}
                     </span>
                     <ElementBadge el={enemy.affinity} />
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {currentTurn === "enemy" && (
+                      <span className="px-1.5 py-0.2 rounded-full bg-red-500/20 text-red-300 border border-red-400/50 font-mono text-[8.5px] font-bold animate-pulse">
+                        ⚠️ {lang === "pt" ? "INIMIGO" : "ENEMY"}
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowEnemyGearModal(true)}
+                      className="px-1.5 py-0.5 rounded text-[8.5px] sm:text-[9.5px] font-mono font-bold bg-indigo-950/80 border border-sky-400/50 text-sky-200 hover:bg-sky-500/25 hover:border-sky-300 transition-all flex items-center gap-0.5 cursor-pointer shadow-sm"
+                      title={lang === "pt" ? "Inspecionar equipamentos do oponente [Tecla I]" : "Inspect opponent gear [Key I]"}
+                    >
+                      <span>🔍</span>
+                      <span className="hidden xs:inline">{lang === "pt" ? "Ver [I]" : "Gear [I]"}</span>
+                    </button>
                     <StatusIcons mage={enemy} />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowEnemyGearModal(true)}
-                    className="px-1.5 sm:px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-indigo-950/80 border border-sky-400/50 text-sky-200 hover:bg-sky-500/25 hover:border-sky-300 transition-all flex items-center gap-1 shadow-sm flex-shrink-0 cursor-pointer"
-                    title={lang === "pt" ? "Inspecionar equipamentos e mascote do inimigo" : "Inspect enemy gear and companion"}
-                  >
-                    <span>🔍</span>
-                    <span className="hidden sm:inline">{lang === "pt" ? "Equipamentos" : "Gear"}</span>
-                  </button>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setShowEnemyGearModal(true)}
-                  className="w-full text-left text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-90 hover:opacity-100 flex items-center gap-1 transition-opacity cursor-pointer group"
+                  className="w-full text-left text-[9.5px] sm:text-[10.5px] font-mono mb-1 truncate opacity-90 hover:opacity-100 flex items-center gap-1 transition-opacity cursor-pointer group"
                   style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color }}
-                  title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente" : "Click to inspect opponent gear"}
+                  title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente [Tecla I]" : "Click to inspect opponent gear [Key I]"}
                 >
                   <span className="truncate group-hover:underline">
                     {enemy.staffGear?.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}{enemy.necklace && enemy.necklace.id !== "necklace_none" ? ` · 📿 ${(lang === "pt" && enemy.necklace.name_pt) ? enemy.necklace.name_pt : enemy.necklace.name}` : ""}{enemy.pet ? ` · 🐾 ${(lang === "pt" && enemy.pet.name_pt) ? enemy.pet.name_pt : enemy.pet.name}` : ""}
@@ -14237,78 +14385,24 @@ export default function MageDuel() {
                   <span className="text-[9px] text-sky-300 opacity-70 group-hover:opacity-100 flex-shrink-0">🔍</span>
                 </button>
 
-                {/* Health & Mana with integrated Ward */}
+                {/* Health & Mana Gauges */}
                 <CombatBar value={enemy.hp} max={enemy.maxHp} shield={enemy.shield} type="hp" label="Health" />
                 <CombatBar value={enemy.mana} max={MAX_MANA} type="mana" label="Mana" />
               </div>
 
-              <div className="relative flex-shrink-0">
-                <div className="scale-75 sm:scale-90 md:scale-100 transform origin-center">
-                  <MageSprite mage={enemy} facing="left" hurt={hurtE} casting={castE} damageFlash={damageFlashE} size={0.96} />
-                </div>
-              </div>
-            </div>
-
-            {/* Player Card */}
-            <div
-              className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-2 landscape:order-1 md:order-1 transition-all shadow-lg"
-              style={{
-                borderColor: currentTurn === "player" ? "#FBBF24" : "rgba(167, 139, 250, 0.28)",
-                boxShadow: currentTurn === "player" ? "0 0 24px rgba(251, 191, 36, 0.45), inset 0 1px 0 rgba(255,255,255,0.15)" : "0 4px 20px rgba(10, 8, 32, 0.35)",
-              }}
-            >
-              {floats.filter(f => f.side === "p").map(f => (
+              {/* Enemy Character Sprite on Pedestal */}
+              <div className="relative flex items-center justify-center py-1 sm:py-2 min-h-[95px] xs:min-h-[115px] sm:min-h-[135px]">
+                {/* Glowing runic pedestal ring at feet */}
                 <div
-                  key={f.id}
-                  className="dmgFloat font-mono absolute flex flex-col items-center pointer-events-none"
+                  className="pedestal-ring"
                   style={{
-                    right: `${f.left}%`,
-                    top: 6,
-                    color: f.color,
-                    fontSize: f.big ? 26 : 18,
-                    fontWeight: 800,
-                    WebkitTextStroke: "1.2px #000000",
-                    textShadow: "0 2px 10px #000000",
-                    zIndex: 25,
+                    background: `radial-gradient(ellipse, ${ELEMENTS[enemy.affinity]?.color || "#EF4444"}88 0%, rgba(147, 51, 234, 0.45) 50%, transparent 75%)`,
+                    boxShadow: currentTurn === "enemy" ? `0 0 24px ${ELEMENTS[enemy.affinity]?.color || "#EF4444"}88` : undefined,
                   }}
-                >
-                  {(f.badge || f.big) && (
-                    <span
-                      className="text-[10px] font-black tracking-widest px-1.5 py-0.2 rounded border transform -rotate-6 animate-bounce"
-                      style={{ background: "#000000CC", borderColor: f.badgeColor || T.gold, color: f.badgeColor || T.gold }}
-                    >
-                      {f.badge || "CRIT!"}
-                    </span>
-                  )}
-                  <span>{f.text}</span>
+                />
+                <div className="scale-90 xs:scale-100 sm:scale-110 md:scale-120 transform origin-bottom transition-transform duration-200">
+                  <MageSprite mage={enemy} facing="left" hurt={hurtE} casting={castE} damageFlash={damageFlashE} size={1.18} />
                 </div>
-              ))}
-
-              <div className="relative flex-shrink-0">
-                <div className="scale-75 sm:scale-90 md:scale-100 transform origin-center">
-                  <MageSprite mage={player} facing="right" hurt={hurtP} casting={castP} damageFlash={damageFlashP} size={0.96} easterEgg={easterEgg} />
-                </div>
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1 flex-wrap">
-                  <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.gold }}>
-                    {player.name}
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30">
-                    Nv.{player.level || mageLevel}
-                  </span>
-                  <ElementBadge el={player.affinity} />
-                  <StatusIcons mage={player} />
-                </div>
-
-                <div className="text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-75" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : T.textMuted }}>
-                  {player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}{player.necklace && player.necklace.id !== "necklace_none" ? ` · 📿 ${(lang === "pt" && player.necklace.name_pt) ? player.necklace.name_pt : player.necklace.name}` : ""}
-                </div>
-
-                {/* Health & Mana with integrated Ward */}
-                <CombatBar value={player.hp} max={player.maxHp} shield={player.shield} type="hp" label="Health" />
-                <CombatBar value={player.mana} max={MAX_MANA} type="mana" label="Mana" />
               </div>
             </div>
           </div>
@@ -14323,70 +14417,79 @@ export default function MageDuel() {
           ))}
         </div>
 
-        {/* Arena Controls Area (Mobile Landscape / Desktop Split) */}
-        <div className="flex-1 min-h-0 flex flex-col landscape:grid landscape:grid-cols-12 md:grid md:grid-cols-12 gap-1.5 sm:gap-2 md:gap-3 my-0.5 sm:my-1 md:my-1.5 overflow-hidden">
-          {/* Battle Chronicle / Combat Log - Adequado para Smartphone sem cortar */}
-          <div className="w-full min-h-[50px] max-h-[66px] xs:max-h-[76px] sm:max-h-[88px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 flex-shrink-0">
+        {/* Arena Controls Area (Responsive Command Center) */}
+        <div className="flex-1 min-h-0 flex flex-col landscape:grid landscape:grid-cols-12 md:grid md:grid-cols-12 gap-1.5 sm:gap-2 md:gap-3 my-0.5 sm:my-1 overflow-hidden">
+          {/* Battle Chronicle / Combat Log */}
+          <div className="w-full min-h-[46px] max-h-[64px] xs:max-h-[72px] sm:max-h-[82px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-0.5 landscape:mb-0 md:mb-0 flex-shrink-0">
             <ArcaneChronicle log={log} logRef={logRef} />
           </div>
 
-          {/* Skills Deck & Battle Actions */}
+          {/* Unified Action Hotbar */}
           <div className="landscape:col-span-8 md:col-span-8 flex flex-col justify-between min-h-0 flex-1 overflow-hidden">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar overscroll-contain p-0.5 pb-1">
-              {menuSkills.map((s, idx) => (
-                <ModernSkillCard
-                  key={s.id}
-                  skill={s}
-                  hotkey={String(idx + 1)}
-                  element={ELEMENTS[s.el]}
-                  player={player}
-                  busy={busy}
-                  onClick={() => playerAction(s)}
-                  onInspect={(skill) => setInspectedBattleSkill(skill)}
-                  lang={lang}
-                />
-              ))}
+            {/* Action Grid: Spells + Foco + Mochila */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar overscroll-contain p-0.5 pb-1">
+              {menuSkills.map((s, idx) => {
+                const hotkeyLetters = ["Q", "W", "E", "R", "T", "Y", "U"];
+                const hotkey = hotkeyLetters[idx] || String(idx + 1);
+                const altKey = String(idx + 1);
+                return (
+                  <ModernSkillCard
+                    key={s.id}
+                    skill={s}
+                    hotkey={hotkey}
+                    altKey={altKey}
+                    element={ELEMENTS[s.el]}
+                    player={player}
+                    busy={busy}
+                    onClick={() => playerAction(s)}
+                    onInspect={(skill) => setInspectedBattleSkill(skill)}
+                    lang={lang}
+                  />
+                );
+              })}
+
+              {/* Foco Arcano Keycap Action Tile */}
+              <FocoActionTile
+                onClick={() => playerAction(FOCUS)}
+                restore={FOCUS.restore}
+                disabled={busy || currentTurn !== "player"}
+                hotkey="ESPAÇO"
+                altKey="F"
+                lang={lang}
+              />
+
+              {/* Mochila de Poções Keycap Action Tile */}
+              <MochilaActionTile
+                onClick={() => setShowBattleBagModal(true)}
+                count={getTotalConsumablesCount(consumables)}
+                disabled={busy || currentTurn !== "player"}
+                hotkey="B"
+                altKey="M"
+                lang={lang}
+              />
             </div>
 
-            {/* Bottom bar with tips, quick focus button, and surrender button */}
-            <div className="flex items-center justify-between mt-1 pt-1.5 border-t text-[10px] sm:text-[11px] font-mono flex-shrink-0" style={{ borderColor: T.borderSubtle, color: T.textSecondary }}>
-              <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="truncate opacity-75 hidden xs:inline">
-                  [1-4] Feitiços · +{REGEN} mana/t · [Espaço] Foco
+            {/* Bottom Keybind Status Bar */}
+            <div className="flex items-center justify-between mt-0.5 pt-1 border-t text-[9.5px] sm:text-[10.5px] font-mono flex-shrink-0" style={{ borderColor: T.borderSubtle, color: T.textSecondary }}>
+              <div className="flex items-center gap-1.5 min-w-0 truncate">
+                <span className="text-amber-400 font-bold">⌨️</span>
+                <span className="truncate opacity-80 hidden xs:inline">
+                  {lang === "pt"
+                    ? `[Q, W, E, R / 1-4] Feitiços · [Espaço / F] Foco (+${FOCUS.restore}) · [B] Mochila · [I] Inspecionar · [Esc] Render-se · +${REGEN} mana/t`
+                    : `[Q, W, E, R / 1-4] Spells · [Space / F] Focus (+${FOCUS.restore}) · [B] Bag · [I] Inspect · [Esc] Surrender · +${REGEN} mana/t`}
                 </span>
-                <span className="truncate opacity-75 xs:hidden">
-                  +{REGEN} mana/t
+                <span className="truncate opacity-80 xs:hidden">
+                  [Q-R / Espaço / B] · +{REGEN} mana/t
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-1.5 sm:ml-2">
-                <button
-                  onClick={() => setShowBattleBagModal(true)}
-                  disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-emerald-300"
-                  style={{ borderColor: "#10B981AA", color: "#34D399", backgroundColor: "rgba(6, 78, 59, 0.45)", boxShadow: "0 0 12px rgba(16, 185, 129, 0.3)" }}
-                  title="Abrir Mochila de Consumíveis (Poções estilo Pokémon) [Tecla B ou M]"
-                >
-                  <span>🎒</span>
-                  <span className="hidden sm:inline">Mochila ({getTotalConsumablesCount(consumables)})</span>
-                  <span className="sm:hidden">Bag ({getTotalConsumablesCount(consumables)})</span>
-                </button>
-                <button
-                  onClick={() => playerAction(FOCUS)}
-                  disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-sky-300"
-                  style={{ borderColor: "rgba(0, 210, 255, 0.6)", color: "#00D2FF", backgroundColor: "rgba(14, 116, 144, 0.45)", boxShadow: "0 0 12px rgba(0, 210, 255, 0.3)" }}
-                  title={`Recuperar ${FOCUS.restore} de Mana (Tecla Espaço)`}
-                >
-                  <span>⚡</span>
-                  <span className="hidden sm:inline">Foco (+{FOCUS.restore}) [Espaço]</span>
-                  <span className="sm:hidden">Foco (+{FOCUS.restore})</span>
-                </button>
+              <div className="flex items-center gap-1 flex-shrink-0 ml-1">
                 <button
                   onClick={() => setShowSurrenderModal(true)}
                   disabled={busy}
-                  className="btn-danger px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all shadow-[0_0_12px_rgba(239,68,68,0.35)] cursor-pointer"
+                  className="px-2 py-0.5 rounded font-mono text-[9px] font-bold text-red-400 hover:text-red-200 hover:bg-red-950/40 transition-colors cursor-pointer"
+                  title="Render-se do duelo [Esc]"
                 >
-                  Render-se
+                  🏳️ {lang === "pt" ? "Render-se" : "Surrender"}
                 </button>
               </div>
             </div>

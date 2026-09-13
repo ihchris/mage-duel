@@ -274,4 +274,90 @@ html {
   }
 }
 
+/* ================= ARCANE DUEL ARENA & KEYCAP SYSTEM ================= */
+
+/* Tactile Gaming Keycaps */
+.keycap-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1.2;
+  user-select: none;
+  background: linear-gradient(180deg, #3730A3 0%, #1E1B4B 100%);
+  border: 1px solid #818CF8;
+  color: #FFFFFF;
+  box-shadow: 0 2px 0 #0F172A, inset 0 1px 0 rgba(255,255,255,0.35), 0 0 10px rgba(129,140,248,0.25);
+  transition: all 0.1s ease;
+}
+
+.keycap-pill:active {
+  transform: translateY(1.5px);
+  box-shadow: 0 0.5px 0 #0F172A, inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.keycap-pill-cyan {
+  background: linear-gradient(180deg, #0284C7 0%, #082F49 100%);
+  border-color: #38BDF8;
+  box-shadow: 0 2px 0 #031525, inset 0 1px 0 rgba(255,255,255,0.4), 0 0 10px rgba(56,189,248,0.35);
+}
+
+.keycap-pill-emerald {
+  background: linear-gradient(180deg, #059669 0%, #022C22 100%);
+  border-color: #34D399;
+  box-shadow: 0 2px 0 #011611, inset 0 1px 0 rgba(255,255,255,0.4), 0 0 10px rgba(52,211,153,0.35);
+}
+
+/* Grand Arcane Dueling Pedestals */
+@keyframes pedestalRunicSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes turnGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.2);
+    border-color: rgba(251, 191, 36, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(245, 158, 11, 0.75), inset 0 0 25px rgba(245, 158, 11, 0.35);
+    border-color: rgba(254, 240, 138, 1);
+  }
+}
+
+@keyframes turnEnemyPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.45), inset 0 0 15px rgba(239, 68, 68, 0.2);
+    border-color: rgba(248, 113, 113, 0.85);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.75), inset 0 0 25px rgba(239, 68, 68, 0.35);
+    border-color: rgba(252, 165, 165, 1);
+  }
+}
+
+.turn-halo-player {
+  animation: turnGlowPulse 1.8s ease-in-out infinite;
+}
+
+.turn-halo-enemy {
+  animation: turnEnemyPulse 1.8s ease-in-out infinite;
+}
+
+.pedestal-ring {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 28px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+
 
