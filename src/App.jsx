@@ -51,6 +51,14 @@ import {
   JewelryGearSection,
 } from "./JewelrySystem.jsx";
 
+import {
+  MATERIALS,
+  FORGE_RECIPES,
+  rollMaterialDrops,
+  ForgeModal,
+  MaterialDropBanner,
+} from "./ForgeSystem.jsx";
+
 // ================= DESIGN SYSTEM TOKENS =================
 export const T = {
   // Backgrounds (hierarquia de profundidade)
@@ -4621,6 +4629,18 @@ export default function MageDuel() {
   const [lastDuelTrophyChange, setLastDuelTrophyChange] = useState(null);
   const [challengedRival, setChallengedRival] = useState(null);
 
+  // Blacksmith Forge Materials State
+  const [materials, setMaterials] = useState(() => saved?.materials ?? {
+    mat_ember: 6,
+    mat_glacial: 4,
+    mat_sap: 4,
+    mat_stardust: 4,
+    mat_iron: 4,
+    mat_crystal: 2,
+  });
+  const [showForgeModal, setShowForgeModal] = useState(false);
+  const [lastDuelMaterialDrops, setLastDuelMaterialDrops] = useState(null);
+
   // Battle Pass State (Season of Embers)
   const [seasonXp, setSeasonXp] = useState(() => saved?.seasonXp ?? 0);
   const [passPremiumOwned, setPassPremiumOwned] = useState(() => saved?.passPremiumOwned ?? false);
@@ -4690,9 +4710,10 @@ export default function MageDuel() {
       rankedWins,
       rankedLosses,
       claimedTierRewards: [...claimedTierRewards],
+      materials,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -4812,6 +4833,38 @@ export default function MageDuel() {
         ELEMENTS={ELEMENTS}
         STAFFS={STAFFS}
         RELICS={RELICS}
+      />
+    );
+  }
+
+  function handleCraftSuccess(recipe) {
+    // Deduct materials
+    setMaterials(prev => {
+      const next = { ...prev };
+      for (const [matId, qty] of Object.entries(recipe.cost)) {
+        next[matId] = Math.max(0, (next[matId] || 0) - qty);
+      }
+      return next;
+    });
+
+    // Add item to owned
+    setOwned(o => new Set([...o, recipe.resultItemId]));
+    const itm = findItem(recipe.resultItemId);
+    const itemName = itm?.name_pt || itm?.name || recipe.resultItemId;
+    addLog(`🔨 Brokk forjou ${itemName} com sucesso na bigorna mágica!`);
+  }
+
+  function renderForgeModal() {
+    return (
+      <ForgeModal
+        isOpen={showForgeModal}
+        onClose={() => setShowForgeModal(false)}
+        materials={materials}
+        owned={owned}
+        onCraftSuccess={handleCraftSuccess}
+        lang={lang}
+        findItem={findItem}
+        RARITY={RARITY}
       />
     );
   }
@@ -5623,6 +5676,22 @@ export default function MageDuel() {
         oldRank,
         newRank,
         isPromotion: trophyRes.isPromotion,
+      });
+
+      // Material Drops for the Blacksmith Forge
+      const matDrops = rollMaterialDrops({
+        isWin,
+        winStreak: isWin ? winStreak + 1 : 0,
+        enemyAffinity: enemy?.affinity || "fire",
+        isBoss: !!bossEncounter,
+      });
+      setLastDuelMaterialDrops(matDrops);
+      setMaterials(prev => {
+        const next = { ...prev };
+        for (const [mId, count] of Object.entries(matDrops)) {
+          next[mId] = (next[mId] || 0) + count;
+        }
+        return next;
       });
     }
 
@@ -7398,10 +7467,10 @@ export default function MageDuel() {
     const HUB_PORTALS = [
       { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: t("gear"), sub: previewMage.staffGear?.name || t("gearSub"), icon: "🪄", color: "#38BDF8" },
+      { id: "forge", label: lang === "pt" ? "Forja Arcana" : "Arcane Forge", sub: lang === "pt" ? "NPC Brokk · Forjar" : "NPC Brokk · Craft", icon: "🔨", color: "#F59E0B" },
       { id: "leaderboard", label: t("leaderboard") || "Ranking", sub: `#${playerRank} · ${trophies} 🏆`, icon: "🏆", color: playerTier.color },
       { id: "shop", label: t("shop"), sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
       { id: "pass", label: t("pass"), sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
-      { id: "style", label: t("style"), sub: t("styleSub"), icon: "✨", color: "#A855F7" },
     ];
 
     return (
@@ -7550,6 +7619,8 @@ export default function MageDuel() {
                 onClick={() => {
                   if (portal.id === "leaderboard") {
                     setShowLeaderboardModal(true);
+                  } else if (portal.id === "forge") {
+                    setShowForgeModal(true);
                   } else {
                     setTab(portal.id);
                   }
@@ -10310,6 +10381,7 @@ export default function MageDuel() {
         {renderAdminModal()}
         {renderInspectModal()}
         {renderLeaderboardModal()}
+        {renderForgeModal()}
       </div>
     );
   }
@@ -11064,6 +11136,11 @@ export default function MageDuel() {
             />
           )}
 
+          {/* Material Drops from Duel */}
+          {lastDuelMaterialDrops && (
+            <MaterialDropBanner drops={lastDuelMaterialDrops} lang={lang} />
+          )}
+
           {/* Combat Statistics Report Grid */}
           <div className="rounded-xl border panel-base p-3 mb-3 text-left shadow-sm" style={{ borderColor: T.borderSubtle }}>
             <div className="flex items-center justify-between text-[11px] font-mono font-bold mb-2 pb-1 border-b" style={{ borderColor: T.borderSubtle, color: T.gold }}>
@@ -11224,18 +11301,28 @@ export default function MageDuel() {
             </button>
           </div>
 
-          <button
-            onClick={() => setShowLeaderboardModal(true)}
-            className="w-full mt-2 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-serif text-[11.5px] sm:text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all"
-          >
-            <span>🏆</span>
-            <span>{lang === "pt" ? "Ver Classificação no Ranking Arcano" : "View Arcane Leaderboard"}</span>
-          </button>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <button
+              onClick={() => setShowLeaderboardModal(true)}
+              className="py-2 px-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-serif text-[11px] sm:text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>🏆</span>
+              <span>{lang === "pt" ? "Ver Ranking" : "Leaderboard"}</span>
+            </button>
+            <button
+              onClick={() => setShowForgeModal(true)}
+              className="py-2 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/60 text-amber-200 font-serif text-[11px] sm:text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all"
+            >
+              <span>🔨</span>
+              <span>{lang === "pt" ? "Forja do Brokk" : "Brokk's Forge"}</span>
+            </button>
+          </div>
         </div>
         {renderMatchmakingModal()}
         {renderLevelUpModal()}
         {renderMasteryCelebrationModal()}
         {renderLeaderboardModal()}
+        {renderForgeModal()}
       </div>
     );
   }
