@@ -49,6 +49,11 @@ import {
   findRing,
   RingVectorIcon,
   JewelryGearSection,
+  NECKLACES,
+  findNecklace,
+  NecklaceVectorIcon,
+  NecklaceSpriteVisual,
+  NecklaceGearSection,
 } from "./JewelrySystem.jsx";
 
 import {
@@ -231,6 +236,9 @@ export const I18N = {
     balancedChance: "Chances de vitória equilibradas (50/50)",
     quickSpells: "Troca Rápida de Feitiços",
     quickGear: "Troca Rápida de Equipamentos",
+    necklace: "Colar",
+    necklaces: "Colares",
+    necklaceSlot: "Colar / Amuleto",
     unlockedSpellsBank: "Banco de Feitiços Disponíveis",
     elementalAdvantage: "Vantagem Elemental",
     elementalDisadvantage: "Desvantagem Elemental",
@@ -388,6 +396,9 @@ export const I18N = {
     balancedChance: "Balanced win probability (50/50)",
     quickSpells: "Quick Spell Swapper",
     quickGear: "Quick Gear Swapper",
+    necklace: "Necklace",
+    necklaces: "Necklaces",
+    necklaceSlot: "Necklace / Amulet",
     unlockedSpellsBank: "Available Spells Bank",
     elementalAdvantage: "Elemental Advantage",
     elementalDisadvantage: "Elemental Disadvantage",
@@ -809,6 +820,7 @@ const START_OWNED = [
   "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare",
   "boots_apprentice", "boots_windstride",
   "ring_none", "ring_cinder", "ring_glacier",
+  "necklace_none", "necklace_apprentice", "necklace_amber_tear", "necklace_frost_gem",
   // Estilos de aparência iniciais (gratuitos)
   "hair_wavy", "hair_short",
   "beard_none", "beard_stubble",
@@ -832,9 +844,12 @@ const LOOTABLE = [
   "boots_ironward", "boots_cinder", "boots_frostbite", "boots_verdant", "boots_celestial",
   // Anéis Arcanos (Jewelry)
   "ring_cinder", "ring_combustion", "ring_glacier", "ring_shatter", "ring_spore", "ring_ironroot",
-  "ring_runic", "ring_singularity", "ring_chronos", "ring_prismatic"
+  "ring_runic", "ring_singularity", "ring_chronos", "ring_prismatic",
+  // Colares & Amuletos Arcanos
+  "necklace_sylvan_locket", "necklace_astral_choker", "necklace_phoenix_heart", "necklace_frozen_star",
+  "necklace_druid_torc", "necklace_chronos_pendant", "necklace_prismatic_eye"
 ];
-const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES, ...BOOTS, ...RINGS];
+const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES, ...BOOTS, ...RINGS, ...NECKLACES];
 const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
 
 // ================= TABELA DE ITENS DA LOJA (100% COSMÉTICO) =================
@@ -1166,10 +1181,20 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
     if (skill.el === "nature" && atk.bootsGear.natureBonus) mult *= 1 + atk.bootsGear.natureBonus;
   }
 
+  // Necklace offensive bonuses
+  if (atk.necklace) {
+    if (atk.necklace.allDmg) mult *= 1 + atk.necklace.allDmg;
+    if (atk.necklace.el === skill.el && atk.necklace.elBonus) mult *= 1 + atk.necklace.elBonus;
+    if (skill.el === "fire" && atk.necklace.fireBonus) mult *= 1 + atk.necklace.fireBonus;
+    if (skill.el === "ice" && atk.necklace.iceBonus) mult *= 1 + atk.necklace.iceBonus;
+    if (skill.el === "nature" && atk.necklace.natureBonus) mult *= 1 + atk.necklace.natureBonus;
+    if (skill.el === "arcane" && atk.necklace.arcaneBonus) mult *= 1 + atk.necklace.arcaneBonus;
+  }
+
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
   let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0) + (atk.pet?.crit || 0)
-    + (atk.hatGear?.crit || 0) + (atk.glovesGear?.crit || 0);
+    + (atk.hatGear?.crit || 0) + (atk.glovesGear?.crit || 0) + (atk.necklace?.crit || 0);
   if (todayMod.id === "critical_overload") critChance += 20;
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
@@ -1190,10 +1215,11 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   if (def.offhand?.dmgReduction) mult *= (1 - def.offhand.dmgReduction);
   // Pet Sporeling: 3% damage reduction
   if (def.pet?.dmgReduction) mult *= (1 - def.pet.dmgReduction);
-  // Gear Damage Reduction: Robe, Gloves, Boots
+  // Gear Damage Reduction: Robe, Gloves, Boots, Necklace
   if (def.robeGear?.dmgReduction) mult *= (1 - def.robeGear.dmgReduction);
   if (def.glovesGear?.dmgReduction) mult *= (1 - def.glovesGear.dmgReduction);
   if (def.bootsGear?.dmgReduction) mult *= (1 - def.bootsGear.dmgReduction);
+  if (def.necklace?.dmgReduction) mult *= (1 - def.necklace.dmgReduction);
   // Defensive Rings
   const defRings = [def.ring1, def.ring2].filter(Boolean);
   for (const ring of defRings) {
@@ -1204,28 +1230,29 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   return { dmg, crit, chilled };
 }
 
-function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId, ring1Id = "ring_none", ring2Id = "ring_none", bootsId = "boots_apprentice") {
+function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId, ring1Id = "ring_none", ring2Id = "ring_none", bootsId = "boots_apprentice", necklaceId = "necklace_none") {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
   const pet = PETS.find(p => p.id === petId && p.id !== "pet_none") || null;
   const ring1 = RINGS.find(r => r.id === ring1Id && r.id !== "ring_none") || null;
   const ring2 = RINGS.find(r => r.id === ring2Id && r.id !== "ring_none") || null;
+  const necklace = NECKLACES.find(n => n.id === necklaceId && n.id !== "necklace_none") || null;
   const robeGear = ROBES.find(r => r.id === (robeId || "robe_classic")) || null;
   const hatGear = HATS.find(h => h.id === hatId) || null;
   const glovesGear = GLOVES.find(g => g.id === (glovesId || "gloves_arcane")) || null;
   const bootsGear = BOOTS.find(b => b.id === (bootsId || "boots_apprentice")) || null;
 
   let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0) + (ring1?.maxHpBonus || 0) + (ring2?.maxHpBonus || 0)
-    + (robeGear?.maxHpBonus || 0) + (hatGear?.maxHpBonus || 0) + (bootsGear?.maxHpBonus || 0);
+    + (robeGear?.maxHpBonus || 0) + (hatGear?.maxHpBonus || 0) + (bootsGear?.maxHpBonus || 0) + (necklace?.maxHpBonus || 0);
 
   // Bloodpact Spike tradeoff: -8 Max HP
   if (staffId === "bloodpact") maxHp -= 8;
 
   const relic = RELICS.find(r => r.id === relicId && r.id !== "none") || null;
   const startShield = (relic?.startShield || 0) + (pet?.startShield || 0) + (ring1?.startShield || 0) + (ring2?.startShield || 0)
-    + (robeGear?.startShield || 0) + (hatGear?.startShield || 0) + (bootsGear?.startShield || 0);
+    + (robeGear?.startShield || 0) + (hatGear?.startShield || 0) + (bootsGear?.startShield || 0) + (necklace?.startShield || 0);
 
   const maxMana = MAX_MANA + (pet?.maxManaBonus || 0) + (ring1?.maxManaBonus || 0) + (ring2?.maxManaBonus || 0)
-    + (robeGear?.maxManaBonus || 0) + (hatGear?.maxManaBonus || 0) + (glovesGear?.maxManaBonus || 0) + (bootsGear?.maxManaBonus || 0);
+    + (robeGear?.maxManaBonus || 0) + (hatGear?.maxManaBonus || 0) + (glovesGear?.maxManaBonus || 0) + (bootsGear?.maxManaBonus || 0) + (necklace?.maxManaBonus || 0);
 
   return {
     name, affinity, skills,
@@ -1236,6 +1263,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
     pet,
     ring1, ring2, ring1Id: ring1Id || "ring_none", ring2Id: ring2Id || "ring_none",
+    necklace, necklaceId: necklaceId || "necklace_none",
     robeGear, hatGear, glovesGear, bootsGear,
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     gloves: glovesId || look?.gloves || "gloves_arcane",
@@ -1247,7 +1275,7 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     gender: look?.gender || "gender_male",
     face: look?.face || "face_round", earrings: look?.earrings || "earring_none", noseRing: look?.noseRing || "nosering_none",
     maxHp, hp: maxHp, maxMana, mana: maxMana, shield: startShield, cds: {},
-    status: { burn: 0, chill: false, entangled: 0 }, phoenixUsed: false,
+    status: { burn: 0, chill: false, entangled: 0 }, phoenixUsed: false, necklaceUsed: false,
     archetype: null,
   };
 }
@@ -1280,6 +1308,7 @@ function calculateMagePowerScore(mage, level = 1) {
   if (mage.offhand && mage.offhand.id !== "offhand_none") score += RARITY_POWER[mage.offhand.rarity] || 8;
   if (mage.ring1 && mage.ring1.id !== "ring_none") score += RARITY_POWER[mage.ring1.rarity] || 6;
   if (mage.ring2 && mage.ring2.id !== "ring_none") score += RARITY_POWER[mage.ring2.rarity] || 6;
+  if (mage.necklace && mage.necklace.id !== "necklace_none") score += RARITY_POWER[mage.necklace.rarity] || 8;
   if (mage.pet && mage.pet.id !== "pet_none") score += RARITY_POWER[mage.pet.rarity] || 10;
   if (mage.robeGear) score += RARITY_POWER[mage.robeGear.rarity] || 6;
   if (mage.hatGear) score += RARITY_POWER[mage.hatGear.rarity] || 6;
@@ -1409,6 +1438,14 @@ function makeEnemy(options = {}) {
   const ring1Choice = pick(validRings.filter(r => !r.el || r.el === enemyAffinity).length ? validRings.filter(r => !r.el || r.el === enemyAffinity) : validRings);
   const ring2Choice = targetLevel >= 3 ? pick(validRings) : { id: "ring_none" };
 
+  // Necklace
+  const validNecklaces = NECKLACES.filter(n => {
+    if (targetLevel <= 2) return n.id === "necklace_none" || n.rarity === "common";
+    if (targetLevel <= 6) return n.rarity === "common" || n.rarity === "rare";
+    return true;
+  });
+  const necklaceChoice = pick(validNecklaces.filter(n => !n.el || n.el === enemyAffinity).length ? validNecklaces.filter(n => !n.el || n.el === enemyAffinity) : validNecklaces);
+
   // Pet
   const petChoice = targetLevel >= 4 && Math.random() < 0.6 ? pick(PETS.filter(p => p.id !== "pet_none")) : { id: "pet_none" };
 
@@ -1444,7 +1481,8 @@ function makeEnemy(options = {}) {
     pick(GLOVES).id,
     ring1Choice?.id || "ring_none",
     ring2Choice?.id || "ring_none",
-    pick(BOOTS).id
+    pick(BOOTS).id,
+    necklaceChoice?.id || "necklace_none"
   );
 
   e.level = targetLevel;
@@ -4818,6 +4856,10 @@ function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1
               <circle cx="-0.6" cy="-0.6" r="0.8" fill="#FFFFFF" />
             </g>
           )}
+          {/* Arcane Necklace / Medallion */}
+          {mage.necklace && mage.necklace.id !== "necklace_none" && (
+            <NecklaceSpriteVisual necklace={mage.necklace} />
+          )}
           {Hat && <Hat p={p} />}
         </g>
 
@@ -4951,7 +4993,8 @@ export default function MageDuel() {
   const [relicId, setRelicId] = useState(saved?.relicId ?? "wardsigil");
   const [ring1Id, setRing1Id] = useState(saved?.ring1Id ?? "ring_cinder");
   const [ring2Id, setRing2Id] = useState(saved?.ring2Id ?? "ring_glacier");
-  const [gearSubTab, setGearSubTab] = useState("rings"); // 'weapons' | 'rings' | 'relics'
+  const [necklaceId, setNecklaceId] = useState(saved?.necklaceId ?? "necklace_apprentice");
+  const [gearSubTab, setGearSubTab] = useState("necklaces"); // 'weapons' | 'apparel' | 'necklaces' | 'rings' | 'relics'
   const [hatId, setHatId] = useState(saved?.hatId ?? "hat_pointed");
   const [auraId, setAuraId] = useState(saved?.auraId ?? "aura_ember");
   const [capeId, setCapeId] = useState(saved?.capeId ?? "wings_angel");
@@ -5072,7 +5115,7 @@ export default function MageDuel() {
       mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId,
       earringId, noseRingId, offhandId, glovesId, bootsId,
-      ring1Id, ring2Id,
+      ring1Id, ring2Id, necklaceId,
       owned: [...owned],
       shards,
       premiumOwned: [...premiumOwned],
@@ -5094,7 +5137,7 @@ export default function MageDuel() {
       consumables,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, bootsId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, bootsId, ring1Id, ring2Id, necklaceId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -5148,6 +5191,7 @@ export default function MageDuel() {
     relicId,
     ring1Id,
     ring2Id,
+    necklaceId,
     hatId,
     auraId,
     capeId,
@@ -5155,7 +5199,7 @@ export default function MageDuel() {
     petId,
     look: { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId },
     chosen,
-  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, ring1Id, ring2Id, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
+  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, ring1Id, ring2Id, necklaceId, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
 
   const { playerRank, playerTier } = useMemo(() => buildRankedLadder(playerDataForLeaderboard), [playerDataForLeaderboard]);
 
@@ -5189,7 +5233,9 @@ export default function MageDuel() {
       "offhand_none",
       "gloves_arcane",
       rival.ring1Id || "ring_none",
-      rival.ring2Id || "ring_none"
+      rival.ring2Id || "ring_none",
+      "boots_apprentice",
+      rival.necklaceId || "necklace_none"
     );
     rivalMage.trophies = rival.trophies;
     rivalMage.archetype = rival.archetype;
@@ -5838,7 +5884,7 @@ export default function MageDuel() {
       }
     }
     const p = makeMage(mageName.trim() || "You", affinity, finalSkills.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
-      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id, bootsId);
+      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id, bootsId, necklaceId);
     p.level = mageLevel;
     p.trophies = trophies;
     p.power = calculateMagePowerScore(p, mageLevel);
@@ -6141,6 +6187,13 @@ export default function MageDuel() {
         lines.push(`Drained ${h} HP.`);
         addFloat(side, `+${h}`, "#72C063", false);
       }
+      if (d.hp > 0 && d.hp <= Math.round(d.maxHp * 0.3) && d.necklace?.clutchHeal && !d.necklaceUsed) {
+        d.necklaceUsed = true;
+        const cHeal = d.necklace.clutchHeal;
+        d.hp = Math.min(d.maxHp, d.hp + cHeal);
+        lines.push(`${side === "p" ? "The foe's" : "Your"} Phoenix Heart necklace flares — restored ${cHeal} HP!`);
+        addFloat(side === "p" ? "e" : "p", `+${cHeal}`, "#ff7a29", false);
+      }
       if (d.hp <= 0 && d.relic?.revive && !d.phoenixUsed) {
         d.hp = 20; d.phoenixUsed = true;
         lines.push(`${side === "p" ? "The foe's" : "Your"} Phoenix Feather blazes — risen at 20 HP!`);
@@ -6166,7 +6219,7 @@ export default function MageDuel() {
     if (n.status.entangled > 0) { n.status.entangled -= 1; }
     let baseRegen = REGEN;
     if (todayMod.id === "arcane_surge") baseRegen += 2;
-    n.mana = Math.min(n.maxMana || MAX_MANA, n.mana + baseRegen + (n.staffGear?.regen || 0) + (n.relic?.regen || 0) + (n.hatGear?.regen || 0) + (n.glovesGear?.regen || 0) + (n.bootsGear?.regen || 0));
+    n.mana = Math.min(n.maxMana || MAX_MANA, n.mana + baseRegen + (n.staffGear?.regen || 0) + (n.relic?.regen || 0) + (n.hatGear?.regen || 0) + (n.glovesGear?.regen || 0) + (n.bootsGear?.regen || 0) + (n.necklace?.regen || 0));
     return n;
   }
 
@@ -8359,6 +8412,8 @@ export default function MageDuel() {
       ring2: findRing(ring2Id),
       ring1Id,
       ring2Id,
+      necklace: findNecklace(necklaceId),
+      necklaceId,
       gloves: activeGloves,
       boots: bootsId,
       bootsId,
@@ -9126,6 +9181,17 @@ export default function MageDuel() {
                   <span>{lang === "pt" ? "Vestimentas" : "Apparel"}</span>
                 </button>
                 <button
+                  onClick={() => setGearSubTab("necklaces")}
+                  className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
+                    gearSubTab === "necklaces"
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 border border-transparent"
+                  }`}
+                >
+                  <span>📿</span>
+                  <span>{lang === "pt" ? "Colares" : "Necklaces"}</span>
+                </button>
+                <button
                   onClick={() => setGearSubTab("rings")}
                   className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
                     gearSubTab === "rings"
@@ -9220,7 +9286,19 @@ export default function MageDuel() {
                 </div>
               )}
 
-              {/* 2. Arcane Rings Sub-tab (Dual Slots) */}
+              {/* 2. Arcane Necklaces Sub-tab */}
+              {gearSubTab === "necklaces" && (
+                <NecklaceGearSection
+                  necklaceId={necklaceId}
+                  onEquipNecklace={setNecklaceId}
+                  onUnequipNecklace={() => setNecklaceId("necklace_none")}
+                  ownedNecklaceIds={owned}
+                  lang={lang}
+                  RARITY={RARITY}
+                />
+              )}
+
+              {/* 3. Arcane Rings Sub-tab (Dual Slots) */}
               {gearSubTab === "rings" && (
                 <JewelryGearSection
                   ring1Id={ring1Id}
@@ -10608,6 +10686,7 @@ export default function MageDuel() {
     const previewMage = buildPreviewMage();
     const el = ELEMENTS[affinity] || ELEMENTS.fire;
     const relic = RELICS.find(r => r.id === relicId);
+    const necklace = findItem(necklaceId);
     const hat = findItem(hatId);
     const aura = findItem(auraId);
     const robeSkin = findItem(robeId);
@@ -10732,10 +10811,11 @@ export default function MageDuel() {
               <span>{lang === "pt" ? "Equipamentos e Cosméticos Ativos:" : "Equipped Gear & Cosmetics:"}</span>
             </h3>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-1.5 w-full">
               {[
                 { label: lang === "pt" ? "Cajado" : "Staff", icon: "🪄", item: staff },
                 { label: lang === "pt" ? "Secundário" : "Off-hand", icon: "🛡️", item: offhand },
+                { label: lang === "pt" ? "Colar" : "Necklace", icon: "📿", item: necklace },
                 { label: lang === "pt" ? "Relíquia" : "Relic", icon: "✦", item: relic },
                 { label: lang === "pt" ? "Túnica" : "Robe", icon: "🥋", item: robeSkin },
                 { label: lang === "pt" ? "Chapéu" : "Hat", icon: "🎩", item: hat },
@@ -10858,6 +10938,7 @@ export default function MageDuel() {
     const foeStaff = enemy.staffGear;
     const foeRelic = enemy.relic;
     const foeOffhand = enemy.offhand;
+    const foeNecklace = enemy.necklace;
     const foePet = enemy.pet;
 
     return (
@@ -11008,7 +11089,46 @@ export default function MageDuel() {
                 </div>
               </div>
 
-              {/* 4. Mascote Companheiro */}
+              {/* 4. Colar / Amuleto */}
+              <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foeNecklace && foeNecklace.id !== "necklace_none" ? `${RARITY[foeNecklace.rarity]?.color || T.gold}55` : T.borderSubtle }}>
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
+                  📿
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="font-mono text-[13px] font-bold truncate text-zinc-100">
+                      {foeNecklace && foeNecklace.id !== "necklace_none" ? ((lang === "pt" && foeNecklace.name_pt) ? foeNecklace.name_pt : foeNecklace.name) : (lang === "pt" ? "Nenhum Colar" : "No Necklace")}
+                    </span>
+                    {foeNecklace && foeNecklace.id !== "necklace_none" && foeNecklace.rarity && (
+                      <span className="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded-full border" style={{ borderColor: `${RARITY[foeNecklace.rarity]?.color}66`, color: RARITY[foeNecklace.rarity]?.color, background: `${RARITY[foeNecklace.rarity]?.color}15` }}>
+                        {RARITY[foeNecklace.rarity]?.label}
+                      </span>
+                    )}
+                  </div>
+                  {foeNecklace && foeNecklace.id !== "necklace_none" ? (
+                    <>
+                      <div className="mt-1 text-[11px] font-mono text-zinc-300 flex flex-wrap gap-x-3 gap-y-0.5">
+                        {foeNecklace.maxHpBonus && <span className="text-emerald-300">+{foeNecklace.maxHpBonus} HP</span>}
+                        {foeNecklace.maxManaBonus && <span className="text-sky-300">+{foeNecklace.maxManaBonus} Mana</span>}
+                        {foeNecklace.startShield && <span className="text-cyan-300">+{foeNecklace.startShield} Escudo</span>}
+                        {foeNecklace.regen && <span className="text-emerald-300">+{foeNecklace.regen} Mana/Turno</span>}
+                        {foeNecklace.allDmg && <span className="text-amber-300">+{Math.round(foeNecklace.allDmg * 100)}% Dano</span>}
+                        {foeNecklace.dmgReduction && <span className="text-teal-300">-{Math.round(foeNecklace.dmgReduction * 100)}% Dano Recebido</span>}
+                        {foeNecklace.clutchHeal && <span className="text-rose-300 font-bold">❤️ Salvação (+{foeNecklace.clutchHeal} HP)</span>}
+                      </div>
+                      <p className="text-[10.5px] font-sans text-zinc-400 mt-1">
+                        {(lang === "pt" && foeNecklace.desc_pt) ? foeNecklace.desc_pt : foeNecklace.desc}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[10.5px] font-sans text-zinc-500 mt-0.5">
+                      {lang === "pt" ? "O oponente não possui colar ou amuleto equipado." : "No necklace equipped."}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. Mascote Companheiro */}
               <div className="card-surface p-3 rounded-xl border flex items-start gap-3" style={{ borderColor: foePet ? `${RARITY[foePet.rarity]?.color || T.gold}55` : T.borderSubtle }}>
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center text-xl flex-shrink-0 bg-white/5 border border-white/10">
                   🐾
@@ -13265,7 +13385,7 @@ export default function MageDuel() {
                   title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente" : "Click to inspect opponent gear"}
                 >
                   <span className="truncate group-hover:underline">
-                    {enemy.staffGear?.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}{enemy.pet ? ` · 🐾 ${(lang === "pt" && enemy.pet.name_pt) ? enemy.pet.name_pt : enemy.pet.name}` : ""}
+                    {enemy.staffGear?.name}{enemy.relic ? ` · ${enemy.relic.name}` : ""}{enemy.offhand ? ` · ${enemy.offhand.name}` : ""}{enemy.necklace && enemy.necklace.id !== "necklace_none" ? ` · 📿 ${(lang === "pt" && enemy.necklace.name_pt) ? enemy.necklace.name_pt : enemy.necklace.name}` : ""}{enemy.pet ? ` · 🐾 ${(lang === "pt" && enemy.pet.name_pt) ? enemy.pet.name_pt : enemy.pet.name}` : ""}
                   </span>
                   <span className="text-[9px] text-sky-300 opacity-70 group-hover:opacity-100 flex-shrink-0">🔍</span>
                 </button>
@@ -13336,7 +13456,7 @@ export default function MageDuel() {
                 </div>
 
                 <div className="text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-75" style={{ color: player.staffGear ? RARITY[player.staffGear.rarity].color : T.textMuted }}>
-                  {player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}
+                  {player.staffGear?.name || "No staff"}{player.relic ? ` · ${player.relic.name}` : ""}{player.offhand ? ` · ${player.offhand.name}` : ""}{player.necklace && player.necklace.id !== "necklace_none" ? ` · 📿 ${(lang === "pt" && player.necklace.name_pt) ? player.necklace.name_pt : player.necklace.name}` : ""}
                 </div>
 
                 {/* Health & Mana with integrated Ward */}

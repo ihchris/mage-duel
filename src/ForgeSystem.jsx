@@ -204,6 +204,62 @@ export const FORGE_RECIPES = [
     cost: { mat_ember: 8, mat_glacial: 8, mat_sap: 8, mat_stardust: 8, mat_celestial_tear: 1 },
   },
 
+  // --- COLARES & AMULETOS ARCANOS ---
+  {
+    id: "recipe_necklace_amber_tear",
+    resultItemId: "necklace_amber_tear",
+    category: "necklaces",
+    cost: { mat_ember: 6, mat_crystal: 3 },
+  },
+  {
+    id: "recipe_necklace_frost_gem",
+    resultItemId: "necklace_frost_gem",
+    category: "necklaces",
+    cost: { mat_glacial: 6, mat_crystal: 3 },
+  },
+  {
+    id: "recipe_necklace_sylvan_locket",
+    resultItemId: "necklace_sylvan_locket",
+    category: "necklaces",
+    cost: { mat_sap: 10, mat_ironwood: 3 },
+  },
+  {
+    id: "recipe_necklace_astral_choker",
+    resultItemId: "necklace_astral_choker",
+    category: "necklaces",
+    cost: { mat_stardust: 10, mat_iron: 4 },
+  },
+  {
+    id: "recipe_necklace_phoenix_heart",
+    resultItemId: "necklace_phoenix_heart",
+    category: "necklaces",
+    cost: { mat_ember: 14, mat_crystal: 6, mat_dragonblood: 1 },
+  },
+  {
+    id: "recipe_necklace_frozen_star",
+    resultItemId: "necklace_frozen_star",
+    category: "necklaces",
+    cost: { mat_glacial: 14, mat_crystal: 6, mat_iron: 4 },
+  },
+  {
+    id: "recipe_necklace_druid_torc",
+    resultItemId: "necklace_druid_torc",
+    category: "necklaces",
+    cost: { mat_sap: 16, mat_ironwood: 6, mat_crystal: 4 },
+  },
+  {
+    id: "recipe_necklace_chronos_pendant",
+    resultItemId: "necklace_chronos_pendant",
+    category: "necklaces",
+    cost: { mat_stardust: 18, mat_crystal: 8, mat_void_tesseract: 1 },
+  },
+  {
+    id: "recipe_necklace_prismatic_eye",
+    resultItemId: "necklace_prismatic_eye",
+    category: "necklaces",
+    cost: { mat_ember: 10, mat_glacial: 10, mat_sap: 10, mat_stardust: 10, mat_celestial_tear: 1 },
+  },
+
   // --- CAJADOS & MÃOS SECUNDÁRIAS ---
   {
     id: "recipe_coral_scepter",
@@ -561,6 +617,7 @@ export function ForgeModal({
         <div className="flex items-center gap-1 p-2 bg-slate-900/80 border-b border-white/10 flex-shrink-0">
           {[
             ["rings", "💍", lang === "pt" ? "Anéis" : "Rings"],
+            ["necklaces", "📿", lang === "pt" ? "Colares" : "Necklaces"],
             ["weapons", "🪄", lang === "pt" ? "Cajados & Mãos" : "Weapons"],
             ["relics", "🔮", lang === "pt" ? "Relíquias" : "Relics"],
             ["apparel", "🥋", lang === "pt" ? "Vestimentas" : "Apparel"],
