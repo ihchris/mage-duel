@@ -1019,6 +1019,18 @@ export function SelfCastFX({ selfCast }) {
 }
 
 // ================= MODERN SKILL CARD =================
+// Element fallback defaults for standalone rendering
+const ELEMENT_DEFAULTS = {
+  fire: { name: "Fogo", color: "#FF5436", icon: "🔥" },
+  ice: { name: "Gelo", color: "#00D2FF", icon: "❄️" },
+  lightning: { name: "Raio", color: "#FBBF24", icon: "⚡" },
+  arcane: { name: "Arcano", color: "#D946EF", icon: "🔮" },
+  nature: { name: "Natureza", color: "#10B981", icon: "🌿" },
+  dark: { name: "Trevas", color: "#9333EA", icon: "🌑" },
+  light: { name: "Luz", color: "#FDE047", icon: "☀️" },
+};
+
+// ================= MODERN SKILL CARD (COLLECTIBLE CARD) =================
 export function ModernSkillCard({
   skill,
   hotkey,
@@ -1029,14 +1041,18 @@ export function ModernSkillCard({
   onClick,
   onInspect,
   lang = "pt",
+  slotLabel,
+  isSlotEmpty = false,
+  isLocked = false,
+  unlockLvl = 1,
 }) {
-  const elColor = T[skill?.el] || element?.color || T.arcane;
-  const el = element || { name: "Arcane", color: elColor, icon: "✶" };
-  const cdVal = (player?.cds && player.cds[skill.id]) || 0;
+  const elColor = T[skill?.el] || element?.color || (skill?.el ? ELEMENT_DEFAULTS[skill.el]?.color : null) || T.arcane;
+  const el = element || (skill?.el ? ELEMENT_DEFAULTS[skill.el] : null) || { name: "Arcane", color: elColor, icon: "✶" };
+  const cdVal = (player?.cds && skill?.id && player.cds[skill.id]) || 0;
   const onCd = cdVal > 0;
-  const noMana = (player?.mana ?? 0) < skill.mana;
-  const disabled = busy || onCd || noMana;
-  const isAffinity = skill.el === player?.affinity;
+  const noMana = player ? ((player?.mana ?? 999) < (skill?.mana ?? 0)) : false;
+  const disabled = busy || onCd || noMana || isLocked;
+  const isAffinity = skill?.el && player?.affinity ? (skill.el === player.affinity) : false;
 
   // Feedback states
   const [justTriggered, setJustTriggered] = useState(false);
@@ -1054,168 +1070,186 @@ export function ModernSkillCard({
   }, [cdVal]);
 
   const handleCardClick = (e) => {
-    if (disabled) return;
+    if (disabled && !isSlotEmpty) return;
     setJustTriggered(true);
     setTimeout(() => setJustTriggered(false), 300);
     if (onClick) onClick(e);
   };
 
+  // Locked Card Variant
+  if (isLocked) {
+    return (
+      <div
+        className="w-full aspect-[3/4] rounded-2xl border-4 border-indigo-900/40 bg-indigo-950/40 p-2 flex flex-col items-center justify-center opacity-50 select-none shadow-inner text-center relative overflow-hidden"
+      >
+        <span className="text-2xl sm:text-3xl mb-1 opacity-70">🔒</span>
+        <span className="text-[10px] sm:text-xs font-mono font-black text-indigo-300">Nv. {unlockLvl}</span>
+        <span className="text-[8px] sm:text-[9px] font-sans text-zinc-400 uppercase tracking-wider mt-0.5 font-bold">Bloqueado</span>
+      </div>
+    );
+  }
+
+  // Empty Slot Card Variant
+  if (isSlotEmpty || !skill) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="w-full aspect-[3/4] rounded-2xl border-4 border-dashed border-indigo-400/40 hover:border-amber-400/80 bg-indigo-950/30 hover:bg-indigo-900/40 p-2 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer group shadow-md hover:scale-105 active:scale-95 select-none relative overflow-hidden"
+      >
+        <span className="text-3xl sm:text-4xl font-black text-indigo-300/60 group-hover:text-amber-300 transition-colors leading-none">+</span>
+        <span className="text-[9.5px] sm:text-[11px] font-sans font-bold text-indigo-200/80 group-hover:text-amber-200 uppercase tracking-wider mt-1.5 text-center">
+          {slotLabel || "Equipar"}
+        </span>
+      </button>
+    );
+  }
+
   const displayName = (lang === "pt" && skill.name_pt)
     ? skill.name_pt
     : (skill.name_pt || (skill.id === "focus" && lang === "pt" ? "Foco Arcano" : skill.name));
-
-  const displayDesc = (lang === "pt" ? (skill.desc_pt || skill.desc) : (skill.desc || skill.desc_pt)) || "";
 
   return (
     <button
       onClick={handleCardClick}
       disabled={disabled}
       type="button"
-      className={`w-full rounded-2xl border p-2 xs:p-2.5 sm:p-3 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none min-h-[105px] xs:min-h-[114px] sm:min-h-[122px] backdrop-blur-md ${
+      className={`w-full aspect-[3/4] rounded-2xl border-4 p-2 text-left font-mono transition-all duration-200 relative overflow-hidden group flex flex-col justify-between select-none ${
         disabled
-          ? "opacity-45 cursor-not-allowed filter grayscale-[0.35]"
-          : "hover:-translate-y-1 active:translate-y-0.5 cursor-pointer shadow-lg hover:shadow-2xl"
+          ? "opacity-50 cursor-not-allowed filter grayscale-[0.3]"
+          : "hover:-translate-y-2 hover:scale-[1.03] active:translate-y-0.5 cursor-pointer shadow-xl"
       }`}
       style={{
         background: !disabled
-          ? `linear-gradient(145deg, ${elColor}22 0%, rgba(26, 20, 60, 0.85) 60%, rgba(13, 11, 36, 0.95) 100%)`
+          ? `linear-gradient(160deg, ${elColor}33 0%, rgba(20, 14, 48, 0.92) 55%, rgba(10, 8, 28, 0.98) 100%)`
           : T.bgSurface,
-        borderColor: cdFinishedFlash
-          ? T.warning
-          : noMana && !onCd
-          ? `${T.danger}66`
-          : !disabled
-          ? `${elColor}60`
-          : T.borderSubtle,
+        borderColor: elColor,
         boxShadow: cdFinishedFlash
-          ? `0 0 20px ${T.warning}99`
+          ? `0 0 28px ${T.warning}EE, 0 10px 24px rgba(0,0,0,0.6)`
           : !disabled
-          ? `0 6px 20px rgba(0,0,0,0.45), 0 0 16px ${elColor}30, inset 0 1px 0 rgba(255,255,255,0.18)`
+          ? `0 0 18px ${elColor}55, 0 10px 24px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.3)`
           : "none",
       }}
     >
-      {/* Expanding energy ring feedback upon trigger */}
+      {/* Diagonal Gloss Highlight on Upper Card */}
+      <div
+        className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-white/25 via-white/10 to-transparent rotate-45 pointer-events-none rounded-full blur-[1px]"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/30 pointer-events-none"
+      />
+
+      {/* Trigger Feedback Ring */}
       {justTriggered && (
         <div
           className="absolute inset-0 rounded-2xl pointer-events-none animate-ping opacity-60"
-          style={{ border: `2px solid ${elColor}` }}
+          style={{ border: `3px solid ${elColor}` }}
         />
       )}
 
-      {/* Cooldown end shimmer overlay */}
-      {cdFinishedFlash && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/25 to-transparent pointer-events-none animate-pulse" />
-      )}
-
-      {/* Top Header Row: Hotkey Badge, Element Icon/Badge & Mana Gem */}
-      <div className="flex items-center justify-between gap-1.5 w-full mb-1 flex-shrink-0">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <div className="keycap-pill shadow-md">
-            <span>{hotkey}</span>
-            {altKey && <span className="text-[8.5px] opacity-75 ml-0.5">·{altKey}</span>}
-          </div>
+      {/* Top Row: Mana Gem + Hotkey (Left) and Combat Status Badges (Right) */}
+      <div className="relative z-10 flex items-center justify-between w-full gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1">
           <span
-            className="text-[9.5px] xs:text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded-lg border flex-shrink-0 shadow-sm"
-            style={{
-              color: elColor,
-              borderColor: `${elColor}55`,
-              backgroundColor: `${elColor}20`,
-            }}
-            title={el.name}
+            className={`text-[11px] sm:text-xs font-mono font-black px-1.5 py-0.5 rounded-lg border shadow-md flex items-center gap-0.5 ${
+              skill.mana === 0
+                ? "border-emerald-400 bg-emerald-950 text-emerald-300"
+                : noMana
+                ? "border-red-500 bg-red-950 text-red-300"
+                : "border-sky-400 bg-sky-950 text-sky-200"
+            }`}
           >
-            <span className="drop-shadow-[0_0_6px_currentColor]">{el.icon}</span>
-            <span className="hidden xs:inline text-[8.5px] sm:text-[9.5px] font-bold">{el.name}</span>
+            <span>💧</span>
+            <span className="text-[12px] sm:text-[13px] font-black">{skill.mana}</span>
           </span>
-          {isAffinity && (
-            <span className="text-[8.5px] xs:text-[9px] font-mono font-black px-1.5 py-0.2 rounded bg-amber-950/90 border border-amber-400/60 text-amber-300 flex-shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.3)]">
-              +25%
+          {hotkey && (
+            <span className="keycap-pill text-[9px] font-bold px-1.5 py-0.5 shadow-sm">
+              {hotkey}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-1 flex-shrink-0">
-          <span
-            className={`text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] font-mono font-black px-2 py-0.5 rounded-full border shadow-sm tracking-tight ${
-              skill.mana === 0
-                ? "border-emerald-500/60 bg-emerald-950/85 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
-                : noMana
-                ? "border-red-500/60 bg-red-950/85 text-red-300"
-                : "border-sky-400/60 bg-sky-950/85 text-sky-200 shadow-[0_0_10px_rgba(14,165,233,0.35)]"
-            }`}
-          >
-            {skill.mana === 0 ? "GRÁTIS" : `💧 ${skill.mana}`}
-          </span>
-          {onInspect && (
-            <span
-              role="button"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation();
-                onInspect(skill);
-              }}
-              className="text-[11px] xs:text-[12px] px-1 py-0.5 rounded hover:bg-white/20 active:scale-95 text-zinc-400 hover:text-amber-300 transition-all cursor-pointer"
-              title={lang === "pt" ? "Ver detalhes do feitiço" : "Spell details"}
-            >
-              ℹ️
+        {/* Status Badges with enlarged typography */}
+        <div className="flex items-center gap-1 flex-wrap justify-end">
+          {skill.dmg > 0 && (
+            <span className="font-mono font-black text-[11px] sm:text-xs text-red-100 bg-red-950/90 px-1.5 py-0.5 rounded-lg border border-red-500/70 flex items-center gap-0.5 shadow-md">
+              <span className="text-[10px]">⚔️</span>
+              <span className="text-[12px] sm:text-[13px]">{skill.dmg}</span>
+            </span>
+          )}
+          {skill.shield > 0 && (
+            <span className="font-mono font-black text-[11px] sm:text-xs text-sky-100 bg-sky-950/90 px-1.5 py-0.5 rounded-lg border border-sky-500/70 flex items-center gap-0.5 shadow-md">
+              <span className="text-[10px]">🛡️</span>
+              <span className="text-[12px] sm:text-[13px]">+{skill.shield}</span>
+            </span>
+          )}
+          {skill.heal > 0 && (
+            <span className="font-mono font-black text-[11px] sm:text-xs text-emerald-100 bg-emerald-950/90 px-1.5 py-0.5 rounded-lg border border-emerald-500/70 flex items-center gap-0.5 shadow-md">
+              <span className="text-[10px]">💚</span>
+              <span className="text-[12px] sm:text-[13px]">+{skill.heal}</span>
+            </span>
+          )}
+          {skill.restore > 0 && (
+            <span className="font-mono font-black text-[11px] sm:text-xs text-cyan-100 bg-cyan-950/90 px-1.5 py-0.5 rounded-lg border border-cyan-500/70 flex items-center gap-0.5 shadow-md">
+              <span className="text-[10px]">💧</span>
+              <span className="text-[12px] sm:text-[13px]">+{skill.restore}</span>
             </span>
           )}
         </div>
       </div>
 
-      {/* Dedicated Spell Name Row + High-Impact Numeric Status Badges */}
-      <div className="w-full my-0.5 min-w-0 flex items-center justify-between gap-1 flex-shrink-0">
+      {/* Centerpiece: Big Elemental/Spell Icon with Aura Glow */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center my-auto">
+        <div
+          className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full blur-md opacity-50 pointer-events-none"
+          style={{ background: elColor }}
+        />
+        <span
+          className="text-3xl xs:text-4xl sm:text-5xl drop-shadow-[0_0_16px_currentColor] transition-transform duration-200 group-hover:scale-115"
+          style={{ color: elColor }}
+        >
+          {el.icon}
+        </span>
+        <span
+          className="text-[9px] sm:text-[10px] font-sans font-black uppercase tracking-wider mt-1 px-1.5 py-0.2 rounded border shadow-sm"
+          style={{
+            color: elColor,
+            borderColor: `${elColor}55`,
+            backgroundColor: `${elColor}20`,
+          }}
+        >
+          {el.name}
+        </span>
+      </div>
+
+      {/* Bottom: Bold Spell Name and Affinity Badge */}
+      <div className="relative z-10 w-full pt-1 flex flex-col items-center flex-shrink-0">
         <h4
-          className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors truncate max-w-[62%]"
+          className="font-serif font-black text-[11px] xs:text-[12px] sm:text-[13px] text-center text-[#FAF6EE] group-hover:text-amber-200 transition-colors leading-tight truncate w-full px-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
           title={displayName}
         >
           {displayName}
         </h4>
-        <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
-          {skill.dmg > 0 && (
-            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-red-100 bg-red-950/85 px-1.5 py-0.5 rounded-lg border border-red-500/50 flex items-center gap-1 shadow-md">
-              <span>⚔️</span>
-              <span>{skill.dmg}</span>
-            </span>
-          )}
-          {skill.shield > 0 && (
-            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-sky-100 bg-sky-950/85 px-1.5 py-0.5 rounded-lg border border-sky-500/50 flex items-center gap-1 shadow-md">
-              <span>🛡️</span>
-              <span>+{skill.shield}</span>
-            </span>
-          )}
-          {skill.restore > 0 && (
-            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-cyan-100 bg-cyan-950/85 px-1.5 py-0.5 rounded-lg border border-cyan-500/50 flex items-center gap-1 shadow-md">
-              <span>💧</span>
-              <span>+{skill.restore}</span>
-            </span>
-          )}
-          {skill.heal > 0 && (
-            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-emerald-100 bg-emerald-950/85 px-1.5 py-0.5 rounded-lg border border-emerald-500/50 flex items-center gap-1 shadow-md">
-              <span>💚</span>
-              <span>+{skill.heal}</span>
-            </span>
-          )}
-        </div>
+        {isAffinity && (
+          <span className="text-[8px] font-mono font-bold text-amber-300 mt-0.5">
+            ★ Afinidade +25%
+          </span>
+        )}
       </div>
 
-      {/* Bottom row: Lore/Effect summary - High contrast with frosted backing */}
-      <div className="w-full mt-auto text-[9.5px] xs:text-[10px] sm:text-[10.5px] font-sans text-zinc-100 leading-tight line-clamp-2 bg-black/45 px-2 py-0.5 rounded-lg border border-white/8 flex-shrink-0">
-        {displayDesc}
-      </div>
-
-      {/* Cooldown Sleek Glass Overlay */}
+      {/* Cooldown Overlay */}
       {onCd && (
         <div
-          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-10 rounded-2xl"
+          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-20 rounded-xl"
           style={{
-            backgroundColor: "rgba(10, 12, 18, 0.88)",
-            backdropFilter: "blur(3px)",
+            backgroundColor: "rgba(8, 7, 20, 0.88)",
+            backdropFilter: "blur(4px)",
           }}
         >
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-950/90 border border-amber-500/70 shadow-lg">
-            <span className="text-sm animate-spin">⏳</span>
-            <span className="text-[12px] font-mono font-black text-amber-300">
-              {cdVal} turno{cdVal > 1 ? "s" : ""}
+          <div className="flex flex-col items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-950/90 border border-amber-500/70 shadow-xl">
+            <span className="text-xl animate-spin">⏳</span>
+            <span className="text-[13px] font-mono font-black text-amber-300">
+              {cdVal}T
             </span>
           </div>
         </div>
