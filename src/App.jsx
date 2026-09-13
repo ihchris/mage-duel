@@ -59,6 +59,15 @@ import {
   MaterialDropBanner,
 } from "./ForgeSystem.jsx";
 
+import {
+  CONSUMABLES,
+  DEFAULT_STARTING_CONSUMABLES,
+  ALCHEMICAL_SPELLS,
+  getTotalConsumablesCount,
+  BattleBagModal,
+  AlchemySanctumModal,
+} from "./AlchemySpellSystem.jsx";
+
 // ================= DESIGN SYSTEM TOKENS =================
 export const T = {
   // Backgrounds (hierarquia de profundidade)
@@ -471,7 +480,7 @@ const RARITY = {
   legendary: { label: "Legendary", color: "#E8B44F", glow: "0 0 16px #E8B44F77" },
 };
 
-const SKILLS = [
+const BASE_SKILLS = [
   // FIRE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
   { id: "emberjab",       name: "Ember Jab",       el: "fire", tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap fire strike.", upgradeOf: null, unlock: { type: "starter" } },
   { id: "fireball",       name: "Fireball",        el: "fire", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Detonates Burn combos.", effect: { status: "burn", duration: 3, chance: 35 }, upgradeOf: null, unlock: { type: "starter" } },
@@ -516,6 +525,8 @@ const SKILLS = [
   { id: "void_rift",      name: "Void Rift",       el: "arcane", tier: 3, role: "control", dmg: 32, mana: 15, cd: 2, desc: "Void tear: 32 dmg + drain 10 mana. CD 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_void_rift" } },
   { id: "astral_projection",name:"Astral Projection",el: "arcane",tier: 3, role: "support", dmg: 0,  mana: 5,  cd: 3, shield: 26, restore: 14, desc: "Shift planes: +26 shield & +14 mana. CD 3.", effect: { status: "shield", amount: 26 }, upgradeOf: null, unlock: { type: "boss", value: "Vaelin the Chronomancer" } },
 ];
+
+const SKILLS = [...BASE_SKILLS, ...ALCHEMICAL_SPELLS];
 
 const FOCUS = { id: "focus", name: "Focus", el: "arcane", tier: 1, role: "support", dmg: 0, mana: 0, cd: 0, restore: 10, desc: "Recover 10 mana." };
 
@@ -4641,6 +4652,11 @@ export default function MageDuel() {
   const [showForgeModal, setShowForgeModal] = useState(false);
   const [lastDuelMaterialDrops, setLastDuelMaterialDrops] = useState(null);
 
+  // Alchemy & Consumables State (Pokémon-style battle pouch)
+  const [consumables, setConsumables] = useState(() => saved?.consumables ?? DEFAULT_STARTING_CONSUMABLES);
+  const [showBattleBagModal, setShowBattleBagModal] = useState(false);
+  const [showAlchemyModal, setShowAlchemyModal] = useState(false);
+
   // Battle Pass State (Season of Embers)
   const [seasonXp, setSeasonXp] = useState(() => saved?.seasonXp ?? 0);
   const [passPremiumOwned, setPassPremiumOwned] = useState(() => saved?.passPremiumOwned ?? false);
@@ -4711,9 +4727,10 @@ export default function MageDuel() {
       rankedLosses,
       claimedTierRewards: [...claimedTierRewards],
       materials,
+      consumables,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -4865,6 +4882,65 @@ export default function MageDuel() {
         lang={lang}
         findItem={findItem}
         RARITY={RARITY}
+      />
+    );
+  }
+
+  // Handlers para Alquimia e Criação de Feitiços com Arquimaga Lyra
+  function handleCraftConsumable(itemId, reqMats, reqShards, quantity) {
+    setMaterials(prev => {
+      const next = { ...prev };
+      for (const [mId, cost] of Object.entries(reqMats)) {
+        next[mId] = Math.max(0, (next[mId] || 0) - cost);
+      }
+      return next;
+    });
+    if (reqShards > 0) setShards(s => Math.max(0, s - reqShards));
+    setConsumables(prev => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + quantity
+    }));
+  }
+
+  function handleLearnSpell(skillId, reqMats, reqShards) {
+    setMaterials(prev => {
+      const next = { ...prev };
+      for (const [mId, cost] of Object.entries(reqMats)) {
+        next[mId] = Math.max(0, (next[mId] || 0) - cost);
+      }
+      return next;
+    });
+    if (reqShards > 0) setShards(s => Math.max(0, s - reqShards));
+    setUnlockedSkills(prev => new Set([...prev, skillId]));
+  }
+
+  function renderAlchemyModal() {
+    return (
+      <AlchemySanctumModal
+        isOpen={showAlchemyModal}
+        onClose={() => setShowAlchemyModal(false)}
+        materials={materials}
+        shards={shards}
+        consumables={consumables}
+        unlockedSkills={unlockedSkills}
+        onCraftConsumable={handleCraftConsumable}
+        onLearnSpell={handleLearnSpell}
+        lang={lang}
+      />
+    );
+  }
+
+  function renderBattleBagModal() {
+    return (
+      <BattleBagModal
+        isOpen={showBattleBagModal}
+        onClose={() => setShowBattleBagModal(false)}
+        consumables={consumables}
+        onUseItem={useBattleConsumable}
+        player={player}
+        busy={busy}
+        currentTurn={currentTurn}
+        lang={lang}
       />
     );
   }
@@ -5218,6 +5294,15 @@ export default function MageDuel() {
 
     if (side === "p") {
       recordMastery(skill.id);
+      if (skill.conjureItem) {
+        const conjDef = CONSUMABLES[skill.conjureItem];
+        setConsumables(prev => ({
+          ...prev,
+          [skill.conjureItem]: (prev[skill.conjureItem] || 0) + 1
+        }));
+        lines.push(`🎒 Alquimia: +1x [${conjDef?.name || skill.conjureItem}] materializado na sua Mochila!`);
+        addFloat("p", `+1 🎒 ${conjDef?.icon || "Item"}`, "#A855F7", false);
+      }
     }
 
     if (skill.restore) {
@@ -5797,6 +5882,8 @@ export default function MageDuel() {
       } else if (e.code === "Space") {
         e.preventDefault();
         playerAction(FOCUS);
+      } else if (e.key === "b" || e.key === "B" || e.key === "m" || e.key === "M") {
+        setShowBattleBagModal(prev => !prev);
       }
     }
 
@@ -5893,6 +5980,155 @@ export default function MageDuel() {
       }, 1150);
     } catch (err) {
       console.error("Error in playerAction:", err);
+      setBusy(false);
+      setCurrentTurn("player");
+    }
+  }
+
+  // ================= POKÉMON-STYLE BATTLE ITEM USAGE =================
+  function useBattleConsumable(item) {
+    if (busy || phase !== "battle" || currentTurn !== "player" || !item) return;
+    const currentCount = consumables[item.id] || 0;
+    if (currentCount <= 0) return;
+
+    try {
+      setBusy(true);
+      setCurrentTurn("resolving");
+      setShowBattleBagModal(false);
+      setTurnCountdown(TURN_DURATION);
+
+      // Decrement consumable
+      setConsumables(prev => ({
+        ...prev,
+        [item.id]: Math.max(0, (prev[item.id] || 0) - 1)
+      }));
+
+      let p = { ...player, status: { ...player.status }, cds: { ...player.cds } };
+      let e = { ...enemy, status: { ...enemy.status }, cds: { ...enemy.cds } };
+
+      addLog(`🎒 Você usou [${item.name}] da sua Mochila de Batalha!`);
+
+      // 1. HP heal
+      if (item.heal) {
+        p.hp = Math.min(p.maxHp, p.hp + item.heal);
+        addFloat("p", `+${item.heal} 💚`, "#22C55E", false);
+        addLog(`💚 Recuperou +${item.heal} de Vida! (HP: ${p.hp}/${p.maxHp})`);
+        triggerSelfCastFX({ el: "nature" });
+      }
+
+      // 2. Mana restore
+      if (item.mana) {
+        p.mana = Math.min(MAX_MANA, p.mana + item.mana);
+        addFloat("p", `+${item.mana} 💧`, "#38BDF8", false);
+        addLog(`💧 Restaurou +${item.mana} de Mana! (Mana: ${p.mana}/${MAX_MANA})`);
+        triggerSelfCastFX({ el: "arcane" });
+      }
+
+      // 3. Shield
+      if (item.shield) {
+        p.shield = (p.shield || 0) + item.shield;
+        addFloat("p", `+${item.shield} 🛡️`, "#5FC1E8", false);
+        addLog(`🛡️ Barreira protetora ampliada em +${item.shield} de Escudo!`);
+        triggerSelfCastFX({ el: "arcane" });
+      }
+
+      // 4. Cooldown reduction
+      if (item.reduceCds) {
+        for (const k in p.cds) {
+          if (p.cds[k] > 0) p.cds[k] = Math.max(0, p.cds[k] - item.reduceCds);
+        }
+        addLog(`⚡ Recargas ativas aceleradas em -${item.reduceCds} turno!`);
+      }
+
+      // 5. Cleanse
+      if (item.cleanse) {
+        p.status.burn = 0;
+        p.status.chill = false;
+        p.status.entangled = 0;
+        addFloat("p", "PURIFICADO! ✨", "#F59E0B", false);
+        addLog("✨ Todas as aflições foram purificadas!");
+      }
+
+      // 6. Offensive throwables (Greek Fire, Frostbite)
+      if (item.dmg) {
+        let remaining = item.dmg;
+        if (e.shield > 0) {
+          const absorbed = Math.min(e.shield, remaining);
+          e.shield -= absorbed;
+          remaining -= absorbed;
+          addLog(`A barreira de ${e.name} absorveu ${absorbed} de dano!`);
+        }
+        e.hp = Math.max(0, e.hp - remaining);
+        addFloat("e", `-${remaining} 💥`, item.element === "fire" ? "#FF6B3D" : "#5FC1E8", true);
+        addLog(`💥 O frasco explodiu causando ${remaining} de dano em ${e.name}!`);
+
+        if (item.status) {
+          if (item.status.type === "burn") {
+            e.status.burn = (e.status.burn || 0) + (item.status.duration || 3);
+            addLog(`🔥 ${e.name} está em chamas por ${item.status.duration || 3} turnos!`);
+          } else if (item.status.type === "chill") {
+            e.status.chill = true;
+            addLog(`❄️ ${e.name} foi congelado (Chill 100%)!`);
+          }
+        }
+      }
+
+      setPlayer({ ...p });
+      setEnemy({ ...e });
+
+      // Turn transition to enemy (Pokémon style: using an item ends player's turn)
+      setTimeout(() => {
+        if (e.hp <= 0) {
+          addLog(`${e.name} sucumbiu ao impacto do item. Vitória!`);
+          setEnemy({ ...e });
+          finishBattle(true);
+          return;
+        }
+
+        setCurrentTurn("enemy");
+        const eSkill = aiChoose(e, p) || FOCUS;
+
+        setTimeout(() => {
+          setCastE(true);
+          setTimeout(() => setCastE(false), 600);
+
+          const r2 = applySkill(eSkill, e, p, "e");
+          e = r2.a; p = r2.d;
+
+          triggerSpellFX(eSkill, "e", r2.crit);
+          addLog(r2.lines[0]);
+
+          setTimeout(() => {
+            r2.lines.slice(1).forEach((line, i) => {
+              setTimeout(() => addLog(line), i * 140);
+            });
+            setPlayer({ ...p });
+            setEnemy({ ...e });
+          }, 460);
+
+          setTimeout(() => {
+            p = tickTurnEnd(p);
+            e = tickTurnEnd(e);
+            setPlayer({ ...p });
+            setEnemy({ ...e });
+
+            if (p.hp <= 0) {
+              addLog("Você caiu... Derrota.");
+              finishBattle(false);
+            } else if (e.hp <= 0) {
+              addLog(`${e.name} sucumbiu aos ferimentos. Vitória!`);
+              finishBattle(true);
+            } else {
+              setRoundNum(r => r + 1);
+              setCurrentTurn("player");
+              setTurnCountdown(TURN_DURATION);
+              setBusy(false);
+            }
+          }, 1000);
+        }, 400);
+      }, 1100);
+    } catch (err) {
+      console.error("Error in useBattleConsumable:", err);
       setBusy(false);
       setCurrentTurn("player");
     }
@@ -7464,13 +7700,16 @@ export default function MageDuel() {
       return false;
     });
 
+    const totalConsumables = getTotalConsumablesCount(consumables);
     const HUB_PORTALS = [
-      { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "📖", color: "#E8B44F" },
+      { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/${SKILLS.length} Magias` : `${unlockedSkills.size}/${SKILLS.length} Spells`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: t("gear"), sub: previewMage.staffGear?.name || t("gearSub"), icon: "🪄", color: "#38BDF8" },
-      { id: "forge", label: lang === "pt" ? "Forja Arcana" : "Arcane Forge", sub: lang === "pt" ? "NPC Brokk · Forjar" : "NPC Brokk · Craft", icon: "🔨", color: "#F59E0B" },
+      { id: "forge", label: lang === "pt" ? "Forja Arcana" : "Arcane Forge", sub: lang === "pt" ? "NPC Brokk · Armas" : "NPC Brokk · Gear", icon: "🔨", color: "#F59E0B" },
+      { id: "alchemy", label: lang === "pt" ? "Alquimia & Magias" : "Alchemy & Spells", sub: lang === "pt" ? "NPC Lyra · Poções" : "NPC Lyra · Potions", icon: "🧪", color: "#A855F7" },
       { id: "leaderboard", label: t("leaderboard") || "Ranking", sub: `#${playerRank} · ${trophies} 🏆`, icon: "🏆", color: playerTier.color },
       { id: "shop", label: t("shop"), sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
       { id: "pass", label: t("pass"), sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
+      { id: "bag", label: lang === "pt" ? "Mochila" : "Battle Bag", sub: `${totalConsumables} ${lang === "pt" ? "itens" : "items"}`, icon: "🎒", color: "#10B981" },
     ];
 
     return (
@@ -7612,7 +7851,7 @@ export default function MageDuel() {
         <div className="flex-1 min-w-0 sm:w-7/12 landscape:w-7/12 md:w-7/12 flex flex-col justify-center flex-shrink-0">
           {extra}
 
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-2.5 w-full h-full">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-2.5 w-full h-full">
             {HUB_PORTALS.map(portal => (
               <button
                 key={portal.id}
@@ -7621,6 +7860,8 @@ export default function MageDuel() {
                     setShowLeaderboardModal(true);
                   } else if (portal.id === "forge") {
                     setShowForgeModal(true);
+                  } else if (portal.id === "alchemy" || portal.id === "bag") {
+                    setShowAlchemyModal(true);
                   } else {
                     setTab(portal.id);
                   }
@@ -8090,7 +8331,19 @@ export default function MageDuel() {
                             {s.unlock.type === "tome" && `Grimório Arcano raro (Drop aleatório de vitória em duelo)`}
                             {s.unlock.type === "mastery" && `Lançar ${SKILLS.find(x => x.id === s.upgradeOf)?.name} (${skillMastery[s.upgradeOf] || 0}/${s.unlock.casts || 8} vezes em combate)`}
                             {s.unlock.type === "boss" && `Derrotar ${s.unlock.value} no Treinamento de Arquimagos`}
+                            {s.unlock.type === "alchemist" && `🧪 Pesquisa com Arquimaga Lyra (${s.unlock.costLabel || "Requer Materiais"})`}
                           </span>
+                          {s.unlock.type === "alchemist" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowAlchemyModal(true);
+                              }}
+                              className="ml-auto px-2 py-0.5 rounded bg-purple-600/30 border border-purple-400 text-purple-200 text-[10px] font-bold hover:bg-purple-600/50 cursor-pointer"
+                            >
+                              🧪 Ir à Lyra
+                            </button>
+                          )}
                         </div>
                       ) : upgradeSkill ? (
                         <div className="mt-2 pt-2 border-t border-[#3A335688] text-[11px] font-mono">
@@ -10382,6 +10635,7 @@ export default function MageDuel() {
         {renderInspectModal()}
         {renderLeaderboardModal()}
         {renderForgeModal()}
+        {renderAlchemyModal()}
       </div>
     );
   }
@@ -11316,6 +11570,13 @@ export default function MageDuel() {
               <span>🔨</span>
               <span>{lang === "pt" ? "Forja do Brokk" : "Brokk's Forge"}</span>
             </button>
+            <button
+              onClick={() => setShowAlchemyModal(true)}
+              className="py-2 px-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/60 text-purple-200 font-serif text-[11px] sm:text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+            >
+              <span>🧪</span>
+              <span>{lang === "pt" ? "Alquimia da Lyra" : "Lyra's Alchemy"}</span>
+            </button>
           </div>
         </div>
         {renderMatchmakingModal()}
@@ -11323,6 +11584,7 @@ export default function MageDuel() {
         {renderMasteryCelebrationModal()}
         {renderLeaderboardModal()}
         {renderForgeModal()}
+        {renderAlchemyModal()}
       </div>
     );
   }
@@ -11557,6 +11819,17 @@ export default function MageDuel() {
               </div>
               <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-1.5 sm:ml-2">
                 <button
+                  onClick={() => setShowBattleBagModal(true)}
+                  disabled={busy || currentTurn !== "player"}
+                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-emerald-400"
+                  style={{ borderColor: "#10B98188", color: "#34D399", backgroundColor: "#064E3B33" }}
+                  title="Abrir Mochila de Consumíveis (Poções estilo Pokémon) [Tecla B ou M]"
+                >
+                  <span>🎒</span>
+                  <span className="hidden sm:inline">Mochila ({getTotalConsumablesCount(consumables)})</span>
+                  <span className="sm:hidden">Bag ({getTotalConsumablesCount(consumables)})</span>
+                </button>
+                <button
                   onClick={() => playerAction(FOCUS)}
                   disabled={busy || currentTurn !== "player"}
                   className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1"
@@ -11590,6 +11863,7 @@ export default function MageDuel() {
       {renderChatModal()}
       {renderMasteryCelebrationModal()}
       {renderEnemyGearModal()}
+      {renderBattleBagModal()}
     </div>
   );
 }
