@@ -5651,136 +5651,145 @@ export default function MageDuel() {
   }
 
   function finishBattle(win) {
-    setResult(win ? "win" : "lose");
-    // Battle Pass XP Progression
-    const bpXpGained = win ? 30 : 10;
-    setSeasonXp(prevXp => {
-      const nextXp = prevXp + bpXpGained;
-      const oldLvl = Math.min(SEASON.maxLevel, Math.floor(prevXp / SEASON.xpPerLevel) + 1);
-      const newLvl = Math.min(SEASON.maxLevel, Math.floor(nextXp / SEASON.xpPerLevel) + 1);
-      if (newLvl > oldLvl) {
-        addLog(`🎉 Subiu para o nível ${newLvl} no Passe de Batalha!`);
-      }
-      return nextXp;
-    });
-
-    // Mage Level XP Progression (Win: +50 XP, Loss: +20 XP)
-    const mageXpGained = win ? 50 : 20;
-    setMageXp(prevXp => {
-      const nextXp = prevXp + mageXpGained;
-      const oldLvl = getMageLevel(prevXp);
-      const newLvl = getMageLevel(nextXp);
-      if (newLvl > oldLvl) {
-        addLog(`🎉 MAGE LEVEL UP! Subiu para o Nível ${newLvl}!`);
-        if (newLvl === 10 || newLvl === 20 || newLvl === 30) {
-          addLog(`✨ NOVO SLOT DE SKILL! Agora você pode equipar ${getMaxSlots(newLvl)} feitiços!`);
+    const isWin = Boolean(win);
+    try {
+      setResult(isWin ? "win" : "lose");
+      // Battle Pass XP Progression
+      const bpXpGained = isWin ? 30 : 10;
+      setSeasonXp(prevXp => {
+        const nextXp = prevXp + bpXpGained;
+        const oldLvl = Math.min(SEASON.maxLevel, Math.floor(prevXp / SEASON.xpPerLevel) + 1);
+        const newLvl = Math.min(SEASON.maxLevel, Math.floor(nextXp / SEASON.xpPerLevel) + 1);
+        if (newLvl > oldLvl) {
+          addLog(`🎉 Subiu para o nível ${newLvl} no Passe de Batalha!`);
         }
-        // Generate 3 random choices from level pool
-        const pool = SKILLS.filter(s => s.unlock.type === "level" && !unlockedSkills.has(s.id));
-        const draftPool = pool.length >= 3 ? pool : SKILLS.filter(s => s.unlock.type !== "boss" && !unlockedSkills.has(s.id));
-        if (draftPool.length > 0) {
-          const shuffled = [...draftPool].sort(() => Math.random() - 0.5);
-          const choices = shuffled.slice(0, Math.min(3, shuffled.length)).map(s => s.id);
-          setPendingLevelDraft({ level: newLvl, choices });
-        }
-      }
-      return nextXp;
-    });
+        return nextXp;
+      });
 
-    // Handle Boss Training Victory
-    if (win && bossEncounter) {
-      const rewardSkill = SKILLS.find(s => s.id === bossEncounter.rewardSkillId);
-      if (rewardSkill && !unlockedSkills.has(rewardSkill.id)) {
-        setUnlockedSkills(us => new Set([...us, rewardSkill.id]));
-      }
-      setBossesDefeated(bd => new Set([...bd, bossEncounter.id]));
-      setLoot({ isBoss: true, boss: bossEncounter, skill: rewardSkill });
-      addLog(`👑 VITÓRIA DE ARQUIMAGO! ${bossEncounter.name} foi derrotado!`);
-      addLog(`✨ Feitiço Mestre aprendido: ${rewardSkill ? rewardSkill.name : ""}`);
-    } else if (win) {
-      // Normal duel victory: 35% chance to drop an ancient Spell Tome if unlearned tomes exist
-      const unlearnedTomes = TOMES.filter(t => !unlockedSkills.has(t.skillId));
-      if (unlearnedTomes.length > 0 && Math.random() < 0.35) {
-        const droppedTome = pick(unlearnedTomes);
-        const skill = SKILLS.find(s => s.id === droppedTome.skillId);
-        setUnlockedSkills(us => new Set([...us, droppedTome.skillId]));
-        setLoot({ isTome: true, tome: droppedTome, skill });
-        addLog(`📖 Você encontrou o ${droppedTome.name}!`);
-        addLog(`✨ Novo feitiço aprendido: ${skill.name}!`);
+      // Mage Level XP Progression (Win: +50 XP, Loss: +20 XP)
+      const mageXpGained = isWin ? 50 : 20;
+      setMageXp(prevXp => {
+        const nextXp = prevXp + mageXpGained;
+        const oldLvl = getMageLevel(prevXp);
+        const newLvl = getMageLevel(nextXp);
+        if (newLvl > oldLvl) {
+          addLog(`🎉 MAGE LEVEL UP! Subiu para o Nível ${newLvl}!`);
+          if (newLvl === 10 || newLvl === 20 || newLvl === 30) {
+            addLog(`✨ NOVO SLOT DE SKILL! Agora você pode equipar ${getMaxSlots(newLvl)} feitiços!`);
+          }
+          // Generate 3 random choices from level pool
+          const pool = SKILLS.filter(s => s.unlock.type === "level" && !unlockedSkills.has(s.id));
+          const draftPool = pool.length >= 3 ? pool : SKILLS.filter(s => s.unlock.type !== "boss" && !unlockedSkills.has(s.id));
+          if (draftPool.length > 0) {
+            const shuffled = [...draftPool].sort(() => Math.random() - 0.5);
+            const choices = shuffled.slice(0, Math.min(3, shuffled.length)).map(s => s.id);
+            setPendingLevelDraft({ level: newLvl, choices });
+          }
+        }
+        return nextXp;
+      });
+
+      // Handle Boss Training Victory
+      if (isWin && bossEncounter) {
+        const rewardSkill = SKILLS.find(s => s.id === bossEncounter.rewardSkillId);
+        if (rewardSkill && !unlockedSkills.has(rewardSkill.id)) {
+          setUnlockedSkills(us => new Set([...us, rewardSkill.id]));
+        }
+        setBossesDefeated(bd => new Set([...bd, bossEncounter.id]));
+        setLoot({ isBoss: true, boss: bossEncounter, skill: rewardSkill });
+        addLog(`👑 VITÓRIA DE ARQUIMAGO! ${bossEncounter.name} foi derrotado!`);
+        addLog(`✨ Feitiço Mestre aprendido: ${rewardSkill ? rewardSkill.name : ""}`);
+      } else if (isWin) {
+        // Normal duel victory: 35% chance to drop an ancient Spell Tome if unlearned tomes exist
+        const unlearnedTomes = TOMES.filter(t => !unlockedSkills.has(t.skillId));
+        if (unlearnedTomes.length > 0 && Math.random() < 0.35) {
+          const droppedTome = pick(unlearnedTomes);
+          const skill = SKILLS.find(s => s.id === droppedTome.skillId);
+          setUnlockedSkills(us => new Set([...us, droppedTome.skillId]));
+          setLoot({ isTome: true, tome: droppedTome, skill });
+          addLog(`📖 Você encontrou o ${droppedTome.name}!`);
+          addLog(`✨ Novo feitiço aprendido: ${skill.name}!`);
+        } else {
+          const drop = rollLoot();
+          if (drop) { setLoot(findItem(drop)); setOwned(o => new Set([...o, drop])); }
+        }
+        setShards(s => s + 5); // +5 por vitória
+        setWinStreak(s => {
+          const next = s + 1;
+          if (next >= 3) {
+            setShowShootingStars(true);
+            setTimeout(() => setShowShootingStars(false), 3000);
+          }
+          return next;
+        });
+        if (Math.random() < 0.05) {
+          setShowRainbow(true);
+          setTimeout(() => setShowRainbow(false), 2000);
+        }
       } else {
-        const drop = rollLoot();
-        if (drop) { setLoot(findItem(drop)); setOwned(o => new Set([...o, drop])); }
+        setWinStreak(0);
       }
-      setShards(s => s + 5); // +5 por vitória
-      setWinStreak(s => {
-        const next = s + 1;
-        if (next >= 3) {
-          setShowShootingStars(true);
-          setTimeout(() => setShowShootingStars(false), 3000);
+
+      // Leaderboard Trophy & Rank Calculation
+      if (!isTutorial) {
+        const oppTrophies = challengedRival?.trophies ?? (enemy?.trophies || trophies);
+        const trophyRes = calculateTrophyDelta({
+          isWin,
+          playerTrophies: trophies,
+          opponentTrophies: oppTrophies,
+          winStreak: isWin ? winStreak + 1 : 0,
+          roundNum,
+          playerHp: player?.hp || 0,
+        });
+        const oldTrophies = trophies;
+        const nextTrophies = Math.max(0, trophies + trophyRes.delta);
+        const { playerRank: oldRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: oldTrophies });
+        const { playerRank: newRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: nextTrophies });
+
+        setTrophies(nextTrophies);
+        if (nextTrophies > highestTrophies) setHighestTrophies(nextTrophies);
+
+        if (isWin) {
+          setRankedWins(w => w + 1);
+        } else {
+          setRankedLosses(l => l + 1);
         }
-        return next;
-      });
-      if (Math.random() < 0.05) {
-        setShowRainbow(true);
-        setTimeout(() => setShowRainbow(false), 2000);
+
+        setLastDuelTrophyChange({
+          isWin,
+          trophyDelta: trophyRes.delta,
+          oldTrophies,
+          newTrophies: nextTrophies,
+          oldRank,
+          newRank,
+          isPromotion: trophyRes.isPromotion,
+        });
+
+        // Material Drops for the Blacksmith Forge
+        const matDrops = rollMaterialDrops({
+          isWin,
+          winStreak: isWin ? winStreak + 1 : 0,
+          enemyAffinity: enemy?.affinity || "fire",
+          isBoss: !!bossEncounter,
+        });
+        setLastDuelMaterialDrops(matDrops);
+        setMaterials(prev => {
+          const next = { ...prev };
+          for (const [mId, count] of Object.entries(matDrops)) {
+            next[mId] = (next[mId] || 0) + count;
+          }
+          return next;
+        });
       }
-    } else {
-      setWinStreak(0);
+    } catch (err) {
+      console.error("Error in finishBattle:", err);
+    } finally {
+      setTimeout(() => {
+        setBusy(false);
+        setCurrentTurn("player");
+        setPhase("result");
+      }, 1000);
     }
-
-    // Leaderboard Trophy & Rank Calculation
-    if (!isTutorial) {
-      const oppTrophies = challengedRival?.trophies ?? (enemy?.trophies || trophies);
-      const trophyRes = calculateTrophyDelta({
-        isWin,
-        playerTrophies: trophies,
-        opponentTrophies: oppTrophies,
-        winStreak: isWin ? winStreak + 1 : 0,
-        roundNum,
-        playerHp: player?.hp || 0,
-      });
-      const oldTrophies = trophies;
-      const nextTrophies = Math.max(0, trophies + trophyRes.delta);
-      const { playerRank: oldRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: oldTrophies });
-      const { playerRank: newRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: nextTrophies });
-
-      setTrophies(nextTrophies);
-      if (nextTrophies > highestTrophies) setHighestTrophies(nextTrophies);
-
-      if (isWin) {
-        setRankedWins(w => w + 1);
-      } else {
-        setRankedLosses(l => l + 1);
-      }
-
-      setLastDuelTrophyChange({
-        isWin,
-        trophyDelta: trophyRes.delta,
-        oldTrophies,
-        newTrophies: nextTrophies,
-        oldRank,
-        newRank,
-        isPromotion: trophyRes.isPromotion,
-      });
-
-      // Material Drops for the Blacksmith Forge
-      const matDrops = rollMaterialDrops({
-        isWin,
-        winStreak: isWin ? winStreak + 1 : 0,
-        enemyAffinity: enemy?.affinity || "fire",
-        isBoss: !!bossEncounter,
-      });
-      setLastDuelMaterialDrops(matDrops);
-      setMaterials(prev => {
-        const next = { ...prev };
-        for (const [mId, count] of Object.entries(matDrops)) {
-          next[mId] = (next[mId] || 0) + count;
-        }
-        return next;
-      });
-    }
-
-    setTimeout(() => setPhase("result"), 1200);
   }
 
   function triggerSpellFX(skill, fromSide, crit) {
