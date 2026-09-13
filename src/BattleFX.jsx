@@ -1091,16 +1091,12 @@ export function ModernSkillCard({
       {/* Top Header Row: Hotkey, Element Icon/Badge & Mana Gem */}
       <div className="flex items-center justify-between gap-1 w-full mb-1 flex-shrink-0">
         <div className="flex items-center gap-1 min-w-0">
-          <span
-            className="text-[9px] sm:text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold flex-shrink-0 shadow-sm"
-            style={{
-              backgroundColor: T.bgDeep,
-              borderColor: T.borderStrong,
-              color: T.textSecondary,
-            }}
+          <kbd
+            className="keycap text-[9px] sm:text-[10px] flex-shrink-0"
+            title={`Atalho: Tecla [${hotkey}]`}
           >
             {hotkey}
-          </span>
+          </kbd>
           <span
             className="text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
             style={{

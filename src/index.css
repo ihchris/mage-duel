@@ -188,6 +188,32 @@ html, body, #root {
   transform: translateY(1px) scale(0.98);
 }
 
+/* Tactile Gaming Keycaps */
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 800;
+  font-size: 10px;
+  line-height: 1;
+  padding: 2.5px 6px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #1C2234 0%, #0F1322 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 2.5px solid rgba(0, 0, 0, 0.75);
+  color: #F1F5F9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  user-select: none;
+  transition: all 0.1s ease;
+}
+.keycap:active {
+  transform: translateY(1.5px);
+  border-bottom-width: 1px;
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.6);
+}
+
 .btn-king {
   background: linear-gradient(135deg, #FDE047 0%, #F59E0B 40%, #B45309 100%);
   border: 1.5px solid rgba(254, 240, 138, 0.8);

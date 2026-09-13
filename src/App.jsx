@@ -7731,6 +7731,32 @@ export default function MageDuel() {
         transform: none;
       }
 
+      /* Tactile Gaming Keycaps */
+      .keycap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 800;
+        font-size: 10px;
+        line-height: 1;
+        padding: 2.5px 6px;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #1C2234 0%, #0F1322 100%);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-bottom: 2.5px solid rgba(0, 0, 0, 0.75);
+        color: #F1F5F9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+        user-select: none;
+        transition: all 0.1s ease;
+      }
+      .keycap:active {
+        transform: translateY(1.5px);
+        border-bottom-width: 1px;
+        box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.6);
+      }
+
       .panel-base {
         background-color: rgba(8, 10, 22, 0.94);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -14351,8 +14377,8 @@ export default function MageDuel() {
             {/* Bottom bar with tips, quick focus button, and surrender button */}
             <div className="flex items-center justify-between mt-1 pt-1.5 border-t text-[10px] sm:text-[11px] font-mono flex-shrink-0" style={{ borderColor: T.borderSubtle, color: T.textSecondary }}>
               <div className="flex items-center gap-2 min-w-0 truncate">
-                <span className="truncate opacity-75 hidden xs:inline">
-                  [1-4] Feitiços · +{REGEN} mana/t · [Espaço] Foco
+                <span className="truncate opacity-80 hidden xs:inline flex items-center gap-1.5">
+                  <kbd className="keycap text-[9px] px-1 py-0.2">1-4</kbd> Feitiços · +{REGEN} mana/t · <kbd className="keycap text-[9px] px-1.5 py-0.2">Espaço</kbd> Foco
                 </span>
                 <span className="truncate opacity-75 xs:hidden">
                   +{REGEN} mana/t
@@ -14362,10 +14388,16 @@ export default function MageDuel() {
                 <button
                   onClick={() => setShowBattleBagModal(true)}
                   disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-emerald-300"
-                  style={{ borderColor: "#10B981AA", color: "#34D399", backgroundColor: "rgba(6, 78, 59, 0.45)", boxShadow: "0 0 12px rgba(16, 185, 129, 0.3)" }}
-                  title="Abrir Mochila de Consumíveis (Poções estilo Pokémon) [Tecla B ou M]"
+                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1.5 cursor-pointer hover:border-emerald-400/60"
+                  style={{
+                    borderColor: "rgba(52, 211, 153, 0.3)",
+                    color: "#6EE7B7",
+                    backgroundColor: "rgba(6, 36, 26, 0.75)",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.5)"
+                  }}
+                  title="Abrir Mochila de Consumíveis [Tecla B ou M]"
                 >
+                  <kbd className="keycap text-[8.5px] px-1 py-0.2">B</kbd>
                   <span>🎒</span>
                   <span className="hidden sm:inline">Mochila ({getTotalConsumablesCount(consumables)})</span>
                   <span className="sm:hidden">Bag ({getTotalConsumablesCount(consumables)})</span>
@@ -14373,12 +14405,18 @@ export default function MageDuel() {
                 <button
                   onClick={() => playerAction(FOCUS)}
                   disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-sky-300"
-                  style={{ borderColor: "rgba(0, 210, 255, 0.6)", color: "#00D2FF", backgroundColor: "rgba(14, 116, 144, 0.45)", boxShadow: "0 0 12px rgba(0, 210, 255, 0.3)" }}
-                  title={`Recuperar ${FOCUS.restore} de Mana (Tecla Espaço)`}
+                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1.5 cursor-pointer hover:border-sky-400/60"
+                  style={{
+                    borderColor: "rgba(56, 189, 248, 0.3)",
+                    color: "#7DD3FC",
+                    backgroundColor: "rgba(8, 30, 48, 0.75)",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.5)"
+                  }}
+                  title={`Recuperar ${FOCUS.restore} de Mana [Tecla Espaço]`}
                 >
+                  <kbd className="keycap text-[8.5px] px-1.5 py-0.2">Espaço</kbd>
                   <span>⚡</span>
-                  <span className="hidden sm:inline">Foco (+{FOCUS.restore}) [Espaço]</span>
+                  <span className="hidden sm:inline">Foco (+{FOCUS.restore})</span>
                   <span className="sm:hidden">Foco (+{FOCUS.restore})</span>
                 </button>
                 <button
