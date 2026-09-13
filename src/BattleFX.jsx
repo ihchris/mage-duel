@@ -11,6 +11,9 @@ export function TurnCountdownBar({
   onTogglePause,
   busy = false,
   dailyMod = null,
+  playerHp,
+  enemyHp,
+  onForceFinish,
 }) {
   const pct = Math.max(0, Math.min(100, (turnCountdown / maxDuration) * 100));
   const isUrgent = turnCountdown <= 4;
@@ -53,7 +56,29 @@ export function TurnCountdownBar({
 
         {/* Center: Clean Turn Status */}
         <div className="flex items-center gap-1.5 font-serif text-[12px] font-bold tracking-wider select-none">
-          {currentTurn === "player" ? (
+          {enemyHp !== undefined && enemyHp !== null && enemyHp <= 0 ? (
+            <button
+              onClick={onForceFinish}
+              type="button"
+              className="flex items-center gap-1.5 text-amber-300 font-bold animate-pulse hover:scale-105 transition-transform cursor-pointer bg-amber-500/10 px-2 py-0.5 rounded border border-amber-400/40 shadow-sm"
+              title="Duelo concluído! Clique para ver a tela de resultado"
+            >
+              <span>👑</span>
+              <span>VITÓRIA!</span>
+              <span className="text-[10px] opacity-75">➔</span>
+            </button>
+          ) : playerHp !== undefined && playerHp !== null && playerHp <= 0 ? (
+            <button
+              onClick={onForceFinish}
+              type="button"
+              className="flex items-center gap-1.5 text-red-400 font-bold animate-pulse hover:scale-105 transition-transform cursor-pointer bg-red-500/10 px-2 py-0.5 rounded border border-red-500/40 shadow-sm"
+              title="Duelo concluído! Clique para ver a tela de resultado"
+            >
+              <span>💀</span>
+              <span>DERROTA</span>
+              <span className="text-[10px] opacity-75">➔</span>
+            </button>
+          ) : currentTurn === "player" ? (
             <span className="flex items-center gap-1.5 text-emerald-400">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>SEU TURNO</span>

@@ -5084,6 +5084,27 @@ export default function MageDuel() {
   const logRef = useRef(null);
   const floatId = useRef(0);
   const projId = useRef(0);
+  const battleTimers = useRef([]);
+
+  function queueBattleTimeout(fn, delay) {
+    const id = setTimeout(() => {
+      battleTimers.current = battleTimers.current.filter(t => t !== id);
+      try {
+        fn();
+      } catch (err) {
+        console.error("Battle timer error:", err);
+        setBusy(false);
+        setCurrentTurn("player");
+      }
+    }, delay);
+    battleTimers.current.push(id);
+    return id;
+  }
+
+  function clearBattleTimeouts() {
+    battleTimers.current.forEach(id => clearTimeout(id));
+    battleTimers.current = [];
+  }
 
   // ================= LOJA DE COSMÉTICOS & MOEDA ARCANE SHARDS =================
   const [showShardShopModal, setShowShardShopModal] = useState(false);
@@ -5294,6 +5315,7 @@ export default function MageDuel() {
   }
 
   function confirmDuel() {
+    clearBattleTimeouts();
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id, bootsId);
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
@@ -5727,6 +5749,7 @@ export default function MageDuel() {
   }
 
   function finishBattle(win) {
+    clearBattleTimeouts();
     const isWin = Boolean(win);
     try {
       setResult(isWin ? "win" : "lose");
@@ -5860,11 +5883,11 @@ export default function MageDuel() {
     } catch (err) {
       console.error("Error in finishBattle:", err);
     } finally {
-      setTimeout(() => {
-        setBusy(false);
-        setCurrentTurn("player");
-        setPhase("result");
-      }, 1000);
+      clearBattleTimeouts();
+      // Fast, guaranteed transition to result screen without getting stuck on Resolvendo
+      setBusy(false);
+      setCurrentTurn("player");
+      setPhase("result");
     }
   }
 
@@ -5979,8 +6002,9 @@ export default function MageDuel() {
   function surrender() {
     if (phase !== "battle" || busy) return;
     setShowSurrenderModal(false);
+    clearBattleTimeouts();
     setBusy(true);
-    addLog(`${player.name} surrenders the duel.`);
+    addLog(`${player?.name || "Você"} cedeu o duelo.`);
     finishBattle(false);
   }
 
@@ -5994,7 +6018,7 @@ export default function MageDuel() {
       let p = player, e = enemy;
 
       setCastP(true);
-      setTimeout(() => setCastP(false), 600);
+      queueBattleTimeout(() => setCastP(false), 600);
 
       const r1 = applySkill(skill, p, e, "p");
       p = r1.a; e = r1.d;
@@ -6003,20 +6027,27 @@ export default function MageDuel() {
       addLog(r1.lines[0]);
 
       // Outcome logs and numbers when projectile lands / cast resolves (460ms)
-      setTimeout(() => {
+      queueBattleTimeout(() => {
         r1.lines.slice(1).forEach((line, i) => {
-          setTimeout(() => addLog(line), i * 140);
+          queueBattleTimeout(() => addLog(line), i * 120);
         });
         setPlayer({ ...p });
         setEnemy({ ...e });
       }, 460);
 
-      // After player's turn completes, check enemy or victory
-      setTimeout(() => {
+      // Check outcome: victory or defeat
+      queueBattleTimeout(() => {
         if (e.hp <= 0) {
-          addLog(`${e.name} collapses. Victory!`);
+          addLog(`${e.name || "Oponente"} sucumbe ao golpe. Vitória!`);
           setEnemy({ ...e });
           finishBattle(true);
+          return;
+        }
+
+        if (p.hp <= 0) {
+          addLog("Você caiu... Derrota.");
+          setPlayer({ ...p });
+          finishBattle(false);
           return;
         }
 
@@ -6024,9 +6055,9 @@ export default function MageDuel() {
         setCurrentTurn("enemy");
         const eSkill = aiChoose(e, p) || FOCUS;
 
-        setTimeout(() => {
+        queueBattleTimeout(() => {
           setCastE(true);
-          setTimeout(() => setCastE(false), 600);
+          queueBattleTimeout(() => setCastE(false), 600);
 
           const r2 = applySkill(eSkill, e, p, "e");
           e = r2.a; p = r2.d;
@@ -6034,25 +6065,36 @@ export default function MageDuel() {
           triggerSpellFX(eSkill, "e", r2.crit);
           addLog(r2.lines[0]);
 
-          setTimeout(() => {
+          queueBattleTimeout(() => {
             r2.lines.slice(1).forEach((line, i) => {
-              setTimeout(() => addLog(line), i * 140);
+              queueBattleTimeout(() => addLog(line), i * 120);
             });
             setPlayer({ ...p });
             setEnemy({ ...e });
+
+            // Check if lethal damage dealt by attack
+            if (p.hp <= 0) {
+              addLog("Você caiu... Derrota.");
+              finishBattle(false);
+              return;
+            } else if (e.hp <= 0) {
+              addLog(`${e.name || "Oponente"} sucumbe ao contra-ataque. Vitória!`);
+              finishBattle(true);
+              return;
+            }
           }, 460);
 
-          setTimeout(() => {
+          queueBattleTimeout(() => {
             p = tickTurnEnd(p);
             e = tickTurnEnd(e);
             setPlayer({ ...p });
             setEnemy({ ...e });
 
             if (p.hp <= 0) {
-              addLog("You fall... Defeat.");
+              addLog("Você caiu... Derrota.");
               finishBattle(false);
             } else if (e.hp <= 0) {
-              addLog(`${e.name} succumbs to their wounds. Victory!`);
+              addLog(`${e.name || "Oponente"} sucumbiu aos ferimentos. Vitória!`);
               finishBattle(true);
             } else {
               setRoundNum(r => r + 1);
@@ -6060,9 +6102,9 @@ export default function MageDuel() {
               setTurnCountdown(TURN_DURATION);
               setBusy(false);
             }
-          }, 1000);
-        }, 400);
-      }, 1150);
+          }, 900);
+        }, 350);
+      }, 950);
     } catch (err) {
       console.error("Error in playerAction:", err);
       setBusy(false);
@@ -6162,20 +6204,27 @@ export default function MageDuel() {
       setEnemy({ ...e });
 
       // Turn transition to enemy (Pokémon style: using an item ends player's turn)
-      setTimeout(() => {
+      queueBattleTimeout(() => {
         if (e.hp <= 0) {
-          addLog(`${e.name} sucumbiu ao impacto do item. Vitória!`);
+          addLog(`${e.name || "Oponente"} sucumbiu ao impacto do item. Vitória!`);
           setEnemy({ ...e });
           finishBattle(true);
+          return;
+        }
+
+        if (p.hp <= 0) {
+          addLog("Você caiu... Derrota.");
+          setPlayer({ ...p });
+          finishBattle(false);
           return;
         }
 
         setCurrentTurn("enemy");
         const eSkill = aiChoose(e, p) || FOCUS;
 
-        setTimeout(() => {
+        queueBattleTimeout(() => {
           setCastE(true);
-          setTimeout(() => setCastE(false), 600);
+          queueBattleTimeout(() => setCastE(false), 600);
 
           const r2 = applySkill(eSkill, e, p, "e");
           e = r2.a; p = r2.d;
@@ -6183,15 +6232,25 @@ export default function MageDuel() {
           triggerSpellFX(eSkill, "e", r2.crit);
           addLog(r2.lines[0]);
 
-          setTimeout(() => {
+          queueBattleTimeout(() => {
             r2.lines.slice(1).forEach((line, i) => {
-              setTimeout(() => addLog(line), i * 140);
+              queueBattleTimeout(() => addLog(line), i * 120);
             });
             setPlayer({ ...p });
             setEnemy({ ...e });
+
+            if (p.hp <= 0) {
+              addLog("Você caiu... Derrota.");
+              finishBattle(false);
+              return;
+            } else if (e.hp <= 0) {
+              addLog(`${e.name || "Oponente"} sucumbiu ao impacto. Vitória!`);
+              finishBattle(true);
+              return;
+            }
           }, 460);
 
-          setTimeout(() => {
+          queueBattleTimeout(() => {
             p = tickTurnEnd(p);
             e = tickTurnEnd(e);
             setPlayer({ ...p });
@@ -6201,7 +6260,7 @@ export default function MageDuel() {
               addLog("Você caiu... Derrota.");
               finishBattle(false);
             } else if (e.hp <= 0) {
-              addLog(`${e.name} sucumbiu aos ferimentos. Vitória!`);
+              addLog(`${e.name || "Oponente"} sucumbiu aos ferimentos. Vitória!`);
               finishBattle(true);
             } else {
               setRoundNum(r => r + 1);
@@ -6209,9 +6268,9 @@ export default function MageDuel() {
               setTurnCountdown(TURN_DURATION);
               setBusy(false);
             }
-          }, 1000);
-        }, 400);
-      }, 1100);
+          }, 900);
+        }, 350);
+      }, 950);
     } catch (err) {
       console.error("Error in useBattleConsumable:", err);
       setBusy(false);
@@ -11632,9 +11691,9 @@ export default function MageDuel() {
               ? isTutorial
                 ? "Você completou as lições elementais e dominou os combos e a mana!"
                 : bossEncounter
-                ? `${enemy.name} curva-se perante sua maestria dos elementos!`
-                : `${enemy.name} cede o duelo.`
-              : `${enemy.name} permanece em pé. Ajuste sua estratégia e retorne.`}
+                ? `${enemy?.name || "Arquimago"} curva-se perante sua maestria dos elementos!`
+                : `${enemy?.name || (lang === "pt" ? "Oponente" : "Opponent")} cede o duelo.`
+              : `${enemy?.name || (lang === "pt" ? "Oponente" : "Opponent")} permanece em pé. Ajuste sua estratégia e retorne.`}
           </p>
 
           {/* Leaderboard Standing Post-Duel Banner */}
@@ -11791,9 +11850,9 @@ export default function MageDuel() {
           {loot && !loot.isBoss && !loot.isTome && (
             <div
               className="rounded-xl border p-4 mb-4 relative overflow-hidden card-surface shadow-md"
-              style={{ borderColor: RARITY[loot.rarity].color }}
+              style={{ borderColor: RARITY[loot.rarity]?.color || T.gold }}
             >
-              <div className="text-[11px] font-mono mb-1 font-bold" style={{ color: RARITY[loot.rarity].color }}>✦ {RARITY[loot.rarity].label} drop ✦</div>
+              <div className="text-[11px] font-mono mb-1 font-bold" style={{ color: RARITY[loot.rarity]?.color || T.gold }}>✦ {RARITY[loot.rarity]?.label || "Item"} drop ✦</div>
               <div className="font-serif text-[20px] sm:text-[22px] font-bold" style={{ color: T.textPrimary }}>{loot.name}</div>
               {loot.desc && <div className="text-[12px] font-mono mt-1" style={{ color: T.textSecondary }}>{loot.desc}</div>}
               <div className="text-[11px] font-mono mt-2" style={{ color: T.textTertiary }}>Item adicionado aos seus cosméticos</div>
@@ -11890,6 +11949,9 @@ export default function MageDuel() {
           onTogglePause={() => setIsTimerPaused(p => !p)}
           busy={busy}
           dailyMod={getTodayModifier()}
+          playerHp={player?.hp}
+          enemyHp={enemy?.hp}
+          onForceFinish={() => finishBattle((enemy?.hp || 0) <= 0)}
         />
 
         {/* Arena Combat Stage Area */}
