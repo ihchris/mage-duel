@@ -1030,7 +1030,8 @@ export function ModernSkillCard({
   onInspect,
   lang = "pt",
 }) {
-  const el = element || { name: "Arcane", color: T.arcane, icon: "✶" };
+  const elColor = T[skill?.el] || element?.color || T.arcane;
+  const el = element || { name: "Arcane", color: elColor, icon: "✶" };
   const cdVal = (player?.cds && player.cds[skill.id]) || 0;
   const onCd = cdVal > 0;
   const noMana = (player?.mana ?? 0) < skill.mana;
@@ -1070,32 +1071,34 @@ export function ModernSkillCard({
       onClick={handleCardClick}
       disabled={disabled}
       type="button"
-      className={`w-full rounded-xl border p-1.5 xs:p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none min-h-[96px] xs:min-h-[102px] sm:min-h-[110px] ${
+      className={`w-full rounded-2xl border p-2 xs:p-2.5 sm:p-3 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none min-h-[105px] xs:min-h-[114px] sm:min-h-[122px] backdrop-blur-md ${
         disabled
-          ? "opacity-45 cursor-not-allowed filter grayscale-[0.3]"
-          : "hover:-translate-y-0.5 active:translate-y-0.5 hover:border-amber-400/60 cursor-pointer shadow-md hover:shadow-lg"
+          ? "opacity-45 cursor-not-allowed filter grayscale-[0.35]"
+          : "hover:-translate-y-1 active:translate-y-0.5 cursor-pointer shadow-lg hover:shadow-2xl"
       }`}
       style={{
-        backgroundColor: T.bgSurface,
+        background: !disabled
+          ? `linear-gradient(145deg, ${elColor}22 0%, rgba(26, 20, 60, 0.85) 60%, rgba(13, 11, 36, 0.95) 100%)`
+          : T.bgSurface,
         borderColor: cdFinishedFlash
           ? T.warning
           : noMana && !onCd
-          ? `${T.danger}55`
+          ? `${T.danger}66`
           : !disabled
-          ? `${el.color}50`
+          ? `${elColor}60`
           : T.borderSubtle,
         boxShadow: cdFinishedFlash
-          ? `0 0 16px ${T.warning}88`
+          ? `0 0 20px ${T.warning}99`
           : !disabled
-          ? `0 4px 14px rgba(0,0,0,0.35), 0 0 12px ${el.color}25`
+          ? `0 6px 20px rgba(0,0,0,0.45), 0 0 16px ${elColor}30, inset 0 1px 0 rgba(255,255,255,0.18)`
           : "none",
       }}
     >
       {/* Expanding energy ring feedback upon trigger */}
       {justTriggered && (
         <div
-          className="absolute inset-0 rounded-xl pointer-events-none animate-ping opacity-60"
-          style={{ border: `2px solid ${el.color}` }}
+          className="absolute inset-0 rounded-2xl pointer-events-none animate-ping opacity-60"
+          style={{ border: `2px solid ${elColor}` }}
         />
       )}
 
@@ -1105,26 +1108,26 @@ export function ModernSkillCard({
       )}
 
       {/* Top Header Row: Hotkey Badge, Element Icon/Badge & Mana Gem */}
-      <div className="flex items-center justify-between gap-1 w-full mb-0.5 flex-shrink-0">
-        <div className="flex items-center gap-1 min-w-0">
-          <div className="keycap-pill">
+      <div className="flex items-center justify-between gap-1.5 w-full mb-1 flex-shrink-0">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="keycap-pill shadow-md">
             <span>{hotkey}</span>
-            {altKey && <span className="text-[8px] opacity-70 ml-0.5">·{altKey}</span>}
+            {altKey && <span className="text-[8.5px] opacity-75 ml-0.5">·{altKey}</span>}
           </div>
           <span
-            className="text-[9px] xs:text-[9.5px] sm:text-[10px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
+            className="text-[9.5px] xs:text-[10px] sm:text-[11px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded-lg border flex-shrink-0 shadow-sm"
             style={{
-              color: el.color,
-              borderColor: `${el.color}44`,
-              backgroundColor: `${el.color}18`,
+              color: elColor,
+              borderColor: `${elColor}55`,
+              backgroundColor: `${elColor}20`,
             }}
             title={el.name}
           >
-            <span>{el.icon}</span>
-            <span className="hidden xs:inline text-[8.5px] sm:text-[9px]">{el.name}</span>
+            <span className="drop-shadow-[0_0_6px_currentColor]">{el.icon}</span>
+            <span className="hidden xs:inline text-[8.5px] sm:text-[9.5px] font-bold">{el.name}</span>
           </span>
           {isAffinity && (
-            <span className="text-[8px] xs:text-[8.5px] font-mono font-bold px-1 py-0.2 rounded bg-amber-950/80 border border-amber-400/50 text-amber-300 flex-shrink-0 shadow-sm">
+            <span className="text-[8.5px] xs:text-[9px] font-mono font-black px-1.5 py-0.2 rounded bg-amber-950/90 border border-amber-400/60 text-amber-300 flex-shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.3)]">
               +25%
             </span>
           )}
@@ -1132,12 +1135,12 @@ export function ModernSkillCard({
 
         <div className="flex items-center gap-1 flex-shrink-0">
           <span
-            className={`text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-sm ${
+            className={`text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] font-mono font-black px-2 py-0.5 rounded-full border shadow-sm tracking-tight ${
               skill.mana === 0
-                ? "border-emerald-500/60 bg-emerald-950/80 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                ? "border-emerald-500/60 bg-emerald-950/85 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.35)]"
                 : noMana
-                ? "border-red-500/60 bg-red-950/80 text-red-300"
-                : "border-sky-500/50 bg-sky-950/80 text-sky-200 shadow-[0_0_8px_rgba(14,165,233,0.25)]"
+                ? "border-red-500/60 bg-red-950/85 text-red-300"
+                : "border-sky-400/60 bg-sky-950/85 text-sky-200 shadow-[0_0_10px_rgba(14,165,233,0.35)]"
             }`}
           >
             {skill.mana === 0 ? "GRÁTIS" : `💧 ${skill.mana}`}
@@ -1150,7 +1153,7 @@ export function ModernSkillCard({
                 e.stopPropagation();
                 onInspect(skill);
               }}
-              className="text-[10px] xs:text-[11px] px-1 py-0.5 rounded hover:bg-white/20 active:scale-95 text-zinc-400 hover:text-amber-300 transition-all cursor-pointer"
+              className="text-[11px] xs:text-[12px] px-1 py-0.5 rounded hover:bg-white/20 active:scale-95 text-zinc-400 hover:text-amber-300 transition-all cursor-pointer"
               title={lang === "pt" ? "Ver detalhes do feitiço" : "Spell details"}
             >
               ℹ️
@@ -1159,55 +1162,59 @@ export function ModernSkillCard({
         </div>
       </div>
 
-      {/* Dedicated Spell Name Row + Stat Badges */}
+      {/* Dedicated Spell Name Row + High-Impact Numeric Status Badges */}
       <div className="w-full my-0.5 min-w-0 flex items-center justify-between gap-1 flex-shrink-0">
         <h4
-          className="font-serif text-[11.5px] xs:text-[12.5px] sm:text-[13.5px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors truncate max-w-[65%]"
+          className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors truncate max-w-[62%]"
           title={displayName}
         >
           {displayName}
         </h4>
-        <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+        <div className="flex items-center gap-1.5 flex-shrink-0 flex-wrap justify-end">
           {skill.dmg > 0 && (
-            <span className="font-bold text-red-200 bg-red-950/70 px-1 py-0.2 rounded border border-red-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
-              ⚔️ {skill.dmg}
+            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-red-100 bg-red-950/85 px-1.5 py-0.5 rounded-lg border border-red-500/50 flex items-center gap-1 shadow-md">
+              <span>⚔️</span>
+              <span>{skill.dmg}</span>
             </span>
           )}
           {skill.shield > 0 && (
-            <span className="font-bold text-sky-200 bg-sky-950/70 px-1 py-0.2 rounded border border-sky-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
-              🛡️ +{skill.shield}
+            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-sky-100 bg-sky-950/85 px-1.5 py-0.5 rounded-lg border border-sky-500/50 flex items-center gap-1 shadow-md">
+              <span>🛡️</span>
+              <span>+{skill.shield}</span>
             </span>
           )}
           {skill.restore > 0 && (
-            <span className="font-bold text-cyan-200 bg-cyan-950/70 px-1 py-0.2 rounded border border-cyan-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
-              💧 +{skill.restore}
+            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-cyan-100 bg-cyan-950/85 px-1.5 py-0.5 rounded-lg border border-cyan-500/50 flex items-center gap-1 shadow-md">
+              <span>💧</span>
+              <span>+{skill.restore}</span>
             </span>
           )}
           {skill.heal > 0 && (
-            <span className="font-bold text-emerald-200 bg-emerald-950/70 px-1 py-0.2 rounded border border-emerald-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
-              💚 +{skill.heal}
+            <span className="font-mono font-black text-[10.5px] xs:text-[11.5px] sm:text-[12.5px] text-emerald-100 bg-emerald-950/85 px-1.5 py-0.5 rounded-lg border border-emerald-500/50 flex items-center gap-1 shadow-md">
+              <span>💚</span>
+              <span>+{skill.heal}</span>
             </span>
           )}
         </div>
       </div>
 
-      {/* Bottom row: Lore/Effect summary - High contrast, clearly readable */}
-      <div className="w-full mt-auto text-[9px] xs:text-[9.5px] sm:text-[10px] font-sans text-zinc-200/95 leading-tight line-clamp-2 bg-black/40 px-1.5 py-0.5 rounded border border-white/5 flex-shrink-0">
+      {/* Bottom row: Lore/Effect summary - High contrast with frosted backing */}
+      <div className="w-full mt-auto text-[9.5px] xs:text-[10px] sm:text-[10.5px] font-sans text-zinc-100 leading-tight line-clamp-2 bg-black/45 px-2 py-0.5 rounded-lg border border-white/8 flex-shrink-0">
         {displayDesc}
       </div>
 
       {/* Cooldown Sleek Glass Overlay */}
       {onCd && (
         <div
-          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-10 rounded-xl"
+          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-10 rounded-2xl"
           style={{
-            backgroundColor: "rgba(10, 12, 18, 0.85)",
-            backdropFilter: "blur(2px)",
+            backgroundColor: "rgba(10, 12, 18, 0.88)",
+            backdropFilter: "blur(3px)",
           }}
         >
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-500/60 shadow-md">
-            <span className="text-xs">⏳</span>
-            <span className="text-[11px] font-mono font-bold text-amber-300">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-950/90 border border-amber-500/70 shadow-lg">
+            <span className="text-sm animate-spin">⏳</span>
+            <span className="text-[12px] font-mono font-black text-amber-300">
               {cdVal} turno{cdVal > 1 ? "s" : ""}
             </span>
           </div>

@@ -5,7 +5,7 @@
 html, body, #root {
   height: 100%;
   margin: 0;
-  background: radial-gradient(ellipse at 50% 0%, #2A1A60 0%, #1A1347 40%, #110E33 75%, #0B0922 100%);
+  background: radial-gradient(ellipse at 50% 0%, #1F194C 0%, #0D0B24 45%, #070515 85%, #04030B 100%);
   color: #FFFFFF;
   font-family: 'JetBrains Mono', monospace;
   overflow-x: hidden;
@@ -357,6 +357,31 @@ html {
   height: 28px;
   border-radius: 50%;
   pointer-events: none;
+}
+
+/* ================= MODERN BOTTOM NAVIGATION BAR ================= */
+.bottom-nav-bar {
+  background: linear-gradient(180deg, rgba(26, 20, 64, 0.9) 0%, rgba(13, 11, 36, 0.98) 100%);
+  border-top: 1px solid rgba(196, 181, 253, 0.3);
+  box-shadow: 0 -8px 32px rgba(5, 4, 18, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+.bottom-nav-item {
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  cursor: pointer;
+}
+.bottom-nav-item:hover {
+  transform: translateY(-2px);
+}
+.bottom-nav-item:active {
+  transform: translateY(1px) scale(0.95);
+}
+
+.bottom-safe-padding {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
 }
 
 
