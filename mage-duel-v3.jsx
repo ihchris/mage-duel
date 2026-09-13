@@ -1140,7 +1140,7 @@ export default function MageDuel() {
       <div className="min-h-screen relative" style={{ color: "#F2EAD8" }}>
         {styles}{bg}
         <div className="relative z-10 p-4 flex justify-center">
-          <div className="game-container w-full max-w-md lg:max-w-4xl pb-24">
+          <div className="w-full max-w-md pb-24">
             
             {/* Header da Loja / Topo com saldo de Arcane Shards */}
             <div className="flex justify-between items-center mb-2 px-1">
@@ -1165,22 +1165,19 @@ export default function MageDuel() {
 
             <p className="text-center text-xs font-mono mb-3" style={{ color: "#B7AE95" }}>Fire ▲ bate Nature ❋ bate Ice ◆ bate Fire</p>
 
-            <div className="lg:flex lg:flex-row lg:gap-8 lg:items-start my-2">
-              <div className="lg:w-1/2 flex flex-col items-center justify-center">
-                <div className="flex justify-center mb-3">
-                  <MageSprite mage={previewMage} facing="right" size={1.4} />
-                </div>
-              </div>
-              <div className="lg:w-1/2 flex flex-col">
-                {/* Menu de Abas de Loadout: [Skills] [Gear] [Style] [Loja ✦] */}
-                <div className="grid grid-cols-4 gap-1 mb-3">
-                  {[["skills", "Skills"], ["gear", "Gear"], ["style", "Style"], ["shop", "Loja ✦"]].map(([k, label]) => (
-                    <button key={k} onClick={() => setTab(k)} className="rounded-md border py-2 font-serif text-xs sm:text-sm transition-all"
-                      style={{ borderColor: tab === k ? "#E8B44F" : "#3A3356", background: tab === k ? "#E8B44F1F" : "#1C1833", color: tab === k ? "#E8B44F" : "#B7AE95" }}>
-                      {label}
-                    </button>
-                  ))}
-                </div>
+            <div className="flex justify-center mb-3">
+              <MageSprite mage={previewMage} facing="right" size={1.4} />
+            </div>
+
+            {/* Menu de Abas de Loadout: [Skills] [Gear] [Style] [Loja ✦] */}
+            <div className="grid grid-cols-4 gap-1 mb-3">
+              {[["skills", "Skills"], ["gear", "Gear"], ["style", "Style"], ["shop", "Loja ✦"]].map(([k, label]) => (
+                <button key={k} onClick={() => setTab(k)} className="rounded-md border py-2 font-serif text-xs sm:text-sm transition-all"
+                  style={{ borderColor: tab === k ? "#E8B44F" : "#3A3356", background: tab === k ? "#E8B44F1F" : "#1C1833", color: tab === k ? "#E8B44F" : "#B7AE95" }}>
+                  {label}
+                </button>
+              ))}
+            </div>
 
             {/* ABA 1: SKILLS */}
             {tab === "skills" && (
@@ -1463,8 +1460,6 @@ export default function MageDuel() {
                 </div>
               </div>
             )}
-              </div>
-            </div>
 
             {/* Botão de Iniciar Duelo */}
             <div className="fixed bottom-0 left-0 right-0 z-20 p-3 flex justify-center" style={{ background: "linear-gradient(transparent, #0A0814 40%)" }}>

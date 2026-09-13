@@ -14,8 +14,6 @@ export function TurnCountdownBar({
   playerHp,
   enemyHp,
   onForceFinish,
-  onSurrender,
-  lang = "pt",
 }) {
   const pct = Math.max(0, Math.min(100, (turnCountdown / maxDuration) * 100));
   const isUrgent = turnCountdown <= 4;
@@ -25,22 +23,21 @@ export function TurnCountdownBar({
 
   return (
     <div
-      className="w-full rounded-xl border px-2.5 sm:px-3 py-1 sm:py-1.5 shadow-md mb-1 sm:mb-1.5 relative overflow-hidden flex-shrink-0"
+      className="w-full rounded-xl border px-3 py-1.5 shadow-md mb-1.5 relative overflow-hidden flex-shrink-0"
       style={{
         backgroundColor: T.bgSurface,
         borderColor: T.borderSubtle,
       }}
     >
       {/* Top Controls Row */}
-      <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+      <div className="flex items-center justify-between gap-2">
         {/* Left: Round & Daily Modifier */}
-        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
           <span
-            className="px-2 py-0.5 rounded font-mono font-bold text-[10.5px] sm:text-[11.5px] tracking-wider shadow-sm"
+            className="px-2 py-0.5 rounded font-mono font-bold text-[11px] tracking-wider"
             style={{
-              backgroundColor: `${T.gold}18`,
+              backgroundColor: `${T.gold}14`,
               color: T.gold,
-              border: `1px solid ${T.gold}44`,
             }}
           >
             R{roundNum}
@@ -58,7 +55,7 @@ export function TurnCountdownBar({
         </div>
 
         {/* Center: Clean Turn Status */}
-        <div className="flex items-center gap-1.5 font-serif text-[11.5px] sm:text-[12.5px] font-bold tracking-wider select-none">
+        <div className="flex items-center gap-1.5 font-serif text-[12px] font-bold tracking-wider select-none">
           {enemyHp !== undefined && enemyHp !== null && enemyHp <= 0 ? (
             <button
               onClick={onForceFinish}
@@ -83,31 +80,31 @@ export function TurnCountdownBar({
             </button>
           ) : currentTurn === "player" ? (
             <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34D399]" />
-              <span>{lang === "pt" ? "SEU TURNO" : "YOUR TURN"}</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>SEU TURNO</span>
             </span>
           ) : currentTurn === "enemy" ? (
             <span className="flex items-center gap-1.5 text-red-400">
-              <span className="inline-block w-2 h-2 rounded-full bg-red-400 animate-pulse shadow-[0_0_8px_#F87171]" />
-              <span>{lang === "pt" ? "TURNO INIMIGO" : "ENEMY TURN"}</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+              <span>TURNO INIMIGO</span>
             </span>
           ) : (
             <span className="flex items-center gap-1.5 text-purple-300">
               <span className="animate-spin text-xs">✦</span>
-              <span>{lang === "pt" ? "RESOLVENDO..." : "RESOLVING..."}</span>
+              <span>RESOLVENDO...</span>
             </span>
           )}
         </div>
 
-        {/* Right: Timer & Pause & Surrender */}
-        <div className="flex items-center gap-1 sm:gap-2">
+        {/* Right: Timer & Pause */}
+        <div className="flex items-center gap-1.5">
           {isTimerPaused && (
             <span className="text-[10px] font-mono text-amber-400 animate-pulse hidden sm:inline">
-              {lang === "pt" ? "PAUSADO" : "PAUSED"}
+              PAUSADO
             </span>
           )}
           <span
-            className="font-mono text-[12px] sm:text-[13px] font-black tracking-tight"
+            className="font-mono text-[12px] font-bold"
             style={{ color: timerColor }}
           >
             {turnCountdown}s
@@ -116,21 +113,10 @@ export function TurnCountdownBar({
             onClick={onTogglePause}
             disabled={busy || currentTurn !== "player"}
             title={isTimerPaused ? "Retomar" : "Pausar"}
-            className="text-[11px] p-1 rounded-lg hover:bg-white/10 transition-colors text-zinc-400 hover:text-zinc-200 cursor-pointer"
+            className="text-[11px] p-1 rounded hover:bg-white/10 transition-colors text-zinc-400 hover:text-zinc-200"
           >
             {isTimerPaused ? "▶" : "⏸"}
           </button>
-          {onSurrender && (
-            <button
-              onClick={onSurrender}
-              disabled={busy}
-              title={lang === "pt" ? "Render-se do duelo [Esc]" : "Surrender duel [Esc]"}
-              className="px-1.5 sm:px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-red-950/60 hover:bg-red-900/80 border border-red-500/40 text-red-300 hover:text-red-100 transition-all flex items-center gap-1 cursor-pointer active:scale-95"
-            >
-              <span>🏳️</span>
-              <span className="hidden xs:inline">{lang === "pt" ? "Render-se" : "Surrender"}</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -1019,40 +1005,22 @@ export function SelfCastFX({ selfCast }) {
 }
 
 // ================= MODERN SKILL CARD =================
-// Element fallback defaults for standalone rendering
-const ELEMENT_DEFAULTS = {
-  fire: { name: "Fogo", color: "#FF5436", icon: "🔥" },
-  ice: { name: "Gelo", color: "#00D2FF", icon: "❄️" },
-  lightning: { name: "Raio", color: "#FBBF24", icon: "⚡" },
-  arcane: { name: "Arcano", color: "#D946EF", icon: "🔮" },
-  nature: { name: "Natureza", color: "#10B981", icon: "🌿" },
-  dark: { name: "Trevas", color: "#9333EA", icon: "🌑" },
-  light: { name: "Luz", color: "#FDE047", icon: "☀️" },
-};
-
-// ================= MODERN SKILL CARD (COLLECTIBLE CARD) =================
 export function ModernSkillCard({
   skill,
   hotkey,
-  altKey,
   element,
   player,
   busy,
   onClick,
   onInspect,
   lang = "pt",
-  slotLabel,
-  isSlotEmpty = false,
-  isLocked = false,
-  unlockLvl = 1,
 }) {
-  const elColor = T[skill?.el] || element?.color || (skill?.el ? ELEMENT_DEFAULTS[skill.el]?.color : null) || T.arcane;
-  const el = element || (skill?.el ? ELEMENT_DEFAULTS[skill.el] : null) || { name: "Arcane", color: elColor, icon: "✶" };
-  const cdVal = (player?.cds && skill?.id && player.cds[skill.id]) || 0;
+  const el = element || { name: "Arcane", color: T.arcane, icon: "✶" };
+  const cdVal = (player?.cds && player.cds[skill.id]) || 0;
   const onCd = cdVal > 0;
-  const noMana = player ? ((player?.mana ?? 999) < (skill?.mana ?? 0)) : false;
-  const disabled = busy || onCd || noMana || isLocked;
-  const isAffinity = skill?.el && player?.affinity ? (skill.el === player.affinity) : false;
+  const noMana = (player?.mana ?? 0) < skill.mana;
+  const disabled = busy || onCd || noMana;
+  const isAffinity = skill.el === player?.affinity;
 
   // Feedback states
   const [justTriggered, setJustTriggered] = useState(false);
@@ -1070,292 +1038,171 @@ export function ModernSkillCard({
   }, [cdVal]);
 
   const handleCardClick = (e) => {
-    if (disabled && !isSlotEmpty) return;
+    if (disabled) return;
     setJustTriggered(true);
     setTimeout(() => setJustTriggered(false), 300);
     if (onClick) onClick(e);
   };
 
-  // Locked Card Variant
-  if (isLocked) {
-    return (
-      <div
-        className="w-full aspect-[3/4] rounded-2xl border-4 border-indigo-900/40 bg-indigo-950/40 p-2 flex flex-col items-center justify-center opacity-50 select-none shadow-inner text-center relative overflow-hidden"
-      >
-        <span className="text-2xl sm:text-3xl mb-1 opacity-70">🔒</span>
-        <span className="text-[10px] sm:text-xs font-mono font-black text-indigo-300">Nv. {unlockLvl}</span>
-        <span className="text-[8px] sm:text-[9px] font-sans text-zinc-400 uppercase tracking-wider mt-0.5 font-bold">Bloqueado</span>
-      </div>
-    );
-  }
-
-  // Empty Slot Card Variant
-  if (isSlotEmpty || !skill) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        className="w-full aspect-[3/4] rounded-2xl border-4 border-dashed border-indigo-400/40 hover:border-amber-400/80 bg-indigo-950/30 hover:bg-indigo-900/40 p-2 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer group shadow-md hover:scale-105 active:scale-95 select-none relative overflow-hidden"
-      >
-        <span className="text-3xl sm:text-4xl font-black text-indigo-300/60 group-hover:text-amber-300 transition-colors leading-none">+</span>
-        <span className="text-[9.5px] sm:text-[11px] font-sans font-bold text-indigo-200/80 group-hover:text-amber-200 uppercase tracking-wider mt-1.5 text-center">
-          {slotLabel || "Equipar"}
-        </span>
-      </button>
-    );
-  }
-
   const displayName = (lang === "pt" && skill.name_pt)
     ? skill.name_pt
     : (skill.name_pt || (skill.id === "focus" && lang === "pt" ? "Foco Arcano" : skill.name));
+
+  const displayDesc = (lang === "pt" ? (skill.desc_pt || skill.desc) : (skill.desc || skill.desc_pt)) || "";
 
   return (
     <button
       onClick={handleCardClick}
       disabled={disabled}
-      type="button"
-      className={`w-full aspect-[3/4] rounded-2xl border-4 p-2 text-left font-mono transition-all duration-200 relative overflow-hidden group flex flex-col justify-between select-none ${
+      className={`w-full rounded-xl border p-1.5 xs:p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-start select-none min-h-[96px] xs:min-h-[102px] sm:min-h-[110px] ${
         disabled
-          ? "opacity-50 cursor-not-allowed filter grayscale-[0.3]"
-          : "hover:-translate-y-2 hover:scale-[1.03] active:translate-y-0.5 cursor-pointer shadow-xl"
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:-translate-y-0.5 active:translate-y-0.5 hover:border-amber-400/50 cursor-pointer"
       }`}
       style={{
-        background: !disabled
-          ? `linear-gradient(160deg, ${elColor}33 0%, rgba(20, 14, 48, 0.92) 55%, rgba(10, 8, 28, 0.98) 100%)`
-          : T.bgSurface,
-        borderColor: elColor,
-        boxShadow: cdFinishedFlash
-          ? `0 0 28px ${T.warning}EE, 0 10px 24px rgba(0,0,0,0.6)`
+        backgroundColor: T.bgSurface,
+        borderColor: cdFinishedFlash
+          ? T.warning
+          : noMana && !onCd
+          ? `${T.danger}44`
           : !disabled
-          ? `0 0 18px ${elColor}55, 0 10px 24px rgba(0,0,0,0.6), inset 0 2px 0 rgba(255,255,255,0.3)`
+          ? `${el.color}40`
+          : T.borderSubtle,
+        boxShadow: cdFinishedFlash
+          ? `0 0 14px ${T.warning}66`
+          : !disabled
+          ? `0 2px 8px rgba(0,0,0,0.3)`
           : "none",
       }}
     >
-      {/* Diagonal Gloss Highlight on Upper Card */}
-      <div
-        className="absolute -top-10 -right-10 w-36 h-36 bg-gradient-to-br from-white/25 via-white/10 to-transparent rotate-45 pointer-events-none rounded-full blur-[1px]"
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-white/10 via-transparent to-black/30 pointer-events-none"
-      />
-
-      {/* Trigger Feedback Ring */}
+      {/* Expanding energy ring feedback upon trigger */}
       {justTriggered && (
         <div
-          className="absolute inset-0 rounded-2xl pointer-events-none animate-ping opacity-60"
-          style={{ border: `3px solid ${elColor}` }}
+          className="absolute inset-0 rounded-xl pointer-events-none animate-ping opacity-60"
+          style={{ border: `2px solid ${el.color}` }}
         />
       )}
 
-      {/* Top Row: Mana Gem + Hotkey (Left) and Combat Status Badges (Right) */}
-      <div className="relative z-10 flex items-center justify-between w-full gap-1 flex-shrink-0">
-        <div className="flex items-center gap-1">
+      {/* Cooldown end shimmer overlay */}
+      {cdFinishedFlash && (
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/20 to-transparent pointer-events-none animate-pulse" />
+      )}
+
+      {/* Top Header Row: Hotkey, Element Icon/Badge & Mana Gem */}
+      <div className="flex items-center justify-between gap-1 w-full mb-1 flex-shrink-0">
+        <div className="flex items-center gap-1 min-w-0">
           <span
-            className={`text-[11px] sm:text-xs font-mono font-black px-1.5 py-0.5 rounded-lg border shadow-md flex items-center gap-0.5 ${
+            className="text-[9px] sm:text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold flex-shrink-0 shadow-sm"
+            style={{
+              backgroundColor: T.bgDeep,
+              borderColor: T.borderStrong,
+              color: T.textSecondary,
+            }}
+          >
+            {hotkey}
+          </span>
+          <span
+            className="text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
+            style={{
+              color: el.color,
+              borderColor: `${el.color}44`,
+              backgroundColor: `${el.color}15`,
+            }}
+            title={el.name}
+          >
+            <span>{el.icon}</span>
+            <span className="hidden xs:inline text-[8.5px] sm:text-[9px]">{el.name}</span>
+          </span>
+          {isAffinity && (
+            <span className="text-[8px] xs:text-[8.5px] sm:text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-amber-950/70 border border-amber-400/50 text-amber-300 flex-shrink-0 shadow-sm">
+              +25%
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <span
+            className={`text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-sm ${
               skill.mana === 0
-                ? "border-emerald-400 bg-emerald-950 text-emerald-300"
+                ? "border-emerald-500/50 bg-emerald-950/60 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.25)]"
                 : noMana
-                ? "border-red-500 bg-red-950 text-red-300"
-                : "border-sky-400 bg-sky-950 text-sky-200"
+                ? "border-red-500/50 bg-red-950/60 text-red-300"
+                : "border-sky-500/40 bg-sky-950/60 text-sky-300 shadow-[0_0_8px_rgba(14,165,233,0.2)]"
             }`}
           >
-            <span>💧</span>
-            <span className="text-[12px] sm:text-[13px] font-black">{skill.mana}</span>
+            {skill.mana === 0 ? "GRÁTIS" : `💧 ${skill.mana}`}
           </span>
-          {hotkey && (
-            <span className="keycap-pill text-[9px] font-bold px-1.5 py-0.5 shadow-sm">
-              {hotkey}
-            </span>
-          )}
-        </div>
-
-        {/* Status Badges with enlarged typography */}
-        <div className="flex items-center gap-1 flex-wrap justify-end">
-          {skill.dmg > 0 && (
-            <span className="font-mono font-black text-[11px] sm:text-xs text-red-100 bg-red-950/90 px-1.5 py-0.5 rounded-lg border border-red-500/70 flex items-center gap-0.5 shadow-md">
-              <span className="text-[10px]">⚔️</span>
-              <span className="text-[12px] sm:text-[13px]">{skill.dmg}</span>
-            </span>
-          )}
-          {skill.shield > 0 && (
-            <span className="font-mono font-black text-[11px] sm:text-xs text-sky-100 bg-sky-950/90 px-1.5 py-0.5 rounded-lg border border-sky-500/70 flex items-center gap-0.5 shadow-md">
-              <span className="text-[10px]">🛡️</span>
-              <span className="text-[12px] sm:text-[13px]">+{skill.shield}</span>
-            </span>
-          )}
-          {skill.heal > 0 && (
-            <span className="font-mono font-black text-[11px] sm:text-xs text-emerald-100 bg-emerald-950/90 px-1.5 py-0.5 rounded-lg border border-emerald-500/70 flex items-center gap-0.5 shadow-md">
-              <span className="text-[10px]">💚</span>
-              <span className="text-[12px] sm:text-[13px]">+{skill.heal}</span>
-            </span>
-          )}
-          {skill.restore > 0 && (
-            <span className="font-mono font-black text-[11px] sm:text-xs text-cyan-100 bg-cyan-950/90 px-1.5 py-0.5 rounded-lg border border-cyan-500/70 flex items-center gap-0.5 shadow-md">
-              <span className="text-[10px]">💧</span>
-              <span className="text-[12px] sm:text-[13px]">+{skill.restore}</span>
+          {onInspect && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onInspect(skill);
+              }}
+              className="text-[10px] xs:text-[11px] px-1 py-0.5 rounded hover:bg-white/20 active:scale-95 text-zinc-400 hover:text-amber-300 transition-all cursor-pointer"
+              title={lang === "pt" ? "Ver detalhes do feitiço" : "Spell details"}
+            >
+              ℹ️
             </span>
           )}
         </div>
       </div>
 
-      {/* Centerpiece: Big Elemental/Spell Icon with Aura Glow */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center my-auto">
-        <div
-          className="absolute w-14 h-14 sm:w-16 sm:h-16 rounded-full blur-md opacity-50 pointer-events-none"
-          style={{ background: elColor }}
-        />
-        <span
-          className="text-3xl xs:text-4xl sm:text-5xl drop-shadow-[0_0_16px_currentColor] transition-transform duration-200 group-hover:scale-115"
-          style={{ color: elColor }}
-        >
-          {el.icon}
-        </span>
-        <span
-          className="text-[9px] sm:text-[10px] font-sans font-black uppercase tracking-wider mt-1 px-1.5 py-0.2 rounded border shadow-sm"
-          style={{
-            color: elColor,
-            borderColor: `${elColor}55`,
-            backgroundColor: `${elColor}20`,
-          }}
-        >
-          {el.name}
-        </span>
-      </div>
-
-      {/* Bottom: Bold Spell Name and Affinity Badge */}
-      <div className="relative z-10 w-full pt-1 flex flex-col items-center flex-shrink-0">
+      {/* Dedicated Spell Name Row + Stat Badges */}
+      <div className="w-full my-0.5 min-w-0 flex items-center justify-between gap-1 flex-shrink-0">
         <h4
-          className="font-serif font-black text-[11px] xs:text-[12px] sm:text-[13px] text-center text-[#FAF6EE] group-hover:text-amber-200 transition-colors leading-tight truncate w-full px-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+          className="font-serif text-[11.5px] xs:text-[12.5px] sm:text-[13.5px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors truncate max-w-[65%]"
           title={displayName}
         >
           {displayName}
         </h4>
-        {isAffinity && (
-          <span className="text-[8px] font-mono font-bold text-amber-300 mt-0.5">
-            ★ Afinidade +25%
-          </span>
-        )}
+        <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+          {skill.dmg > 0 && (
+            <span className="font-bold text-red-200 bg-red-950/70 px-1 py-0.2 rounded border border-red-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              ⚔️ {skill.dmg}
+            </span>
+          )}
+          {skill.shield > 0 && (
+            <span className="font-bold text-sky-200 bg-sky-950/70 px-1 py-0.2 rounded border border-sky-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              🛡️ +{skill.shield}
+            </span>
+          )}
+          {skill.restore > 0 && (
+            <span className="font-bold text-cyan-200 bg-cyan-950/70 px-1 py-0.2 rounded border border-cyan-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              💧 +{skill.restore}
+            </span>
+          )}
+          {skill.heal > 0 && (
+            <span className="font-bold text-emerald-200 bg-emerald-950/70 px-1 py-0.2 rounded border border-emerald-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              💚 +{skill.heal}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Cooldown Overlay */}
+      {/* Bottom row: Lore/Effect summary - High contrast, clearly readable, never clipped on mobile */}
+      <div className="w-full mt-auto text-[9px] xs:text-[9.5px] sm:text-[10px] font-sans text-zinc-200/95 leading-tight line-clamp-2 bg-black/35 px-1.5 py-0.5 rounded border border-white/5 flex-shrink-0">
+        {displayDesc}
+      </div>
+
+      {/* Cooldown Sleek Glass Overlay */}
       {onCd && (
         <div
-          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-20 rounded-xl"
+          className="absolute inset-0 flex items-center justify-center p-2 pointer-events-none z-10 rounded-xl"
           style={{
-            backgroundColor: "rgba(8, 7, 20, 0.88)",
-            backdropFilter: "blur(4px)",
+            backgroundColor: "rgba(10, 12, 18, 0.82)",
+            backdropFilter: "blur(2px)",
           }}
         >
-          <div className="flex flex-col items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-950/90 border border-amber-500/70 shadow-xl">
-            <span className="text-xl animate-spin">⏳</span>
-            <span className="text-[13px] font-mono font-black text-amber-300">
-              {cdVal}T
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-950/70 border border-amber-500/50 shadow-md">
+            <span className="text-xs">⏳</span>
+            <span className="text-[11px] font-mono font-bold text-amber-300">
+              {cdVal} turno{cdVal > 1 ? "s" : ""}
             </span>
           </div>
         </div>
       )}
-    </button>
-  );
-}
-
-// ================= ARCANE FOCUS ACTION TILE =================
-export function FocoActionTile({
-  onClick,
-  restore = 14,
-  disabled = false,
-  hotkey = "ESPAÇO",
-  altKey = "F",
-  lang = "pt",
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      type="button"
-      className={`rounded-xl border p-1.5 xs:p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none min-h-[96px] xs:min-h-[102px] sm:min-h-[110px] ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:-translate-y-0.5 active:translate-y-0.5 cursor-pointer shadow-[0_0_15px_rgba(2,132,199,0.25)] hover:shadow-[0_0_22px_rgba(56,189,248,0.4)] hover:border-sky-400"
-      }`}
-      style={{
-        background: disabled
-          ? "linear-gradient(145deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.7) 100%)"
-          : "linear-gradient(145deg, rgba(8, 47, 73, 0.85) 0%, rgba(3, 105, 161, 0.4) 100%)",
-        borderColor: disabled ? "rgba(56, 189, 248, 0.2)" : "rgba(56, 189, 248, 0.6)",
-      }}
-      title={lang === "pt" ? `Recuperar ${restore} de Mana (Teclas Espaço ou F)` : `Restore ${restore} Mana (Keys Space or F)`}
-    >
-      <div className="flex items-center justify-between gap-1 w-full flex-shrink-0">
-        <div className="keycap-pill keycap-pill-cyan">
-          <span>{hotkey}</span>
-          {altKey && <span className="text-[8px] opacity-70 ml-0.5">·{altKey}</span>}
-        </div>
-        <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold bg-sky-950/80 border border-sky-400/50 text-sky-200 shadow-[0_0_8px_rgba(56,189,248,0.3)]">
-          💧 +{restore}
-        </span>
-      </div>
-
-      <div className="w-full my-0.5 flex items-center gap-1.5 flex-shrink-0">
-        <span className="text-sm sm:text-base animate-pulse">⚡</span>
-        <h4 className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold text-sky-100 group-hover:text-white truncate">
-          {lang === "pt" ? "Foco Arcano" : "Arcane Focus"}
-        </h4>
-      </div>
-
-      <div className="w-full mt-auto text-[9px] xs:text-[9.5px] sm:text-[10px] font-sans text-sky-200/80 leading-tight bg-black/30 px-1.5 py-0.5 rounded border border-sky-400/10 flex-shrink-0 truncate">
-        {lang === "pt" ? "Gera mana instantânea" : "Generates instant mana"}
-      </div>
-    </button>
-  );
-}
-
-// ================= CONSUMABLES BAG ACTION TILE =================
-export function MochilaActionTile({
-  onClick,
-  count = 0,
-  disabled = false,
-  hotkey = "B",
-  altKey = "M",
-  lang = "pt",
-}) {
-  return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      type="button"
-      className={`rounded-xl border p-1.5 xs:p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none min-h-[96px] xs:min-h-[102px] sm:min-h-[110px] ${
-        disabled
-          ? "opacity-50 cursor-not-allowed"
-          : "hover:-translate-y-0.5 active:translate-y-0.5 cursor-pointer shadow-[0_0_15px_rgba(5,150,105,0.25)] hover:shadow-[0_0_22px_rgba(52,211,153,0.4)] hover:border-emerald-400"
-      }`}
-      style={{
-        background: disabled
-          ? "linear-gradient(145deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.7) 100%)"
-          : "linear-gradient(145deg, rgba(6, 78, 59, 0.85) 0%, rgba(5, 150, 105, 0.4) 100%)",
-        borderColor: disabled ? "rgba(52, 211, 153, 0.2)" : "rgba(52, 211, 153, 0.6)",
-      }}
-      title={lang === "pt" ? "Abrir Mochila de Consumíveis [Teclas B ou M]" : "Open Consumables Bag [Keys B or M]"}
-    >
-      <div className="flex items-center justify-between gap-1 w-full flex-shrink-0">
-        <div className="keycap-pill keycap-pill-emerald">
-          <span>{hotkey}</span>
-          {altKey && <span className="text-[8px] opacity-70 ml-0.5">·{altKey}</span>}
-        </div>
-        <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-mono font-bold bg-emerald-950/80 border border-emerald-400/50 text-emerald-200 shadow-[0_0_8px_rgba(52,211,153,0.3)]">
-          🎒 {count}
-        </span>
-      </div>
-
-      <div className="w-full my-0.5 flex items-center gap-1.5 flex-shrink-0">
-        <span className="text-sm sm:text-base">🧪</span>
-        <h4 className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold text-emerald-100 group-hover:text-white truncate">
-          {lang === "pt" ? "Mochila" : "Potion Bag"}
-        </h4>
-      </div>
-
-      <div className="w-full mt-auto text-[9px] xs:text-[9.5px] sm:text-[10px] font-sans text-emerald-200/80 leading-tight bg-black/30 px-1.5 py-0.5 rounded border border-emerald-400/10 flex-shrink-0 truncate">
-        {lang === "pt" ? "Poções & Elixires" : "Potions & Elixirs"}
-      </div>
     </button>
   );
 }
