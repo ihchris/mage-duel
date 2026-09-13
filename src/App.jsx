@@ -32,6 +32,18 @@ import {
   SurrenderModal,
 } from "./BattleFX.jsx";
 
+import {
+  LEADERBOARD_TIERS,
+  getTierForTrophies,
+  getNextTier,
+  calculateTrophyDelta,
+  INITIAL_LEADERBOARD_RIVALS,
+  buildRankedLadder,
+  LeaderboardHeaderPill,
+  LeaderboardModal,
+  LeaderboardResultBanner,
+} from "./LeaderboardSystem.jsx";
+
 // ================= DESIGN SYSTEM TOKENS =================
 export const T = {
   // Backgrounds (hierarquia de profundidade)
@@ -156,6 +168,8 @@ export const I18N = {
     pass: "Passe Batalha",
     appearance: "Aparência",
     appearanceSub: "Customizar Mago",
+    leaderboard: "Ranking",
+    leaderboardSub: "Hall da Fama Arcano",
     findDuel: "ENCONTRAR OPONENTE",
     searchingOpponent: "Buscando oponente nos leylines...",
     matchFound: "Oponente Encontrado!",
@@ -293,6 +307,8 @@ export const I18N = {
     pass: "Battle Pass",
     appearance: "Appearance",
     appearanceSub: "Customize Mage",
+    leaderboard: "Leaderboard",
+    leaderboardSub: "Arcane Hall of Fame",
     findDuel: "FIND OPPONENT",
     searchingOpponent: "Searching arcane leylines for duelists...",
     matchFound: "Opponent Found!",
@@ -4544,6 +4560,16 @@ export default function MageDuel() {
   const [shards, setShards] = useState(() => saved?.shards ?? 0);
   const [premiumOwned, setPremiumOwned] = useState(new Set(saved?.premiumOwned ?? []));
 
+  // Leaderboard & Ranked Rating State
+  const [trophies, setTrophies] = useState(() => saved?.trophies ?? 1000);
+  const [highestTrophies, setHighestTrophies] = useState(() => saved?.highestTrophies ?? 1000);
+  const [rankedWins, setRankedWins] = useState(() => saved?.rankedWins ?? 0);
+  const [rankedLosses, setRankedLosses] = useState(() => saved?.rankedLosses ?? 0);
+  const [claimedTierRewards, setClaimedTierRewards] = useState(() => new Set(saved?.claimedTierRewards ?? []));
+  const [showLeaderboardModal, setShowLeaderboardModal] = useState(false);
+  const [lastDuelTrophyChange, setLastDuelTrophyChange] = useState(null);
+  const [challengedRival, setChallengedRival] = useState(null);
+
   // Battle Pass State (Season of Embers)
   const [seasonXp, setSeasonXp] = useState(() => saved?.seasonXp ?? 0);
   const [passPremiumOwned, setPassPremiumOwned] = useState(() => saved?.passPremiumOwned ?? false);
@@ -4607,9 +4633,14 @@ export default function MageDuel() {
       skillMastery,
       pendingLevelDraft,
       bossesDefeated: [...bossesDefeated],
+      trophies,
+      highestTrophies,
+      rankedWins,
+      rankedLosses,
+      claimedTierRewards: [...claimedTierRewards],
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -4635,6 +4666,84 @@ export default function MageDuel() {
   useEffect(() => {
     localStorage.setItem(FRIENDS_KEY, JSON.stringify(friends));
   }, [friends]);
+
+  // Leaderboard & Rank Helpers
+  const playerDataForLeaderboard = useMemo(() => ({
+    name: mageName,
+    affinity,
+    trophies,
+    rankedWins,
+    rankedLosses,
+    winStreak,
+    staffId,
+    relicId,
+    hatId,
+    auraId,
+    capeId,
+    robeId,
+    petId,
+    look: { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId },
+    chosen,
+  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
+
+  const { playerRank, playerTier } = useMemo(() => buildRankedLadder(playerDataForLeaderboard), [playerDataForLeaderboard]);
+
+  function claimTierReward(tier) {
+    if (claimedTierRewards.has(tier.id)) return;
+    setClaimedTierRewards(prev => new Set([...prev, tier.id]));
+    setShards(s => s + tier.rewardShards);
+    addLog(`🎁 Recompensa da Liga ${tier.name_pt} resgatada: +${tier.rewardShards} ✦ Shards!`);
+  }
+
+  function startLeaderboardDuel(rival) {
+    setShowLeaderboardModal(false);
+    setChallengedRival(rival);
+    setBossEncounter(null);
+    setIsTutorial(false);
+
+    const rivalSkills = (rival.skills || []).map(id => SKILLS.find(s => s.id === id)).filter(Boolean);
+    const rivalMage = makeMage(
+      rival.name,
+      rival.affinity,
+      rivalSkills.length >= 2 ? rivalSkills : [FOCUS],
+      rival.staffId,
+      rival.relicId,
+      rival.hatId,
+      rival.auraId,
+      rival.capeId,
+      "armor_none",
+      rival.petId || "pet_none",
+      rival.robeId || "robe_classic",
+      rival.look,
+      "offhand_none",
+      "gloves_arcane"
+    );
+    rivalMage.trophies = rival.trophies;
+    rivalMage.archetype = rival.archetype;
+    if (rivalMage.relic?.startShield) rivalMage.shield = rivalMage.relic.startShield;
+
+    setEnemy(rivalMage);
+    setPhase("scout");
+  }
+
+  function renderLeaderboardModal() {
+    return (
+      <LeaderboardModal
+        isOpen={showLeaderboardModal}
+        onClose={() => setShowLeaderboardModal(false)}
+        playerData={playerDataForLeaderboard}
+        onChallengeRival={startLeaderboardDuel}
+        onClaimTierReward={claimTierReward}
+        claimedTierRewards={claimedTierRewards}
+        lang={lang}
+        MageSprite={MageSprite}
+        SKILLS={SKILLS}
+        ELEMENTS={ELEMENTS}
+        STAFFS={STAFFS}
+        RELICS={RELICS}
+      />
+    );
+  }
 
   function isFriend(mage) {
     return mage && friends.some(f => f.name === mage.name);
@@ -5356,6 +5465,43 @@ export default function MageDuel() {
     } else {
       setWinStreak(0);
     }
+
+    // Leaderboard Trophy & Rank Calculation
+    if (!isTutorial) {
+      const oppTrophies = challengedRival?.trophies ?? (enemy?.trophies || trophies);
+      const trophyRes = calculateTrophyDelta({
+        isWin,
+        playerTrophies: trophies,
+        opponentTrophies: oppTrophies,
+        winStreak: isWin ? winStreak + 1 : 0,
+        roundNum,
+        playerHp: player?.hp || 0,
+      });
+      const oldTrophies = trophies;
+      const nextTrophies = Math.max(0, trophies + trophyRes.delta);
+      const { playerRank: oldRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: oldTrophies });
+      const { playerRank: newRank } = buildRankedLadder({ ...playerDataForLeaderboard, trophies: nextTrophies });
+
+      setTrophies(nextTrophies);
+      if (nextTrophies > highestTrophies) setHighestTrophies(nextTrophies);
+
+      if (isWin) {
+        setRankedWins(w => w + 1);
+      } else {
+        setRankedLosses(l => l + 1);
+      }
+
+      setLastDuelTrophyChange({
+        isWin,
+        trophyDelta: trophyRes.delta,
+        oldTrophies,
+        newTrophies: nextTrophies,
+        oldRank,
+        newRank,
+        isPromotion: trophyRes.isPromotion,
+      });
+    }
+
     setTimeout(() => setPhase("result"), 1200);
   }
 
@@ -7124,10 +7270,10 @@ export default function MageDuel() {
     const HUB_PORTALS = [
       { id: "skills", label: t("grimoire"), sub: lang === "pt" ? `${unlockedSkills.size}/36 Magias` : `${unlockedSkills.size}/36 Spells`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: t("gear"), sub: previewMage.staffGear?.name || t("gearSub"), icon: "🪄", color: "#38BDF8" },
-      { id: "style", label: t("style"), sub: t("styleSub"), icon: "✨", color: "#A855F7" },
+      { id: "leaderboard", label: t("leaderboard") || "Ranking", sub: `#${playerRank} · ${trophies} 🏆`, icon: "🏆", color: playerTier.color },
       { id: "shop", label: t("shop"), sub: `${shards} ✦ Shards`, icon: "✦", color: "#F59E0B" },
       { id: "pass", label: t("pass"), sub: `Nv. ${seasonLevel} Embers`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
-      { id: "appearance", label: t("appearance"), sub: t("appearanceSub"), icon: "👤", color: "#10B981" },
+      { id: "style", label: t("style"), sub: t("styleSub"), icon: "✨", color: "#A855F7" },
     ];
 
     return (
@@ -7273,7 +7419,13 @@ export default function MageDuel() {
             {HUB_PORTALS.map(portal => (
               <button
                 key={portal.id}
-                onClick={() => setTab(portal.id)}
+                onClick={() => {
+                  if (portal.id === "leaderboard") {
+                    setShowLeaderboardModal(true);
+                  } else {
+                    setTab(portal.id);
+                  }
+                }}
                 className="glass-card p-1 sm:p-2.5 md:p-3 text-left transition-all relative overflow-hidden group select-none flex flex-col justify-between min-h-[44px] sm:min-h-[56px]"
               >
                 {/* Notification indicator dot */}
@@ -9751,6 +9903,14 @@ export default function MageDuel() {
                 </button>
               )}
 
+              {/* Leaderboard Ranking Pill */}
+              <LeaderboardHeaderPill
+                trophies={trophies}
+                rank={playerRank}
+                onClick={() => setShowLeaderboardModal(true)}
+                lang={lang}
+              />
+
               {/* Language Switcher Pill */}
               <button
                 onClick={toggleLang}
@@ -9960,6 +10120,7 @@ export default function MageDuel() {
         {renderMasteryCelebrationModal()}
         {renderAdminModal()}
         {renderInspectModal()}
+        {renderLeaderboardModal()}
       </div>
     );
   }
@@ -10700,6 +10861,20 @@ export default function MageDuel() {
               : `${enemy.name} permanece em pé. Ajuste sua estratégia e retorne.`}
           </p>
 
+          {/* Leaderboard Standing Post-Duel Banner */}
+          {lastDuelTrophyChange && (
+            <LeaderboardResultBanner
+              isWin={lastDuelTrophyChange.isWin}
+              trophyDelta={lastDuelTrophyChange.trophyDelta}
+              oldTrophies={lastDuelTrophyChange.oldTrophies}
+              newTrophies={lastDuelTrophyChange.newTrophies}
+              oldRank={lastDuelTrophyChange.oldRank}
+              newRank={lastDuelTrophyChange.newRank}
+              isPromotion={lastDuelTrophyChange.isPromotion}
+              lang={lang}
+            />
+          )}
+
           {/* Combat Statistics Report Grid */}
           <div className="rounded-xl border panel-base p-3 mb-3 text-left shadow-sm" style={{ borderColor: T.borderSubtle }}>
             <div className="flex items-center justify-between text-[11px] font-mono font-bold mb-2 pb-1 border-b" style={{ borderColor: T.borderSubtle, color: T.gold }}>
@@ -10859,10 +11034,19 @@ export default function MageDuel() {
               🏰 {t("returnHub")}
             </button>
           </div>
+
+          <button
+            onClick={() => setShowLeaderboardModal(true)}
+            className="w-full mt-2 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-amber-500/40 text-amber-300 font-serif text-[11.5px] sm:text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all"
+          >
+            <span>🏆</span>
+            <span>{lang === "pt" ? "Ver Classificação no Ranking Arcano" : "View Arcane Leaderboard"}</span>
+          </button>
         </div>
         {renderMatchmakingModal()}
         {renderLevelUpModal()}
         {renderMasteryCelebrationModal()}
+        {renderLeaderboardModal()}
       </div>
     );
   }
