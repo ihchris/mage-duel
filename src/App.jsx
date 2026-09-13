@@ -11059,8 +11059,8 @@ export default function MageDuel() {
 
         {/* Arena Controls Area (Mobile Landscape / Desktop Split) */}
         <div className="flex-1 min-h-0 flex flex-col landscape:grid landscape:grid-cols-12 md:grid md:grid-cols-12 gap-1.5 sm:gap-2 md:gap-3 my-0.5 sm:my-1 md:my-1.5 overflow-hidden">
-          {/* Battle Chronicle / Combat Log */}
-          <div className="flex-1 min-h-[44px] max-h-[64px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 overflow-hidden">
+          {/* Battle Chronicle / Combat Log - Adequado para Smartphone sem cortar */}
+          <div className="w-full min-h-[64px] max-h-[82px] xs:max-h-[92px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 flex-shrink-0">
             <ArcaneChronicle log={log} logRef={logRef} />
           </div>
 
@@ -11076,6 +11076,7 @@ export default function MageDuel() {
                   player={player}
                   busy={busy}
                   onClick={() => playerAction(s)}
+                  lang={lang}
                 />
               ))}
             </div>

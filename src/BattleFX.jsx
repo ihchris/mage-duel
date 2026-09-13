@@ -987,6 +987,7 @@ export function ModernSkillCard({
   player,
   busy,
   onClick,
+  lang = "pt",
 }) {
   const el = element || { name: "Arcane", color: T.arcane, icon: "✶" };
   const cdVal = (player?.cds && player.cds[skill.id]) || 0;
@@ -1017,14 +1018,16 @@ export function ModernSkillCard({
     if (onClick) onClick(e);
   };
 
+  const displayName = skill.name_pt || (skill.id === "focus" && lang === "pt" ? "Foco Arcano" : skill.name);
+
   return (
     <button
       onClick={handleCardClick}
       disabled={disabled}
-      className={`w-full rounded-xl border p-2.5 sm:p-3 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none ${
+      className={`w-full rounded-xl border p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none ${
         disabled
           ? "opacity-50 cursor-not-allowed"
-          : "hover:-translate-y-0.5 active:translate-y-0.5 hover:border-amber-400/50"
+          : "hover:-translate-y-0.5 active:translate-y-0.5 hover:border-amber-400/50 cursor-pointer"
       }`}
       style={{
         backgroundColor: T.bgSurface,
@@ -1055,11 +1058,11 @@ export function ModernSkillCard({
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/20 to-transparent pointer-events-none animate-pulse" />
       )}
 
-      {/* Top row: Hotkey pill, Spell Name, Element Icon, Mana Gem */}
-      <div className="flex items-center justify-between gap-1.5 w-full mb-1">
-        <div className="flex items-center gap-1.5 min-w-0">
+      {/* Top Header Row: Hotkey, Element Icon/Badge & Mana Gem */}
+      <div className="flex items-center justify-between gap-1 w-full mb-1 flex-shrink-0">
+        <div className="flex items-center gap-1 min-w-0">
           <span
-            className="text-[10px] font-mono px-1.5 py-0.5 rounded border font-semibold flex-shrink-0"
+            className="text-[9px] sm:text-[10px] font-mono px-1.5 py-0.5 rounded border font-bold flex-shrink-0 shadow-sm"
             style={{
               backgroundColor: T.bgDeep,
               borderColor: T.borderStrong,
@@ -1069,63 +1072,76 @@ export function ModernSkillCard({
             {hotkey}
           </span>
           <span
-            className="font-serif text-[13px] sm:text-[14px] font-bold leading-tight truncate group-hover:text-amber-200 transition-colors"
-            style={{ color: T.textPrimary }}
+            className="text-[9.5px] sm:text-[10.5px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
+            style={{
+              color: el.color,
+              borderColor: `${el.color}44`,
+              backgroundColor: `${el.color}15`,
+            }}
+            title={el.name}
           >
-            {skill.name}
+            <span>{el.icon}</span>
+            <span className="hidden xs:inline text-[9px]">{el.name}</span>
           </span>
+          {isAffinity && (
+            <span className="text-[8.5px] sm:text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-amber-950/70 border border-amber-400/50 text-amber-300 flex-shrink-0 shadow-sm">
+              +25%
+            </span>
+          )}
         </div>
 
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <span className="text-xs" title={el.name} style={{ color: el.color }}>
-            {el.icon}
-          </span>
+        <div className="flex items-center gap-1 flex-shrink-0">
           <span
-            className={`text-[10px] sm:text-[11px] font-mono font-bold px-1.5 py-0.5 rounded-full border ${
+            className={`text-[9.5px] sm:text-[10.5px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-sm ${
               skill.mana === 0
-                ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
+                ? "border-emerald-500/50 bg-emerald-950/60 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.25)]"
                 : noMana
-                ? "border-red-500/40 bg-red-950/40 text-red-300"
-                : "border-sky-500/30 bg-sky-950/30 text-sky-300"
+                ? "border-red-500/50 bg-red-950/60 text-red-300"
+                : "border-sky-500/40 bg-sky-950/60 text-sky-300 shadow-[0_0_8px_rgba(14,165,233,0.2)]"
             }`}
           >
-            {skill.mana === 0 ? "GRÁTIS" : `💧${skill.mana}`}
+            {skill.mana === 0 ? "GRÁTIS" : `💧 ${skill.mana}`}
           </span>
         </div>
       </div>
 
-      {/* Middle row: Primary stat + Affinity bonus only (clean, no confetti) */}
-      <div className="flex items-center gap-2 my-1 text-[11px] font-mono">
+      {/* Dedicated Spell Name Row - Full Width, Never Truncated */}
+      <div className="w-full my-0.5 min-w-0 flex-1 flex items-center">
+        <h4
+          className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors break-words"
+          style={{ wordBreak: "break-word" }}
+        >
+          {displayName}
+        </h4>
+      </div>
+
+      {/* Middle row: Primary combat stats badges */}
+      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap my-0.5 text-[9.5px] sm:text-[10.5px] font-mono flex-shrink-0">
         {skill.dmg > 0 && (
-          <span className="font-bold text-red-300 flex items-center gap-0.5">
+          <span className="font-bold text-red-200 bg-red-950/70 px-1.5 py-0.5 rounded border border-red-500/40 flex items-center gap-0.5 shadow-sm">
             ⚔️ {skill.dmg}
           </span>
         )}
         {skill.shield > 0 && (
-          <span className="font-bold text-sky-300 flex items-center gap-0.5">
+          <span className="font-bold text-sky-200 bg-sky-950/70 px-1.5 py-0.5 rounded border border-sky-500/40 flex items-center gap-0.5 shadow-sm">
             🛡️ +{skill.shield}
           </span>
         )}
         {skill.restore > 0 && (
-          <span className="font-bold text-cyan-300 flex items-center gap-0.5">
+          <span className="font-bold text-cyan-200 bg-cyan-950/70 px-1.5 py-0.5 rounded border border-cyan-500/40 flex items-center gap-0.5 shadow-sm">
             💧 +{skill.restore}
           </span>
         )}
         {skill.heal > 0 && (
-          <span className="font-bold text-emerald-300 flex items-center gap-0.5">
+          <span className="font-bold text-emerald-200 bg-emerald-950/70 px-1.5 py-0.5 rounded border border-emerald-500/40 flex items-center gap-0.5 shadow-sm">
             💚 +{skill.heal}
-          </span>
-        )}
-        {isAffinity && (
-          <span className="text-[10px] font-bold px-1 py-0.2 rounded bg-amber-950/40 border border-amber-500/40 text-amber-300">
-            +25% AFIN
           </span>
         )}
       </div>
 
-      {/* Bottom row: Lore/Effect summary (compact, clean) */}
-      <div className="text-[10px] sm:text-[11px] font-mono text-zinc-400 leading-snug line-clamp-2">
-        {skill.desc || ""}
+      {/* Bottom row: Lore/Effect summary */}
+      <div className="text-[9px] sm:text-[10px] font-sans text-zinc-400 leading-tight line-clamp-2 mt-0.5 flex-shrink-0">
+        {skill.desc_pt || skill.desc || ""}
       </div>
 
       {/* Cooldown Sleek Glass Overlay */}
@@ -1151,73 +1167,176 @@ export function ModernSkillCard({
 
 // ================= ARCANE CHRONICLE (COMBAT LOG) =================
 export function ArcaneChronicle({ log, logRef }) {
+  const [showFullModal, setShowFullModal] = useState(false);
+
+  // Automatically auto-scroll to latest log entry
+  useEffect(() => {
+    if (logRef?.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [log, logRef]);
+
   return (
-    <div
-      className="rounded-xl border p-2.5 sm:p-3 font-mono flex flex-col h-full overflow-hidden shadow-xl"
-      style={{
-        backgroundColor: T.bgBase,
-        borderColor: T.borderDefault,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
-      }}
-    >
+    <>
       <div
-        className="flex items-center justify-between pb-1.5 mb-2 border-b text-[12px] font-mono flex-shrink-0"
-        style={{ borderColor: `${T.borderSubtle}` }}
+        className="rounded-xl border p-1.5 xs:p-2 sm:p-2.5 font-mono flex flex-col h-full overflow-hidden shadow-lg"
+        style={{
+          backgroundColor: T.bgBase,
+          borderColor: T.borderDefault,
+          boxShadow: "0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.03)",
+        }}
       >
-        <div className="flex items-center gap-2 font-serif font-bold" style={{ color: T.gold }}>
-          <span>📜</span>
-          <span className="tracking-wide text-[12px] sm:text-[14px]">BATTLE CHRONICLE</span>
+        {/* Compact Header with Full History Trigger */}
+        <div
+          className="flex items-center justify-between pb-1 mb-1 border-b text-[10px] sm:text-[12px] font-mono flex-shrink-0"
+          style={{ borderColor: `${T.borderSubtle}` }}
+        >
+          <div className="flex items-center gap-1.5 font-serif font-bold text-amber-300">
+            <span>📜</span>
+            <span className="tracking-wide text-[10.5px] xs:text-[11px] sm:text-[13px]">CRÔNICA DE BATALHA</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowFullModal(true)}
+            className="px-1.5 py-0.5 rounded bg-slate-900/90 border border-amber-400/40 hover:border-amber-300 text-amber-300 text-[9px] sm:text-[10px] font-sans font-bold flex items-center gap-1 cursor-pointer transition-all shadow-sm active:scale-95"
+            title="Ver histórico completo do combate"
+          >
+            <span>↗</span>
+            <span>Histórico</span>
+          </button>
         </div>
-        <span className="text-[11px] font-mono" style={{ color: T.textTertiary }}>
-          Live records
-        </span>
+
+        {/* Live Scrolling Log Entries without Truncation */}
+        <div ref={logRef} className="flex-1 overflow-y-auto pr-0.5 sm:pr-1 space-y-0.5 sm:space-y-1 custom-scrollbar">
+          {log.map((line, idx) => {
+            const isLatest = idx === log.length - 1;
+            const isCrit = line.includes("CRITICAL HIT") || line.includes("CRÍTICO");
+            const isYou = line.startsWith("You cast") || line.startsWith("Você lançou") || line.startsWith("Você usou");
+            const isFoe = line.includes("casts") || line.includes("lançou");
+            const isVictory = line.includes("Victory") || line.includes("Vitória");
+            const isDefeat = line.includes("Defeat") || line.includes("Derrota");
+            const isWard = line.includes("ward") || line.includes("Ward");
+            const isBurn = line.includes("Burning") || line.includes("Queimadura");
+            const isChill = line.includes("Chilled") || line.includes("Congelamento");
+
+            return (
+              <div
+                key={idx}
+                className={`leading-tight transition-opacity text-[9.5px] xs:text-[10px] sm:text-[11.5px] font-mono break-words ${
+                  isLatest ? "font-bold" : "opacity-85"
+                }`}
+                style={{
+                  color: isCrit
+                    ? T.gold
+                    : isVictory
+                    ? T.success
+                    : isDefeat
+                    ? T.danger
+                    : isYou
+                    ? "#A7F3D0"
+                    : isFoe
+                    ? "#FCA5A5"
+                    : isWard
+                    ? T.info
+                    : isBurn
+                    ? T.fire
+                    : isChill
+                    ? "#BAE6FD"
+                    : T.textPrimary,
+                }}
+              >
+                <span className="opacity-40 mr-1" style={{ color: T.textTertiary }}>▸</span>
+                {line}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div ref={logRef} className="flex-1 overflow-y-auto pr-1 space-y-1.5 custom-scrollbar">
-        {log.map((line, idx) => {
-          const isLatest = idx === log.length - 1;
-          const isCrit = line.includes("CRITICAL HIT");
-          const isYou = line.startsWith("You cast");
-          const isFoe = line.includes("casts");
-          const isVictory = line.includes("Victory");
-          const isDefeat = line.includes("Defeat");
-          const isWard = line.includes("ward") || line.includes("Ward");
-          const isBurn = line.includes("Burning");
-          const isChill = line.includes("Chilled");
-
-          return (
-            <div
-              key={idx}
-              className={`leading-relaxed transition-opacity text-[11px] sm:text-[12px] font-mono ${
-                isLatest ? "font-semibold" : "opacity-80"
-              }`}
-              style={{
-                color: isCrit
-                  ? T.gold
-                  : isVictory
-                  ? T.success
-                  : isDefeat
-                  ? T.danger
-                  : isYou
-                  ? "#A7F3D0"
-                  : isFoe
-                  ? "#FCA5A5"
-                  : isWard
-                  ? T.info
-                  : isBurn
-                  ? T.fire
-                  : isChill
-                  ? "#BAE6FD"
-                  : T.textPrimary,
-              }}
-            >
-              <span className="opacity-40 mr-1.5" style={{ color: T.textTertiary }}>▸</span>
-              {line}
+      {/* Full Combat History Modal for Mobile & Desktop */}
+      {showFullModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm safe-all"
+          onClick={() => setShowFullModal(false)}
+        >
+          <div
+            className="w-full max-w-md md:max-w-lg bg-slate-950 border border-amber-500/40 rounded-2xl p-3.5 sm:p-5 shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/10 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">📜</span>
+                <div>
+                  <h3 className="font-serif text-sm sm:text-base font-bold text-amber-200">
+                    Histórico Completo da Batalha
+                  </h3>
+                  <p className="text-[10px] text-zinc-400 font-mono">
+                    Todos os turnos, feitiços e danos registrados ({log.length} eventos)
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowFullModal(false)}
+                className="p-1.5 rounded-lg bg-slate-900 border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white text-xs font-bold"
+              >
+                ✕
+              </button>
             </div>
-          );
-        })}
-      </div>
-    </div>
+
+            <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 custom-scrollbar text-[11px] sm:text-[12px] font-mono">
+              {log.map((line, idx) => {
+                const isCrit = line.includes("CRITICAL HIT") || line.includes("CRÍTICO");
+                const isYou = line.startsWith("You cast") || line.startsWith("Você lançou") || line.startsWith("Você usou");
+                const isFoe = line.includes("casts") || line.includes("lançou");
+                const isVictory = line.includes("Victory") || line.includes("Vitória");
+                const isDefeat = line.includes("Defeat") || line.includes("Derrota");
+                const isWard = line.includes("ward") || line.includes("Ward");
+                const isBurn = line.includes("Burning") || line.includes("Queimadura");
+                const isChill = line.includes("Chilled") || line.includes("Congelamento");
+
+                return (
+                  <div
+                    key={idx}
+                    className="p-1.5 rounded bg-slate-900/60 border border-white/5 leading-relaxed break-words"
+                    style={{
+                      color: isCrit
+                        ? T.gold
+                        : isVictory
+                        ? T.success
+                        : isDefeat
+                        ? T.danger
+                        : isYou
+                        ? "#A7F3D0"
+                        : isFoe
+                        ? "#FCA5A5"
+                        : isWard
+                        ? T.info
+                        : isBurn
+                        ? T.fire
+                        : isChill
+                        ? "#BAE6FD"
+                        : T.textPrimary,
+                    }}
+                  >
+                    <span className="opacity-40 mr-1.5 text-zinc-400">#{idx + 1} ▸</span>
+                    {line}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="pt-2 mt-2 border-t border-white/10 flex justify-end flex-shrink-0">
+              <button
+                onClick={() => setShowFullModal(false)}
+                className="px-4 py-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs font-sans transition-colors cursor-pointer shadow-md"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
