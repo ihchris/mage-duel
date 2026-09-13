@@ -9218,27 +9218,27 @@ export default function MageDuel() {
           )}
 
           {tab === "pass" && (
-            <div>
+            <div className="w-full max-w-full overflow-x-hidden">
               {/* Season Header Banner */}
               <div
-                className="rounded-2xl panel-elevated border p-4 mb-3 shadow-lg"
+                className="rounded-2xl panel-elevated border p-3.5 sm:p-4 mb-3 shadow-lg w-full"
                 style={{ borderColor: `${T.arcane}66` }}
               >
-                <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">🎫</span>
+                    <span className="text-xl sm:text-2xl">🎫</span>
                     <span className="font-serif font-bold text-[15px] sm:text-[16px]" style={{ color: T.textPrimary }}>{SEASON.name}</span>
                   </div>
                   <span
                     className="text-[11px] font-mono px-2 py-0.5 rounded border"
                     style={{ borderColor: `${T.arcane}55`, background: `${T.arcane}18`, color: T.arcane }}
                   >
-                    Termina em 31/05/2026
+                    {lang === "pt" ? "Termina em 31/05/2026" : "Ends May 31, 2026"}
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center text-[12px] font-mono mb-1.5" style={{ color: T.textSecondary }}>
-                  <span>Nível Atual: <strong style={{ color: T.textPrimary }}>{seasonLevel}</strong> / {SEASON.maxLevel}</span>
+                <div className="flex justify-between items-center text-xs font-mono mb-1.5" style={{ color: T.textSecondary }}>
+                  <span>{lang === "pt" ? "Nível Atual:" : "Current Level:"} <strong style={{ color: T.textPrimary }}>{seasonLevel}</strong> / {SEASON.maxLevel}</span>
                   <span>{seasonXp} XP Total ({seasonLevel < SEASON.maxLevel ? `${seasonXp % SEASON.xpPerLevel}/${SEASON.xpPerLevel} XP` : "MAX"})</span>
                 </div>
 
@@ -9257,134 +9257,296 @@ export default function MageDuel() {
                 {/* Premium Pass Status & Unlock Button */}
                 <div className="flex items-center justify-between gap-2 flex-wrap pt-2.5 border-t" style={{ borderColor: T.borderSubtle }}>
                   {passPremiumOwned ? (
-                    <div className="flex items-center gap-1.5 text-[12px] font-mono font-bold" style={{ color: T.gold }}>
+                    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-mono font-bold" style={{ color: T.gold }}>
                       <span>⭐</span>
-                      <span>Passe Premium Ativo!</span>
+                      <span>{lang === "pt" ? "Passe Premium Ativo!" : "Premium Pass Active!"}</span>
                     </div>
                   ) : (
                     <button
                       onClick={buyPremiumPass}
-                      className="btn-gold rounded-lg px-4 py-2 font-mono text-[12px] font-bold shadow-md flex items-center gap-1.5"
+                      className="btn-gold rounded-lg px-3.5 sm:px-4 py-2 font-mono text-xs font-bold shadow-md flex items-center gap-1.5 cursor-pointer active:scale-95"
                     >
-                      <span>✦ Desbloquear Premium ({SEASON.premiumCost} ✦)</span>
+                      <span>✦ {lang === "pt" ? `Desbloquear Premium (${SEASON.premiumCost} ✦)` : `Unlock Premium (${SEASON.premiumCost} ✦)`}</span>
                     </button>
                   )}
 
-                  {unclaimedCount > 3 && (
+                  {unclaimedCount > 0 && (
                     <button
                       onClick={claimAllRewards}
-                      className="btn-surface rounded-lg px-3.5 py-1.5 font-mono text-[11px] font-bold transition-all animate-pulse"
-                      style={{ borderColor: `${T.success}88`, color: T.success }}
+                      className="px-3.5 py-1.5 rounded-lg font-mono text-xs font-bold transition-all shadow-md flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 active:scale-95 animate-pulse cursor-pointer"
                     >
-                      Coletar Tudo ({unclaimedCount})
+                      <span>⚡</span>
+                      <span>{lang === "pt" ? `Coletar Tudo (${unclaimedCount})` : `Claim All (${unclaimedCount})`}</span>
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Reward Track Columns Header */}
-              <div className="grid grid-cols-[1fr_40px_1fr] gap-1.5 text-center font-mono text-xs font-bold mb-2 px-1">
-                <div className="text-[#B07FF5] bg-[#B07FF51A] py-1 rounded border border-[#B07FF533]">GRÁTIS</div>
-                <div className="text-[#B7AE95] py-1">NV</div>
-                <div className="text-[#E8B44F] bg-[#E8B44F1A] py-1 rounded border border-[#E8B44F33]">PREMIUM</div>
-              </div>
-
-              {/* 30-Level Track List */}
-              <div className="grid gap-2 max-h-[50vh] overflow-y-auto pr-1">
+              {/* MOBILE VIEW (< sm): Stacked Milestone Cards (No horizontal scrolling / dragging!) */}
+              <div className="block sm:hidden space-y-2.5 max-h-[60vh] overflow-y-auto overscroll-contain pr-0.5 custom-scrollbar w-full">
                 {BATTLE_PASS_REWARDS.map(entry => {
                   const isLevelUnlocked = entry.level <= seasonLevel;
                   const isFreeClaimed = claimedRewards.has(`free_${entry.level}`);
                   const isPremClaimed = claimedRewards.has(`premium_${entry.level}`);
+                  const hasFreeToClaim = entry.free && isLevelUnlocked && !isFreeClaimed;
+                  const hasPremToClaim = entry.premium && isLevelUnlocked && passPremiumOwned && !isPremClaimed;
+                  const isCurrentLevel = entry.level === seasonLevel;
 
                   return (
                     <div
                       key={entry.level}
-                      className="grid grid-cols-[1fr_40px_1fr] gap-1.5 items-center p-1.5 rounded-lg border transition-all"
-                      style={{
-                        borderColor: isLevelUnlocked ? "#3A3356" : "#241D3B",
-                        background: entry.level === seasonLevel ? "#221B3A" : "#141126",
-                      }}
+                      className={`rounded-xl p-3 border transition-all w-full ${
+                        isCurrentLevel
+                          ? "bg-[#221B3A] border-amber-400/60 shadow-[0_0_12px_rgba(245,158,11,0.2)]"
+                          : isLevelUnlocked
+                          ? "bg-[#161229] border-[#3A3356]"
+                          : "bg-[#0F0D1C] border-[#221B3A] opacity-75"
+                      }`}
                     >
-                      {/* Free Track Card */}
-                      {entry.free ? (
-                        <div
-                          className={`p-2 rounded border flex flex-col justify-between text-xs font-mono transition-all ${
-                            isFreeClaimed
-                              ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
-                              : isLevelUnlocked
-                              ? "border-[#B07FF5] bg-[#B07FF514] shadow-sm"
-                              : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
-                          }`}
-                        >
-                          <div className="flex items-center gap-1 mb-1">
-                            <span>{entry.free.icon}</span>
-                            <span className="font-bold text-[#F2EAD8] truncate">{entry.free.name}</span>
+                      {/* Milestone Header */}
+                      <div className="flex items-center justify-between mb-2 pb-1.5 border-b border-white/5">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-7 h-7 rounded-full flex items-center justify-center font-mono font-bold text-xs border flex-shrink-0"
+                            style={{
+                              borderColor: isLevelUnlocked ? "#E8B44F" : "#3A3356",
+                              background: isLevelUnlocked ? "#E8B44F22" : "#1A1630",
+                              color: isLevelUnlocked ? "#E8B44F" : "#716B89",
+                            }}
+                          >
+                            {entry.level}
                           </div>
-                          {isFreeClaimed ? (
-                            <span className="text-[10px] text-emerald-400 font-bold">✓ Coletado</span>
-                          ) : isLevelUnlocked ? (
-                            <button
-                              onClick={() => claimReward("free", entry.level)}
-                              className="rounded bg-[#B07FF5] hover:bg-[#A855F7] text-white font-bold py-0.5 px-2 text-[10px] transition-colors"
-                            >
-                              Coletar
-                            </button>
-                          ) : (
-                            <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
+                          <span className="font-mono text-xs font-bold text-zinc-200">
+                            {lang === "pt" ? `Nível ${entry.level}` : `Level ${entry.level}`}
+                          </span>
+                          {isCurrentLevel && (
+                            <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                              {lang === "pt" ? "ATUAL" : "CURRENT"}
+                            </span>
                           )}
                         </div>
-                      ) : (
-                        <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
-                      )}
-
-                      {/* Level Badge in Center */}
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center font-mono font-bold text-xs mx-auto border"
-                        style={{
-                          borderColor: isLevelUnlocked ? "#E8B44F" : "#3A3356",
-                          background: isLevelUnlocked ? "#E8B44F22" : "#1A1630",
-                          color: isLevelUnlocked ? "#E8B44F" : "#5A5478",
-                        }}
-                      >
-                        {entry.level}
+                        <span className="text-[11px] font-mono">
+                          {isLevelUnlocked ? (
+                            <span className="text-emerald-400 font-bold flex items-center gap-1">
+                              <span>✓</span>
+                              <span>{lang === "pt" ? "Desbloqueado" : "Unlocked"}</span>
+                            </span>
+                          ) : (
+                            <span className="text-zinc-500 flex items-center gap-1">
+                              <span>🔒</span>
+                              <span>{lang === "pt" ? `Nv. ${entry.level}` : `Lvl ${entry.level}`}</span>
+                            </span>
+                          )}
+                        </span>
                       </div>
 
-                      {/* Premium Track Card */}
-                      {entry.premium ? (
+                      {/* Free Track Row */}
+                      {entry.free ? (
                         <div
-                          className={`p-2 rounded border flex flex-col justify-between text-xs font-mono transition-all ${
-                            isPremClaimed
-                              ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
-                              : isLevelUnlocked && passPremiumOwned
-                              ? "border-[#E8B44F] bg-[#E8B44F14] shadow-sm"
-                              : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
+                          className={`flex items-center justify-between gap-2 p-2 rounded-lg mb-1.5 border transition-all ${
+                            isFreeClaimed
+                              ? "bg-[#110E1F]/60 border-white/5 opacity-60"
+                              : hasFreeToClaim
+                              ? "bg-[#B07FF514] border-[#B07FF5] shadow-[0_0_8px_rgba(176,127,245,0.2)]"
+                              : "bg-slate-900/40 border-white/5"
                           }`}
                         >
-                          <div className="flex items-center gap-1 mb-1">
-                            <span>{entry.premium.icon}</span>
-                            <span className="font-bold text-[#F2EAD8] truncate">{entry.premium.name}</span>
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#B07FF522] text-[#B07FF5] border border-[#B07FF544] flex-shrink-0">
+                              GRÁTIS
+                            </span>
+                            <span className="text-base flex-shrink-0">{entry.free.icon}</span>
+                            <span className="text-xs font-mono font-bold text-zinc-200 truncate">
+                              {entry.free.name}
+                            </span>
                           </div>
-                          {isPremClaimed ? (
-                            <span className="text-[10px] text-emerald-400 font-bold">✓ Coletado</span>
-                          ) : isLevelUnlocked && passPremiumOwned ? (
-                            <button
-                              onClick={() => claimReward("premium", entry.level)}
-                              className="rounded bg-[#E8B44F] hover:bg-[#D97706] text-[#100E1F] font-bold py-0.5 px-2 text-[10px] transition-colors"
-                            >
-                              Coletar
-                            </button>
-                          ) : !passPremiumOwned ? (
-                            <span className="text-[10px] text-[#E8B44F88]">⭐ Requer Passe</span>
-                          ) : (
-                            <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
-                          )}
+                          <div className="flex-shrink-0">
+                            {isFreeClaimed ? (
+                              <span className="text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+                                <span>✓</span>
+                                <span>{lang === "pt" ? "Coletado" : "Claimed"}</span>
+                              </span>
+                            ) : isLevelUnlocked ? (
+                              <button
+                                onClick={() => claimReward("free", entry.level)}
+                                className="px-3 py-1.5 rounded-lg bg-[#B07FF5] hover:bg-[#A855F7] active:scale-95 text-white font-mono font-bold text-xs shadow-md transition-all cursor-pointer"
+                              >
+                                {lang === "pt" ? "Coletar" : "Claim"}
+                              </button>
+                            ) : (
+                              <span className="text-[11px] font-mono text-zinc-500">🔒 Bloqueado</span>
+                            )}
+                          </div>
                         </div>
-                      ) : (
-                        <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
-                      )}
+                      ) : null}
+
+                      {/* Premium Track Row */}
+                      {entry.premium ? (
+                        <div
+                          className={`flex items-center justify-between gap-2 p-2 rounded-lg border transition-all ${
+                            isPremClaimed
+                              ? "bg-[#110E1F]/60 border-white/5 opacity-60"
+                              : hasPremToClaim
+                              ? "bg-[#E8B44F14] border-[#E8B44F] shadow-[0_0_8px_rgba(232,180,79,0.25)]"
+                              : "bg-slate-900/40 border-white/5"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#E8B44F22] text-[#E8B44F] border border-[#E8B44F44] flex-shrink-0">
+                              ⭐ PREMIUM
+                            </span>
+                            <span className="text-base flex-shrink-0">{entry.premium.icon}</span>
+                            <span className="text-xs font-mono font-bold text-zinc-200 truncate">
+                              {entry.premium.name}
+                            </span>
+                          </div>
+                          <div className="flex-shrink-0">
+                            {isPremClaimed ? (
+                              <span className="text-[11px] font-mono text-emerald-400 font-bold flex items-center gap-1">
+                                <span>✓</span>
+                                <span>{lang === "pt" ? "Coletado" : "Claimed"}</span>
+                              </span>
+                            ) : hasPremToClaim ? (
+                              <button
+                                onClick={() => claimReward("premium", entry.level)}
+                                className="px-3 py-1.5 rounded-lg bg-[#E8B44F] hover:bg-[#D97706] active:scale-95 text-slate-950 font-mono font-bold text-xs shadow-md transition-all cursor-pointer"
+                              >
+                                {lang === "pt" ? "Coletar" : "Claim"}
+                              </button>
+                            ) : !passPremiumOwned ? (
+                              <button
+                                onClick={buyPremiumPass}
+                                className="text-[11px] font-mono text-amber-400/90 hover:text-amber-300 font-bold flex items-center gap-0.5 underline cursor-pointer"
+                              >
+                                <span>⭐</span>
+                                <span>{lang === "pt" ? "Requer Passe" : "Need Pass"}</span>
+                              </button>
+                            ) : (
+                              <span className="text-[11px] font-mono text-zinc-500">🔒 Bloqueado</span>
+                            )}
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   );
                 })}
+              </div>
+
+              {/* DESKTOP / TABLET VIEW (sm:block): Classic 2-Track Grid */}
+              <div className="hidden sm:block w-full">
+                {/* Reward Track Columns Header */}
+                <div className="grid grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] gap-2 text-center font-mono text-xs font-bold mb-2 px-1">
+                  <div className="text-[#B07FF5] bg-[#B07FF51A] py-1.5 rounded-lg border border-[#B07FF533]">
+                    {lang === "pt" ? "TRILHA GRÁTIS" : "FREE TRACK"}
+                  </div>
+                  <div className="text-[#B7AE95] py-1.5 font-bold">NV</div>
+                  <div className="text-[#E8B44F] bg-[#E8B44F1A] py-1.5 rounded-lg border border-[#E8B44F33]">
+                    {lang === "pt" ? "TRILHA PREMIUM ⭐" : "PREMIUM TRACK ⭐"}
+                  </div>
+                </div>
+
+                {/* 30-Level Track List */}
+                <div className="grid gap-2 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar w-full">
+                  {BATTLE_PASS_REWARDS.map(entry => {
+                    const isLevelUnlocked = entry.level <= seasonLevel;
+                    const isFreeClaimed = claimedRewards.has(`free_${entry.level}`);
+                    const isPremClaimed = claimedRewards.has(`premium_${entry.level}`);
+
+                    return (
+                      <div
+                        key={entry.level}
+                        className="grid grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)] gap-2 items-center p-2 rounded-xl border transition-all"
+                        style={{
+                          borderColor: isLevelUnlocked ? "#3A3356" : "#241D3B",
+                          background: entry.level === seasonLevel ? "#221B3A" : "#141126",
+                        }}
+                      >
+                        {/* Free Track Card */}
+                        {entry.free ? (
+                          <div
+                            className={`p-2 rounded-lg border flex flex-col justify-between text-xs font-mono transition-all min-w-0 ${
+                              isFreeClaimed
+                                ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
+                                : isLevelUnlocked
+                                ? "border-[#B07FF5] bg-[#B07FF514] shadow-sm"
+                                : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
+                              <span className="text-base flex-shrink-0">{entry.free.icon}</span>
+                              <span className="font-bold text-[#F2EAD8] truncate">{entry.free.name}</span>
+                            </div>
+                            {isFreeClaimed ? (
+                              <span className="text-[10px] text-emerald-400 font-bold">✓ {lang === "pt" ? "Coletado" : "Claimed"}</span>
+                            ) : isLevelUnlocked ? (
+                              <button
+                                onClick={() => claimReward("free", entry.level)}
+                                className="rounded-lg bg-[#B07FF5] hover:bg-[#A855F7] text-white font-bold py-1 px-2.5 text-xs transition-colors cursor-pointer active:scale-95 shadow"
+                              >
+                                {lang === "pt" ? "Coletar" : "Claim"}
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
+                        )}
+
+                        {/* Level Badge in Center */}
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs mx-auto border flex-shrink-0"
+                          style={{
+                            borderColor: isLevelUnlocked ? "#E8B44F" : "#3A3356",
+                            background: isLevelUnlocked ? "#E8B44F22" : "#1A1630",
+                            color: isLevelUnlocked ? "#E8B44F" : "#5A5478",
+                          }}
+                        >
+                          {entry.level}
+                        </div>
+
+                        {/* Premium Track Card */}
+                        {entry.premium ? (
+                          <div
+                            className={`p-2 rounded-lg border flex flex-col justify-between text-xs font-mono transition-all min-w-0 ${
+                              isPremClaimed
+                                ? "opacity-50 border-[#3A3356] bg-[#110E1F]"
+                                : isLevelUnlocked && passPremiumOwned
+                                ? "border-[#E8B44F] bg-[#E8B44F14] shadow-sm"
+                                : "border-[#2A2342] bg-[#0F0D1C] opacity-70"
+                            }`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1.5 min-w-0">
+                              <span className="text-base flex-shrink-0">{entry.premium.icon}</span>
+                              <span className="font-bold text-[#F2EAD8] truncate">{entry.premium.name}</span>
+                            </div>
+                            {isPremClaimed ? (
+                              <span className="text-[10px] text-emerald-400 font-bold">✓ {lang === "pt" ? "Coletado" : "Claimed"}</span>
+                            ) : isLevelUnlocked && passPremiumOwned ? (
+                              <button
+                                onClick={() => claimReward("premium", entry.level)}
+                                className="rounded-lg bg-[#E8B44F] hover:bg-[#D97706] text-[#100E1F] font-bold py-1 px-2.5 text-xs transition-colors cursor-pointer active:scale-95 shadow"
+                              >
+                                {lang === "pt" ? "Coletar" : "Claim"}
+                              </button>
+                            ) : !passPremiumOwned ? (
+                              <button
+                                onClick={buyPremiumPass}
+                                className="text-[10px] text-[#E8B44F] hover:underline font-bold text-left cursor-pointer"
+                              >
+                                ⭐ {lang === "pt" ? "Requer Passe" : "Need Pass"}
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-[#5A5478]">🔒 Bloqueado</span>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="p-2 text-center text-xs font-mono text-[#5A5478]">—</div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
