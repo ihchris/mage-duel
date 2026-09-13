@@ -73,48 +73,48 @@ import {
   AlchemySanctumModal,
 } from "./AlchemySpellSystem.jsx";
 
-// ================= DESIGN SYSTEM TOKENS =================
+// ================= DESIGN SYSTEM TOKENS (VIBRANT FANTASY) =================
 export const T = {
-  // Backgrounds (hierarquia de profundidade)
-  bgDeep:     "#08060F",   // fundo do jogo
-  bgBase:     "#0F0C1F",   // painéis principais
-  bgSurface:  "#1A1630",   // cards
-  bgElevated: "#242043",   // cards destacados / hover
-  bgOverlay:  "#0A0814EE", // modais
+  // Backgrounds (hierarquia de profundidade mágica vívida)
+  bgDeep:     "#0D0B24",                 // Fundo astral anil profundo
+  bgBase:     "rgba(32, 26, 74, 0.78)",   // Painéis principais ametista / safira real
+  bgSurface:  "rgba(46, 38, 102, 0.68)",  // Cards em vidro lapidado
+  bgElevated: "rgba(66, 54, 142, 0.75)",  // Cards destacados com brilho cósmico
+  bgOverlay:  "rgba(16, 12, 42, 0.88)",   // Modais com backdrop mágico
 
   // Borders
-  borderSubtle:  "#2A2444",
-  borderDefault: "#3A3356",
-  borderStrong:  "#4A4270",
+  borderSubtle:  "rgba(167, 139, 250, 0.22)",
+  borderDefault: "rgba(196, 181, 253, 0.35)",
+  borderStrong:  "rgba(251, 191, 36, 0.65)",
 
   // Text
-  textPrimary:   "#F2EAD8",
-  textSecondary: "#B7AE95",
-  textTertiary:  "#8E87A5",
-  textMuted:     "#5A5478",
+  textPrimary:   "#FFFFFF",
+  textSecondary: "#E2E8F0",
+  textTertiary:  "#CBD5E1",
+  textMuted:     "#94A3B8",
 
   // Brand
-  gold:      "#E8B44F",
-  goldDark:  "#C08A2E",
-  goldLight: "#FFE28A",
+  gold:      "#FBBF24",
+  goldDark:  "#B45309",
+  goldLight: "#FEF08A",
 
   // Feedback
-  success: "#72C063",
-  danger:  "#EF4444",
-  warning: "#F59E0B",
-  info:    "#5FC1E8",
+  success: "#34D399",
+  danger:  "#F87171",
+  warning: "#FBBF24",
+  info:    "#38BDF8",
 
-  // Elementos (mantém os atuais)
-  fire:   "#FF6B3D",
-  ice:    "#5FC1E8",
-  nature: "#72C063",
-  arcane: "#B07FF5",
+  // Elementos (vívidos e saturados)
+  fire:   "#FF5436",
+  ice:    "#00D2FF",
+  nature: "#10B981",
+  arcane: "#D946EF",
 
-  // Raridades (mantém os atuais)
-  common:    "#9AA0B4",
-  rare:      "#4FA3E8",
-  epic:      "#B07FF5",
-  legendary: "#E8B44F",
+  // Raridades (joias arcanas brilhantes)
+  common:    "#94A3B8",
+  rare:      "#00D2FF",
+  epic:      "#C084FC",
+  legendary: "#FBBF24",
 };
 
 // ================= LOCALIZATION (PT-BR / EN) =================
@@ -5698,16 +5698,20 @@ export default function MageDuel() {
     }, 1000);
   }
 
-  const stars = useMemo(() => Array.from({ length: 16 }, () => ({
+  const STAR_COLORS = ["#FDE047", "#38BDF8", "#E879F9", "#6EE7B7", "#FFFFFF", "#F472B6"];
+  const stars = useMemo(() => Array.from({ length: 22 }, () => ({
     left: Math.random() * 100, top: Math.random() * 100,
-    size: rand(1, 2), delay: rand(0, 4), dur: rand(3, 6),
+    size: rand(1.2, 2.5), delay: rand(0, 4), dur: rand(2.5, 5),
+    color: pick(STAR_COLORS),
   })), []);
 
-  const dustParticles = useMemo(() => Array.from({ length: 8 }, () => ({
+  const DUST_COLORS = ["#FBBF24", "#38BDF8", "#34D399", "#C084FC", "#F472B6"];
+  const dustParticles = useMemo(() => Array.from({ length: 12 }, () => ({
     left: Math.random() * 100,
-    size: rand(1.5, 2.5),
+    size: rand(1.8, 3),
     delay: rand(0, 15),
-    dur: rand(20, 30),
+    dur: rand(18, 28),
+    color: pick(DUST_COLORS),
   })), []);
 
   useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [log]);
@@ -7434,37 +7438,65 @@ export default function MageDuel() {
   );
 
   const bg = (
-    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -20%, #1E1B4B 0%, #0F172A 45%, #020617 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
+    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -10%, #3B2A82 0%, #241A5C 30%, #15103E 65%, #0D092A 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
+      {/* 4 Luminous Elemental Aurora Glow Orbs */}
+      <div style={{
+        position: "absolute", top: "-10%", left: "-10%", width: "55vw", height: "55vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(217, 70, 239, 0.26) 0%, rgba(147, 51, 234, 0.12) 45%, transparent 70%)",
+        filter: "blur(50px)", pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", top: "-5%", right: "-10%", width: "50vw", height: "50vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(0, 210, 255, 0.24) 0%, rgba(59, 130, 246, 0.12) 45%, transparent 70%)",
+        filter: "blur(50px)", pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "-10%", left: "-5%", width: "45vw", height: "45vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.08) 50%, transparent 70%)",
+        filter: "blur(60px)", pointerEvents: "none",
+      }} />
+      <div style={{
+        position: "absolute", bottom: "-10%", right: "-5%", width: "45vw", height: "45vw", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(220, 38, 38, 0.1) 50%, transparent 70%)",
+        filter: "blur(60px)", pointerEvents: "none",
+      }} />
+
+      {/* Colorful Twinkling Stardust */}
       {stars.map((s, i) => (
-        <div key={i} className={i >= 8 ? "hidden sm:block" : ""} style={{
+        <div key={i} className={i >= 12 ? "hidden sm:block" : ""} style={{
           position: "absolute", left: `${s.left}%`, top: `${s.top}%`, width: s.size, height: s.size,
-          borderRadius: "50%", background: "#EFE7D2",
+          borderRadius: "50%", background: s.color || "#FDE047",
+          boxShadow: `0 0 8px ${s.color || "#FDE047"}`,
           animation: `twinkle ${s.dur}s ease-in-out ${s.delay}s infinite`,
           willChange: "opacity",
         }} />
       ))}
-      {/* Floating arena dust particles - hidden on mobile for 60fps performance */}
+
+      {/* Floating Arena Mana motes */}
       {dustParticles.map((d, i) => (
         <div key={`d-${i}`} className="hidden sm:block" style={{
           position: "absolute", left: `${d.left}%`, width: d.size, height: d.size,
-          borderRadius: "50%", background: "#E8B44F",
+          borderRadius: "50%", background: d.color || "#FBBF24",
+          boxShadow: `0 0 10px ${d.color || "#FBBF24"}`,
           animation: `dustFloat ${d.dur}s linear ${d.delay}s infinite`,
-          opacity: 0.3,
+          opacity: 0.55,
           willChange: "transform",
         }} />
       ))}
-      {/* Horizontal scrolling mist layer - hidden on mobile for 60fps performance */}
+
+      {/* Horizontal scrolling mist layer with purple astral glow */}
       <div className="hidden sm:block" style={{
         position: "absolute", bottom: 0, left: 0, width: "200%", height: "35%",
-        background: "linear-gradient(to top, #02061799 0%, transparent 100%)",
+        background: "linear-gradient(to top, rgba(38, 25, 92, 0.4) 0%, transparent 100%)",
         animation: "scrollMist 25s linear infinite",
-        pointerEvents: "none", opacity: 0.35,
+        pointerEvents: "none", opacity: 0.5,
         willChange: "transform",
       }} />
-      {/* Radial edge vignette */}
+
+      {/* Soft celestial vignette */}
       <div style={{
         position: "fixed", inset: 0,
-        background: "radial-gradient(circle at center, transparent 40%, #020617CC 100%)",
+        background: "radial-gradient(circle at center, transparent 45%, rgba(13, 9, 38, 0.55) 100%)",
         pointerEvents: "none", zIndex: 1,
       }} />
     </div>
@@ -8524,8 +8556,11 @@ export default function MageDuel() {
                 <MageSprite mage={previewMage} facing="right" size={1.65} />
               </div>
 
-              {/* Soft Ambient Ground Shadow */}
-              <div className="w-20 sm:w-28 h-2 sm:h-2.5 rounded-[50%] bg-black/40 blur-sm pointer-events-none mt-0.5" />
+              {/* Luminous Elemental Pedestal Glow */}
+              <div
+                className="w-24 sm:w-32 h-3 sm:h-3.5 rounded-[50%] blur-sm pointer-events-none mt-0.5 transition-all duration-300"
+                style={{ background: `radial-gradient(ellipse, ${el.color}AA 0%, rgba(147, 51, 234, 0.45) 50%, transparent 75%)` }}
+              />
 
               <div className="flex items-center gap-1.5 mt-0.5">
                 <button
@@ -8543,7 +8578,7 @@ export default function MageDuel() {
                     e.stopPropagation();
                     setTab("appearance");
                   }}
-                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-slate-900/90 border border-pink-500/40 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-pink-500/40 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
                   title={lang === "pt" ? "Personalizar Aparência" : "Customize Appearance"}
                 >
                   <span>🪞</span><span>{lang === "pt" ? "Aparência" : "Appearance"}</span>
@@ -8554,8 +8589,8 @@ export default function MageDuel() {
             {/* Badges on desktop/landscape */}
             <div className="flex justify-center gap-1 items-center flex-wrap mt-0.5">
               <span
-                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-bold bg-slate-900/90 border flex items-center gap-1 shadow-sm"
-                style={{ color: el.color, borderColor: `${el.color}44` }}
+                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-bold bg-indigo-950/80 border flex items-center gap-1 shadow-sm"
+                style={{ color: el.color, borderColor: `${el.color}66`, boxShadow: `0 0 10px ${el.color}33` }}
               >
                 <span>{el.icon}</span>
                 <span>{getElementName(affinity, lang)}</span>
@@ -8564,7 +8599,7 @@ export default function MageDuel() {
               <button
                 onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
                 title="Alternar gênero"
-                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-medium bg-slate-900/90 border border-white/10 hover:border-amber-400/40 text-zinc-300 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
+                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-medium bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400/60 text-zinc-200 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
               >
                 <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
                 <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
@@ -8572,15 +8607,15 @@ export default function MageDuel() {
 
               {relic && relic.id !== "none" && (
                 <span
-                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-semibold bg-slate-900/90 border shadow-sm"
-                  style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}44` }}
+                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-semibold bg-indigo-950/80 border shadow-sm"
+                  style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}66`, boxShadow: `0 0 10px ${RARITY[relic.rarity]?.color || T.gold}33` }}
                 >
                   ✦ {relic.name}
                 </span>
               )}
             </div>
 
-            <div className="text-center text-[9.5px] sm:text-[10.5px] font-sans text-zinc-400/90 truncate max-w-xs mt-0.5">
+            <div className="text-center text-[9.5px] sm:text-[10.5px] font-sans text-zinc-300 truncate max-w-xs mt-0.5 font-medium">
               <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
                 {previewMage.staffGear?.name}
               </span>
@@ -8608,7 +8643,12 @@ export default function MageDuel() {
                     setTab(portal.id);
                   }
                 }}
-                className="glass-card p-1 sm:p-2 md:p-2.5 text-center transition-all relative overflow-hidden group select-none flex flex-col items-center justify-center min-h-[46px] xs:min-h-[50px] sm:min-h-[58px] hover:border-amber-400/40"
+                className="glass-card p-1 sm:p-2 md:p-2.5 text-center transition-all relative overflow-hidden group select-none flex flex-col items-center justify-center min-h-[46px] xs:min-h-[50px] sm:min-h-[58px]"
+                style={{
+                  background: `linear-gradient(145deg, ${portal.color}22 0%, rgba(38, 30, 85, 0.85) 100%)`,
+                  borderColor: `${portal.color}55`,
+                  boxShadow: `0 4px 14px rgba(10, 8, 30, 0.35), 0 0 10px ${portal.color}20`,
+                }}
               >
                 {/* Notification indicator dot */}
                 {portal.hasNotice && (
@@ -11585,21 +11625,21 @@ export default function MageDuel() {
           <div className="w-full flex items-center justify-between py-0.5 sm:py-1 flex-shrink-0 flex-nowrap gap-1 sm:gap-2">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1 sm:gap-2 flex-wrap xs:flex-nowrap">
-                <h1 className="font-serif text-[14px] xs:text-[17px] sm:text-[22px] md:text-[26px] font-black tracking-wide text-amber-200 drop-shadow-[0_2px_12px_rgba(245,158,11,0.25)] whitespace-nowrap">
+                <h1 className="font-serif text-[14px] xs:text-[17px] sm:text-[22px] md:text-[26px] font-black tracking-wide text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.4)] whitespace-nowrap">
                   {mageName.trim() || "Mage Duel"}
                 </h1>
                 {/* Ultra-slim XP Badge & Bar */}
-                <div className="px-1.5 xs:px-2 py-0.5 rounded-full bg-slate-900/90 border border-amber-500/25 flex items-center gap-1 shadow-sm flex-shrink-0">
+                <div className="px-1.5 xs:px-2 py-0.5 rounded-full bg-indigo-950/80 border border-amber-400/40 flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] flex-shrink-0">
                   <span className="font-bold text-amber-300 text-[9px] xs:text-[10px] sm:text-[11px] font-sans">Nv.{mageLevel}</span>
-                  <div className="w-8 xs:w-12 sm:w-20 h-1 rounded-full overflow-hidden bg-slate-950 border border-white/10">
+                  <div className="w-8 xs:w-12 sm:w-20 h-1.5 rounded-full overflow-hidden bg-indigo-950/90 border border-white/15">
                     <div
                       className="h-full rounded-full transition-all duration-300"
-                      style={{ width: `${mageLevelInfo.percent}%`, background: "linear-gradient(90deg, #F59E0B, #FBBF24)" }}
+                      style={{ width: `${mageLevelInfo.percent}%`, background: "linear-gradient(90deg, #F59E0B, #FDE047)", boxShadow: "0 0 8px rgba(251, 191, 36, 0.6)" }}
                     />
                   </div>
                 </div>
               </div>
-              <p className="text-[9px] sm:text-[11px] font-sans text-zinc-400 mt-0.5 hidden xs:block truncate">
+              <p className="text-[9px] sm:text-[11px] font-sans text-indigo-200/90 mt-0.5 hidden xs:block truncate font-medium">
                 {lang === "pt" ? "Afinidade" : "Affinity"} {getElementName(affinity, lang)} +25% · {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP
               </p>
             </div>
@@ -11609,7 +11649,7 @@ export default function MageDuel() {
               {pendingLevelDraft && (
                 <button
                   onClick={() => {}}
-                  className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-serif font-bold bg-amber-500/20 border border-amber-400/50 text-amber-300 animate-pulse shadow-md flex items-center gap-1"
+                  className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-serif font-bold bg-amber-500/25 border border-amber-400/70 text-amber-200 animate-pulse shadow-[0_0_14px_rgba(245,158,11,0.5)] flex items-center gap-1 cursor-pointer"
                   title="Novo Feitiço Disponível para Escolha!"
                 >
                   🌟 Draft
@@ -11628,7 +11668,7 @@ export default function MageDuel() {
               <button
                 onClick={toggleLang}
                 title={lang === "pt" ? "Mudar para Inglês (Switch to English)" : "Mudar para Português (Switch to Portuguese)"}
-                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-slate-900/90 border border-white/15 hover:border-amber-400/50 text-zinc-200 hover:text-amber-200 text-[10px] sm:text-xs font-sans font-bold transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5 active:scale-95"
+                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400/60 text-zinc-100 hover:text-amber-200 text-[10px] sm:text-xs font-sans font-bold transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5 active:scale-95 cursor-pointer"
               >
                 <span>{lang === "pt" ? "🇧🇷" : "🇺🇸"}</span>
               </button>
@@ -11637,9 +11677,9 @@ export default function MageDuel() {
               <button
                 onClick={() => setTab("shop")}
                 title={t("shopTitle")}
-                className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/90 border border-amber-500/25 hover:border-amber-400/50 text-amber-300 text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center gap-1 shadow-sm hover:-translate-y-0.5"
+                className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-indigo-950/80 border border-amber-400/40 hover:border-amber-400/80 text-amber-300 text-[10px] sm:text-xs font-mono font-bold transition-all flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] hover:-translate-y-0.5 cursor-pointer"
               >
-                <span className="text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]">✦</span>
+                <span className="text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]">✦</span>
                 <span>{shards}</span>
               </button>
 
@@ -11647,16 +11687,16 @@ export default function MageDuel() {
               <button
                 onClick={() => setShowFriends(true)}
                 title={t("friends")}
-                className="px-2 py-0.5 sm:py-1 rounded-full bg-slate-900/90 border border-white/10 hover:border-white/25 text-zinc-300 text-[10px] sm:text-xs font-sans transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5"
+                className="px-2 py-0.5 sm:py-1 rounded-full bg-indigo-950/80 border border-indigo-400/30 hover:border-indigo-300/60 text-zinc-200 text-[10px] sm:text-xs font-sans transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5 cursor-pointer"
               >
                 <span>👥</span>
-                <span className="font-bold">{friends.length}</span>
+                <span className="font-bold text-zinc-100">{friends.length}</span>
               </button>
 
               {/* Settings Gear */}
               <button
                 onClick={() => setShowAdminModal(true)}
-                className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-slate-900/90 border border-white/10 hover:border-amber-400/50 text-zinc-300 hover:text-white transition-all shadow-sm flex items-center justify-center text-xs sm:text-sm hover:-translate-y-0.5"
+                className="p-1 sm:p-1.5 rounded-lg sm:rounded-xl bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400/60 text-zinc-200 hover:text-white transition-all shadow-sm flex items-center justify-center text-xs sm:text-sm hover:-translate-y-0.5 cursor-pointer"
                 title={t("settings")}
               >
                 <span>⚙️</span>
@@ -11670,28 +11710,35 @@ export default function MageDuel() {
           {(() => {
             const todayMod = getTodayModifier();
             return (
-              <div className="w-full rounded-xl p-1 sm:p-2 my-0.5 flex items-center justify-between gap-1.5 shadow-md border glass-panel transition-all flex-shrink-0">
+              <div
+                className="w-full rounded-xl p-1 sm:p-2 my-0.5 flex items-center justify-between gap-1.5 shadow-md border glass-panel transition-all flex-shrink-0"
+                style={{
+                  background: "linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(46, 38, 102, 0.75) 100%)",
+                  borderColor: "rgba(245, 158, 11, 0.5)",
+                  boxShadow: "0 4px 18px rgba(0,0,0,0.3), 0 0 16px rgba(245, 158, 11, 0.2)",
+                }}
+              >
                 <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
                   <div
-                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-xs sm:text-base border flex-shrink-0 shadow-[0_0_12px_rgba(245,158,11,0.25)]"
+                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-xs sm:text-base border flex-shrink-0 shadow-[0_0_14px_rgba(245,158,11,0.4)]"
                     style={{
-                      background: "linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(15, 23, 42, 0.6) 100%)",
-                      borderColor: "rgba(245, 158, 11, 0.45)",
+                      background: "linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(46, 38, 102, 0.8) 100%)",
+                      borderColor: "rgba(245, 158, 11, 0.65)",
                     }}
                   >
                     <span>🛡️</span>
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1 flex-wrap">
-                      <span className="text-[8.5px] sm:text-[9px] font-sans uppercase tracking-widest font-bold text-amber-400/90">
+                      <span className="text-[8.5px] sm:text-[9px] font-sans uppercase tracking-widest font-bold text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
                         {t("dailyModifier")}
                       </span>
-                      <span className="text-zinc-500">·</span>
-                      <span className="text-[10.5px] sm:text-sm font-serif font-bold text-zinc-100 whitespace-nowrap">
+                      <span className="text-indigo-300/60">·</span>
+                      <span className="text-[10.5px] sm:text-sm font-serif font-bold text-white whitespace-nowrap">
                         {todayMod.icon} {todayMod.name}
                       </span>
                     </div>
-                    <div className="text-[9px] sm:text-[10.5px] font-sans text-zinc-400 truncate hidden xs:block">
+                    <div className="text-[9px] sm:text-[10.5px] font-sans text-indigo-100/80 truncate hidden xs:block">
                       {todayMod.desc}
                     </div>
                   </div>
@@ -11699,9 +11746,10 @@ export default function MageDuel() {
                 <span
                   className="px-2 py-0.5 rounded-full text-[8.5px] sm:text-[10px] font-sans font-bold border flex-shrink-0 shadow-sm"
                   style={{
-                    backgroundColor: "rgba(245, 158, 11, 0.12)",
-                    borderColor: "rgba(245, 158, 11, 0.35)",
-                    color: "#FDE68A",
+                    backgroundColor: "rgba(245, 158, 11, 0.25)",
+                    borderColor: "rgba(245, 158, 11, 0.6)",
+                    color: "#FEF08A",
+                    boxShadow: "0 0 10px rgba(245, 158, 11, 0.3)",
                   }}
                 >
                   {todayMod.shortDesc}
@@ -11745,34 +11793,34 @@ export default function MageDuel() {
                     onClick={() => isUnlocked ? setTab("skills") : null}
                     className={`min-h-[44px] xs:min-h-[48px] sm:min-h-[56px] rounded-lg sm:rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
                       !isUnlocked
-                        ? "opacity-35 cursor-not-allowed border-white/5 bg-black/40"
+                        ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
                         : skill
-                        ? "bg-slate-950/85 hover:scale-[1.02] shadow-md border"
-                        : "border-dashed border-white/10 bg-slate-950/30 hover:border-amber-400/40 hover:bg-slate-900/40"
+                        ? "bg-indigo-950/85 hover:scale-[1.02] shadow-md border"
+                        : "border-dashed border-indigo-400/30 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40"
                     }`}
                     style={{
-                      borderColor: skill && el ? `${el.color}66` : undefined,
-                      boxShadow: skill && el ? `0 0 16px ${el.color}28, inset 0 1px 0 rgba(255,255,255,0.06)` : undefined,
+                      borderColor: skill && el ? `${el.color}88` : undefined,
+                      boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
                     }}
                     title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
                   >
                     {!isUnlocked ? (
                       <div className="flex flex-col items-center justify-center my-auto">
                         <span className="text-[10px] sm:text-[12px] opacity-60">🔒</span>
-                        <span className="text-[7px] sm:text-[8px] font-sans font-bold text-zinc-500">Nv.{unlockLvl}</span>
+                        <span className="text-[7px] sm:text-[8px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
                       </div>
                     ) : skill ? (
                       <>
                         <div className="flex items-center justify-between w-full px-0.5">
-                          <span className="text-[11px] sm:text-[12px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                          <span className="text-[11px] sm:text-[12px] drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
                           <span
-                            className="text-[8px] sm:text-[9px] font-mono font-bold px-1 rounded border border-sky-400/30 text-sky-300"
-                            style={{ background: "rgba(14, 165, 233, 0.15)" }}
+                            className="text-[8px] sm:text-[9px] font-mono font-bold px-1 rounded border border-sky-400/40 text-sky-200"
+                            style={{ background: "rgba(14, 165, 233, 0.25)" }}
                           >
                             💧{skill.mana}
                           </span>
                         </div>
-                        <span className="text-[9px] xs:text-[9.5px] sm:text-[11px] font-serif font-bold text-zinc-100 group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
+                        <span className="text-[9px] xs:text-[9.5px] sm:text-[11px] font-serif font-bold text-white group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
                           {skill.name}
                         </span>
                         <div className="flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold">
@@ -11783,7 +11831,7 @@ export default function MageDuel() {
                         </div>
                       </>
                     ) : (
-                      <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-zinc-500">
+                      <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-indigo-300/60">
                         <span className="text-xs sm:text-sm font-bold leading-none">+</span>
                         <span className="text-[7px] sm:text-[8px] font-sans uppercase tracking-wider mt-0.5">S{i + 1}</span>
                       </div>
@@ -11806,34 +11854,35 @@ export default function MageDuel() {
                     onClick={() => isUnlocked ? setTab("skills") : null}
                     className={`hidden sm:flex min-h-[56px] rounded-xl text-center flex-col items-center justify-between p-1.5 transition-all group relative overflow-hidden ${
                       !isUnlocked
-                        ? "opacity-35 cursor-not-allowed border-white/5 bg-black/40"
+                        ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
                         : skill
-                        ? "bg-slate-950/85 hover:scale-[1.02] shadow-md border"
-                        : "border-dashed border-white/10 bg-slate-950/30 hover:border-amber-400/40 hover:bg-slate-900/40"
+                        ? "bg-indigo-950/85 hover:scale-[1.02] shadow-md border"
+                        : "border-dashed border-indigo-400/30 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40"
                     }`}
                     style={{
-                      borderColor: skill && el ? `${el.color}66` : undefined,
+                      borderColor: skill && el ? `${el.color}88` : undefined,
+                      boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
                     }}
-                    title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name}` : "Slot vazio"}
+                    title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
                   >
                     {!isUnlocked ? (
                       <div className="flex flex-col items-center justify-center my-auto">
                         <span className="text-[12px] opacity-60">🔒</span>
-                        <span className="text-[8px] font-sans font-bold text-zinc-500">Nv.{unlockLvl}</span>
+                        <span className="text-[8px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
                       </div>
                     ) : skill ? (
                       <>
                         <div className="flex items-center justify-between w-full px-0.5">
-                          <span className="text-[12px]" style={{ color: el.color }}>{el.icon}</span>
-                          <span className="text-[9px] font-mono font-bold text-sky-300">💧{skill.mana}</span>
+                          <span className="text-[12px] drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                          <span className="text-[9px] font-mono font-bold text-sky-200">💧{skill.mana}</span>
                         </div>
-                        <span className="text-[10px] font-serif font-bold text-zinc-100 truncate max-w-full">
+                        <span className="text-[10px] font-serif font-bold text-white truncate max-w-full">
                           {skill.name}
                         </span>
                         <div className="text-[8px] font-mono font-bold text-red-300">⚔️{skill.dmg || 0}</div>
                       </>
                     ) : (
-                      <div className="my-auto text-zinc-500 font-bold">+</div>
+                      <div className="my-auto text-indigo-300/60 font-bold">+</div>
                     )}
                   </button>
                 );
@@ -11845,7 +11894,7 @@ export default function MageDuel() {
           <div className="w-full pt-0.5 pb-0.5 flex-shrink-0 flex flex-row gap-1.5 sm:gap-2 items-center">
             <button
               onClick={startTutorial}
-              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-sky-500/25 text-sky-200 hover:border-sky-400/50 flex-shrink-0 cursor-pointer active:scale-95"
+              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-sky-400/40 text-sky-200 hover:border-sky-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(56,189,248,0.25)]"
               title="Treinamento com Espantalho Arcano"
             >
               <span className="text-sm sm:text-base">🎯</span>
@@ -11853,7 +11902,7 @@ export default function MageDuel() {
             </button>
             <button
               onClick={() => setShowBossTrialsModal(true)}
-              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-purple-500/25 text-purple-200 hover:border-purple-400/50 flex-shrink-0 cursor-pointer active:scale-95"
+              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-purple-400/40 text-purple-200 hover:border-purple-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
               title="Treinamento de Mestres Elementais"
             >
               <span className="text-sm sm:text-base">👑</span>
@@ -11862,7 +11911,7 @@ export default function MageDuel() {
             <button
               onClick={() => { setIsTutorial(false); findOpponent(); }}
               disabled={!canFindOpponent}
-              className="btn-king flex-1 rounded-xl py-2 sm:py-2.5 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-98"
+              className="btn-king flex-1 rounded-xl py-2 sm:py-2.5 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(245,158,11,0.5)] cursor-pointer active:scale-98"
             >
               <span className="text-base sm:text-xl">⚔️</span>
               <span className="font-bold tracking-wide">{t("findDuel")}</span>
@@ -13278,7 +13327,7 @@ export default function MageDuel() {
   const shakeClass = screenShake === "heavy" ? "arena-shake-heavy" : screenShake === "light" ? "arena-shake-light" : "";
 
   return (
-    <div className={`h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between safe-all p-1 sm:p-2.5 md:p-4 ${shakeClass}`} style={{ color: "#F2EAD8" }}>
+    <div className={`h-[100dvh] max-h-[100dvh] overflow-hidden relative flex flex-col items-center justify-between safe-all p-1 sm:p-2.5 md:p-4 ${shakeClass}`} style={{ color: "#FFFFFF" }}>
       {styles}{bg}
       {phaseTransition && <div className="phase-transition" />}
       {screenFlash === "white" && <div className="screen-flash-white" />}
@@ -13325,8 +13374,8 @@ export default function MageDuel() {
             <div
               className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-1 landscape:order-2 md:order-2 transition-all shadow-lg"
               style={{
-                borderColor: currentTurn === "enemy" ? T.danger : T.borderSubtle,
-                boxShadow: currentTurn === "enemy" ? `0 0 20px ${T.danger}33` : "0 4px 20px #00000044",
+                borderColor: currentTurn === "enemy" ? "#EF4444" : "rgba(167, 139, 250, 0.28)",
+                boxShadow: currentTurn === "enemy" ? "0 0 24px rgba(239, 68, 68, 0.45), inset 0 1px 0 rgba(255,255,255,0.15)" : "0 4px 20px rgba(10, 8, 32, 0.35)",
               }}
             >
               {floats.filter(f => f.side === "e").map(f => (
@@ -13359,8 +13408,8 @@ export default function MageDuel() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1.5 mb-0.5 sm:mb-1">
                   <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.textPrimary }}>{enemy.name}</span>
-                    <span className="px-1.5 py-0.2 rounded bg-slate-800 text-zinc-300 font-mono text-[9px] font-bold border border-white/20">
+                    <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate text-white">{enemy.name}</span>
+                    <span className="px-1.5 py-0.2 rounded bg-indigo-950/80 text-zinc-200 font-mono text-[9px] font-bold border border-indigo-400/30">
                       Nv.{enemy.level || 1}
                     </span>
                     <ElementBadge el={enemy.affinity} />
@@ -13369,7 +13418,7 @@ export default function MageDuel() {
                   <button
                     type="button"
                     onClick={() => setShowEnemyGearModal(true)}
-                    className="px-1.5 sm:px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-slate-900/90 border border-sky-400/40 text-sky-200 hover:bg-sky-500/20 hover:border-sky-400 transition-all flex items-center gap-1 shadow-sm flex-shrink-0 cursor-pointer"
+                    className="px-1.5 sm:px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-mono font-bold bg-indigo-950/80 border border-sky-400/50 text-sky-200 hover:bg-sky-500/25 hover:border-sky-300 transition-all flex items-center gap-1 shadow-sm flex-shrink-0 cursor-pointer"
                     title={lang === "pt" ? "Inspecionar equipamentos e mascote do inimigo" : "Inspect enemy gear and companion"}
                   >
                     <span>🔍</span>
@@ -13380,7 +13429,7 @@ export default function MageDuel() {
                 <button
                   type="button"
                   onClick={() => setShowEnemyGearModal(true)}
-                  className="w-full text-left text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-80 hover:opacity-100 flex items-center gap-1 transition-opacity cursor-pointer group"
+                  className="w-full text-left text-[10px] sm:text-[11px] font-mono mb-1 sm:mb-1.5 truncate opacity-90 hover:opacity-100 flex items-center gap-1 transition-opacity cursor-pointer group"
                   style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color }}
                   title={lang === "pt" ? "Clique para inspecionar equipamentos do oponente" : "Click to inspect opponent gear"}
                 >
@@ -13406,8 +13455,8 @@ export default function MageDuel() {
             <div
               className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-2 landscape:order-1 md:order-1 transition-all shadow-lg"
               style={{
-                borderColor: currentTurn === "player" ? T.gold : T.borderSubtle,
-                boxShadow: currentTurn === "player" ? `0 0 20px ${T.gold}33` : "0 4px 20px #00000044",
+                borderColor: currentTurn === "player" ? "#FBBF24" : "rgba(167, 139, 250, 0.28)",
+                boxShadow: currentTurn === "player" ? "0 0 24px rgba(251, 191, 36, 0.45), inset 0 1px 0 rgba(255,255,255,0.15)" : "0 4px 20px rgba(10, 8, 32, 0.35)",
               }}
             >
               {floats.filter(f => f.side === "p").map(f => (
@@ -13515,8 +13564,8 @@ export default function MageDuel() {
                 <button
                   onClick={() => setShowBattleBagModal(true)}
                   disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-emerald-400"
-                  style={{ borderColor: "#10B98188", color: "#34D399", backgroundColor: "#064E3B33" }}
+                  className="btn-surface px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-emerald-300"
+                  style={{ borderColor: "#10B981AA", color: "#34D399", backgroundColor: "rgba(6, 78, 59, 0.45)", boxShadow: "0 0 12px rgba(16, 185, 129, 0.3)" }}
                   title="Abrir Mochila de Consumíveis (Poções estilo Pokémon) [Tecla B ou M]"
                 >
                   <span>🎒</span>
@@ -13526,8 +13575,8 @@ export default function MageDuel() {
                 <button
                   onClick={() => playerAction(FOCUS)}
                   disabled={busy || currentTurn !== "player"}
-                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1"
-                  style={{ borderColor: `${T.ice}66`, color: T.ice }}
+                  className="btn-surface px-2 sm:px-3 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all disabled:opacity-40 shadow-sm flex items-center gap-1 cursor-pointer hover:border-sky-300"
+                  style={{ borderColor: "rgba(0, 210, 255, 0.6)", color: "#00D2FF", backgroundColor: "rgba(14, 116, 144, 0.45)", boxShadow: "0 0 12px rgba(0, 210, 255, 0.3)" }}
                   title={`Recuperar ${FOCUS.restore} de Mana (Tecla Espaço)`}
                 >
                   <span>⚡</span>
@@ -13537,7 +13586,7 @@ export default function MageDuel() {
                 <button
                   onClick={() => setShowSurrenderModal(true)}
                   disabled={busy}
-                  className="btn-danger px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-colors"
+                  className="btn-danger px-2 sm:px-2.5 py-1 rounded-lg font-mono text-[10px] sm:text-[11px] font-bold transition-all shadow-[0_0_12px_rgba(239,68,68,0.35)] cursor-pointer"
                 >
                   Render-se
                 </button>

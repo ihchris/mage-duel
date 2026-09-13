@@ -1,43 +1,43 @@
-// ================= DESIGN TOKENS (MAGE DUEL AAA GLASSMORPHISM) =================
+// ================= DESIGN TOKENS (VIBRANT FANTASY GLASSMORPHISM) =================
 export const T = {
-  // Backgrounds (Glassmorphism & Depth)
-  bgDeep:     "#020617",               // Deep midnight slate void
-  bgBase:     "rgba(15, 23, 42, 0.65)", // Glassmorphism panels
-  bgSurface:  "rgba(30, 41, 59, 0.45)", // Frosted glass cards
-  bgElevated: "rgba(51, 65, 85, 0.55)", // Elevated glass highlight
-  bgOverlay:  "rgba(2, 6, 23, 0.82)",   // Glass backdrop modal
+  // Backgrounds (Vibrant Jewel-Toned Depth)
+  bgDeep:     "#0D0B24",                 // Enchanted astral indigo
+  bgBase:     "rgba(32, 26, 74, 0.78)",   // Vibrant royal amethyst / sapphire glass
+  bgSurface:  "rgba(46, 38, 102, 0.68)",  // Jewel-toned frosted glass cards
+  bgElevated: "rgba(66, 54, 142, 0.75)",  // Elevated cosmic highlight
+  bgOverlay:  "rgba(16, 12, 42, 0.88)",   // Rich magical modal backdrop
 
-  // Borders
-  borderSubtle:  "rgba(255, 255, 255, 0.08)",
-  borderDefault: "rgba(255, 255, 255, 0.14)",
-  borderStrong:  "rgba(245, 158, 11, 0.45)",
+  // Borders (Luminous & Colorful)
+  borderSubtle:  "rgba(167, 139, 250, 0.22)",
+  borderDefault: "rgba(196, 181, 253, 0.35)",
+  borderStrong:  "rgba(251, 191, 36, 0.65)",
 
-  // Text
-  textPrimary:   "#F8FAFC", // Clean off-white
-  textSecondary: "#94A3B8", // Slate 400
-  textTertiary:  "#64748B", // Slate 500
-  textMuted:     "#475569", // Slate 600
+  // Text (High Contrast & Radiant)
+  textPrimary:   "#FFFFFF", // Crisp bright white
+  textSecondary: "#E2E8F0", // Slate 200 (bright, clean)
+  textTertiary:  "#CBD5E1", // Slate 300
+  textMuted:     "#94A3B8", // Slate 400
 
-  // Brand / Gold
+  // Brand / Radiant Gold
   gold:      "#FBBF24",
   goldDark:  "#B45309",
-  goldLight: "#FDE68A",
+  goldLight: "#FEF08A",
 
-  // Feedback
-  success: "#4ADE80",
+  // Feedback (Vivid & Expressive)
+  success: "#34D399",
   danger:  "#F87171",
   warning: "#FBBF24",
   info:    "#38BDF8",
 
-  // Elements
-  fire:   "#F87171",
-  ice:    "#38BDF8",
-  nature: "#4ADE80",
-  arcane: "#C084FC",
+  // Elements (Vibrant & Saturated)
+  fire:   "#FF5436", // Radiant flame coral
+  ice:    "#00D2FF", // Electric crystalline cyan
+  nature: "#10B981", // Vivid emerald jade
+  arcane: "#D946EF", // Luminous cosmic violet/magenta
 
-  // Rarities
+  // Rarities (Vivid Jewel Hues)
   common:    "#94A3B8",
-  rare:      "#38BDF8",
+  rare:      "#00D2FF",
   epic:      "#C084FC",
   legendary: "#FBBF24",
 };

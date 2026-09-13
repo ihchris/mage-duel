@@ -916,10 +916,10 @@ export function LeaderboardHeaderPill({ trophies = 1000, rank = 14, onClick, lan
     <button
       onClick={onClick}
       title={lang === "pt" ? `Ranking Arcano: ${tier.name_pt} (Posição #${rank})` : `Arcane Leaderboard: ${tier.name_en} (Rank #${rank})`}
-      className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-900/90 border hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 flex-shrink-0 group"
+      className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-indigo-950/80 border hover:scale-105 active:scale-95 transition-all shadow-md flex items-center gap-1.5 flex-shrink-0 group"
       style={{
         borderColor: tier.border,
-        boxShadow: `0 0 10px ${tier.glow}`,
+        boxShadow: `0 0 12px ${tier.glow}`,
       }}
     >
       <span className="text-xs sm:text-sm drop-shadow-[0_0_8px_currentColor] transition-transform group-hover:rotate-12" style={{ color: tier.color }}>
@@ -929,7 +929,7 @@ export function LeaderboardHeaderPill({ trophies = 1000, rank = 14, onClick, lan
         <span className="text-[10px] sm:text-xs font-bold" style={{ color: tier.color }}>
           {trophies}
         </span>
-        <span className="text-[8.5px] sm:text-[10px] text-zinc-400 font-sans">
+        <span className="text-[8.5px] sm:text-[10px] text-zinc-300 font-sans">
           #{rank}
         </span>
       </div>
@@ -985,35 +985,35 @@ export function LeaderboardModal({
         onClick={e => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-white/10 bg-slate-900/95 flex-shrink-0">
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-indigo-500/20 bg-gradient-to-r from-indigo-950/95 via-purple-950/90 to-indigo-950/95 flex-shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-2xl sm:text-3xl drop-shadow-[0_0_12px_rgba(245,158,11,0.5)]">🏆</span>
             <div className="min-w-0">
               <h2 className="font-serif text-[17px] sm:text-[21px] font-bold text-amber-200 truncate">
                 {lang === "pt" ? "Ranking Arcano · Hall da Fama" : "Arcane Leaderboard · Hall of Fame"}
               </h2>
-              <p className="text-[9.5px] sm:text-[11px] font-sans text-zinc-400 truncate">
+              <p className="text-[9.5px] sm:text-[11px] font-sans text-indigo-200/80 truncate">
                 {lang === "pt" ? "Temporada 1: Chamas da Glória · Fim em 4d 18h" : "Season 1: Flames of Glory · Ends in 4d 18h"}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-bold"
+            className="p-1.5 rounded-xl bg-indigo-900/60 hover:bg-indigo-800/80 border border-indigo-400/20 text-zinc-200 hover:text-white transition-all text-xs font-bold"
           >
             ✕
           </button>
         </div>
 
         {/* Sticky Player Summary & Progression Card */}
-        <div className="p-3 sm:p-3.5 bg-gradient-to-r from-slate-950/95 via-slate-900/90 to-slate-950/95 border-b border-white/10 flex-shrink-0">
+        <div className="p-3 sm:p-3.5 bg-gradient-to-r from-indigo-950/90 via-purple-900/60 to-indigo-950/90 border-b border-indigo-500/20 flex-shrink-0">
           <div className="flex items-center justify-between gap-2.5 mb-2">
             <div className="flex items-center gap-2.5 min-w-0">
               {/* Tier Badge Icon */}
               <div
                 className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl border flex-shrink-0 shadow-md"
                 style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.8)",
+                  backgroundColor: "rgba(30, 27, 75, 0.85)",
                   borderColor: playerTier.border,
                   boxShadow: `0 0 16px ${playerTier.glow}`,
                 }}
