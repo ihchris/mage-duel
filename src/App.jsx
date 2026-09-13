@@ -8483,7 +8483,7 @@ export default function MageDuel() {
         {renderAdmToast()}
 
         <div
-          className="relative z-10 w-full h-full sm:h-auto sm:max-h-[96dvh] max-w-5xl flex flex-col md:flex-row landscape:flex-row rounded-none sm:rounded-2xl panel-base overflow-hidden border-0 sm:border border-white/10 shadow-2xl"
+          className="relative z-10 game-container h-full sm:h-auto sm:max-h-[96dvh] flex flex-col md:flex-row landscape:flex-row rounded-none sm:rounded-2xl panel-base overflow-hidden border-0 sm:border border-white/10 shadow-2xl"
           style={{
             boxShadow: "0 20px 60px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.08)",
           }}
@@ -12465,7 +12465,7 @@ export default function MageDuel() {
       <div className="h-[100dvh] max-h-[100dvh] overflow-hidden sm:min-h-[100dvh] sm:h-auto sm:overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-between safe-all p-1.5 xs:p-2 sm:p-2.5 md:p-3.5" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
-        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl h-full max-h-full flex flex-col justify-between p-0 gap-1 overflow-hidden pb-14 xs:pb-16 sm:pb-18">
+        <div className="relative z-10 game-container h-full max-h-full flex flex-col justify-between p-0 gap-1 overflow-hidden pb-14 xs:pb-16 sm:pb-18">
           {/* Modern AAA Header - Single Row on Mobile */}
           <div className="w-full flex items-center justify-between py-0.5 sm:py-1 flex-shrink-0 flex-nowrap gap-1 sm:gap-2">
             <div className="min-w-0 flex-1">
@@ -12563,118 +12563,127 @@ export default function MageDuel() {
             </div>
           </div>
 
-          {renderCharacterPreview(null)}
-
-          {/* Dynamic Loadout Slots Indicator - Horizontal Sliding Carousel for all 7 Sockets */}
-          <div className="w-full rounded-xl sm:rounded-2xl glass-panel p-1.5 sm:p-2.5 my-0.5 flex-shrink-0 shadow-lg border border-white/10">
-            <div className="flex items-center justify-between mb-1 text-[11px] sm:text-xs font-sans">
-              <div className="flex items-center gap-1.5">
-                <span className="font-serif font-bold flex items-center gap-1 text-amber-300">
-                  <span>🔮</span>
-                  <span>{t("spellSlots")} ({chosen.length}/{maxSlots})</span>
-                </span>
-                <span className="text-[9.5px] text-zinc-400 hidden sm:inline">
-                  {maxSlots < 7 ? (lang === "pt" ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : `· Lv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} unlocks next socket`) : (lang === "pt" ? "· Todos os 7 slots liberados!" : "· All 7 sockets unlocked!")}
-                </span>
-              </div>
-              <button
-                onClick={() => setTab("skills")}
-                className="text-[10px] sm:text-[11px] font-sans font-medium text-amber-300/90 hover:text-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
-              >
-                <span>{t("fullGrimoire")} ➔</span>
-              </button>
+          {/* Main Area: 1 Column on Mobile (<lg), 2 Columns on Laptop/Desktop (lg+) */}
+          <div className="w-full flex-1 min-h-0 flex flex-col lg:flex-row lg:items-center lg:justify-between lg:gap-8 overflow-hidden my-auto">
+            {/* Left Column: Focused Hero Character Stage (lg:w-1/2) */}
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-center min-h-0 h-full">
+              {renderCharacterPreview(null)}
             </div>
 
-            {/* Sockets Carousel: Horizontal scrollable strip for all 7 sockets */}
-            <div className="flex flex-row flex-nowrap overflow-x-auto custom-scrollbar gap-1.5 sm:gap-2 pb-1 pt-0.5 items-stretch">
-              {Array.from({ length: 7 }).map((_, i) => {
-                const isUnlocked = i < maxSlots;
-                const skillId = chosen[i];
-                const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
-                const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : 30;
-                const el = skill ? ELEMENTS[skill.el] : null;
-
-                return (
+            {/* Right Column: Sockets & Action CTA (lg:w-1/2) */}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center gap-2 sm:gap-3">
+              {/* Dynamic Loadout Slots Indicator - Horizontal Sliding Carousel for all 7 Sockets */}
+              <div className="w-full rounded-xl sm:rounded-2xl glass-panel p-1.5 sm:p-2.5 my-0.5 flex-shrink-0 shadow-lg border border-white/10">
+                <div className="flex items-center justify-between mb-1 text-[11px] sm:text-xs font-sans">
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-serif font-bold flex items-center gap-1 text-amber-300">
+                      <span>🔮</span>
+                      <span>{t("spellSlots")} ({chosen.length}/{maxSlots})</span>
+                    </span>
+                    <span className="text-[9.5px] text-zinc-400 hidden sm:inline">
+                      {maxSlots < 7 ? (lang === "pt" ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : `· Lv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} unlocks next socket`) : (lang === "pt" ? "· Todos os 7 slots liberados!" : "· All 7 sockets unlocked!")}
+                    </span>
+                  </div>
                   <button
-                    key={i}
-                    onClick={() => isUnlocked ? setTab("skills") : null}
-                    className={`flex-shrink-0 min-w-[76px] xs:min-w-[86px] sm:min-w-[102px] h-[58px] xs:h-[62px] sm:h-[68px] rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
-                      !isUnlocked
-                        ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
-                        : skill
-                        ? "bg-indigo-950/85 hover:scale-[1.03] shadow-md border cursor-pointer"
-                        : "border-dashed border-indigo-400/35 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40 cursor-pointer"
-                    }`}
-                    style={{
-                      borderColor: skill && el ? `${el.color}99` : undefined,
-                      boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
-                    }}
-                    title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
+                    onClick={() => setTab("skills")}
+                    className="text-[10px] sm:text-[11px] font-sans font-medium text-amber-300/90 hover:text-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
                   >
-                    {!isUnlocked ? (
-                      <div className="flex flex-col items-center justify-center my-auto">
-                        <span className="text-xs sm:text-sm opacity-60">🔒</span>
-                        <span className="text-[7.5px] sm:text-[8.5px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
-                      </div>
-                    ) : skill ? (
-                      <>
-                        <div className="flex items-center justify-between w-full px-0.5">
-                          <span className="text-xs sm:text-sm drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
-                          <span
-                            className="text-[8px] sm:text-[9px] font-mono font-bold px-1 rounded border border-sky-400/40 text-sky-200"
-                            style={{ background: "rgba(14, 165, 233, 0.25)" }}
-                          >
-                            💧{skill.mana}
-                          </span>
-                        </div>
-                        <span className="text-[9px] xs:text-[10px] sm:text-[11px] font-serif font-bold text-white group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
-                          {skill.name}
-                        </span>
-                        <div className="flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold">
-                          {skill.dmg > 0 && <span className="text-red-300">⚔️{skill.dmg}</span>}
-                          {skill.shield > 0 && <span className="text-sky-300">🛡️{skill.shield}</span>}
-                          {skill.heal > 0 && <span className="text-emerald-300">💚{skill.heal}</span>}
-                          {skill.restore > 0 && <span className="text-sky-300">💧+{skill.restore}</span>}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-indigo-300/60">
-                        <span className="text-xs sm:text-sm font-bold leading-none">+</span>
-                        <span className="text-[7.5px] sm:text-[8px] font-sans uppercase tracking-wider mt-0.5">Slot {i + 1}</span>
-                      </div>
-                    )}
+                    <span>{t("fullGrimoire")} ➔</span>
                   </button>
-                );
-              })}
-            </div>
-          </div>
+                </div>
 
-          {/* Action Row: King CTA Button */}
-          <div className="w-full pt-1 pb-1 flex-shrink-0 flex flex-row gap-1.5 sm:gap-2 items-center">
-            <button
-              onClick={startTutorial}
-              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-sky-400/40 text-sky-200 hover:border-sky-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(56,189,248,0.25)]"
-              title="Treinamento com Espantalho Arcano"
-            >
-              <span className="text-sm sm:text-base">🎯</span>
-              <span className="hidden xs:inline">{t("tutorial")}</span>
-            </button>
-            <button
-              onClick={() => setShowBossTrialsModal(true)}
-              className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-purple-400/40 text-purple-200 hover:border-purple-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
-              title="Treinamento de Mestres Elementais"
-            >
-              <span className="text-sm sm:text-base">👑</span>
-              <span className="hidden xs:inline">{t("bossTrials")}</span>
-            </button>
-            <button
-              onClick={() => { setIsTutorial(false); findOpponent(); }}
-              disabled={!canFindOpponent}
-              className="btn-king flex-1 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(245,158,11,0.6)] cursor-pointer active:scale-98 transition-all font-bold"
-            >
-              <span className="text-base sm:text-xl">⚔️</span>
-              <span className="font-bold tracking-wide">{t("findDuel")}</span>
-            </button>
+                {/* Sockets Carousel: Horizontal scrollable strip for all 7 sockets */}
+                <div className="flex flex-row flex-nowrap overflow-x-auto custom-scrollbar gap-1.5 sm:gap-2 pb-1 pt-0.5 items-stretch">
+                  {Array.from({ length: 7 }).map((_, i) => {
+                    const isUnlocked = i < maxSlots;
+                    const skillId = chosen[i];
+                    const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
+                    const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : 30;
+                    const el = skill ? ELEMENTS[skill.el] : null;
+
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => isUnlocked ? setTab("skills") : null}
+                        className={`flex-shrink-0 min-w-[76px] xs:min-w-[86px] sm:min-w-[102px] h-[58px] xs:h-[62px] sm:h-[68px] rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
+                          !isUnlocked
+                            ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
+                            : skill
+                            ? "bg-indigo-950/85 hover:scale-[1.03] shadow-md border cursor-pointer"
+                            : "border-dashed border-indigo-400/35 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40 cursor-pointer"
+                        }`}
+                        style={{
+                          borderColor: skill && el ? `${el.color}99` : undefined,
+                          boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
+                        }}
+                        title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
+                      >
+                        {!isUnlocked ? (
+                          <div className="flex flex-col items-center justify-center my-auto">
+                            <span className="text-xs sm:text-sm opacity-60">🔒</span>
+                            <span className="text-[7.5px] sm:text-[8.5px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
+                          </div>
+                        ) : skill ? (
+                          <>
+                            <div className="flex items-center justify-between w-full px-0.5">
+                              <span className="text-xs sm:text-sm drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                              <span
+                                className="text-[8px] sm:text-[9px] font-mono font-bold px-1 rounded border border-sky-400/40 text-sky-200"
+                                style={{ background: "rgba(14, 165, 233, 0.25)" }}
+                              >
+                                💧{skill.mana}
+                              </span>
+                            </div>
+                            <span className="text-[9px] xs:text-[10px] sm:text-[11px] font-serif font-bold text-white group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
+                              {skill.name}
+                            </span>
+                            <div className="flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold">
+                              {skill.dmg > 0 && <span className="text-red-300">⚔️{skill.dmg}</span>}
+                              {skill.shield > 0 && <span className="text-sky-300">🛡️{skill.shield}</span>}
+                              {skill.heal > 0 && <span className="text-emerald-300">💚{skill.heal}</span>}
+                              {skill.restore > 0 && <span className="text-sky-300">💧+{skill.restore}</span>}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-indigo-300/60">
+                            <span className="text-xs sm:text-sm font-bold leading-none">+</span>
+                            <span className="text-[7.5px] sm:text-[8px] font-sans uppercase tracking-wider mt-0.5">Slot {i + 1}</span>
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Action Row: King CTA Button */}
+              <div className="w-full pt-1 pb-1 flex-shrink-0 flex flex-row gap-1.5 sm:gap-2 items-center">
+                <button
+                  onClick={startTutorial}
+                  className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-sky-400/40 text-sky-200 hover:border-sky-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(56,189,248,0.25)]"
+                  title="Treinamento com Espantalho Arcano"
+                >
+                  <span className="text-sm sm:text-base">🎯</span>
+                  <span className="hidden xs:inline">{t("tutorial")}</span>
+                </button>
+                <button
+                  onClick={() => setShowBossTrialsModal(true)}
+                  className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-purple-400/40 text-purple-200 hover:border-purple-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(168,85,247,0.25)]"
+                  title="Treinamento de Mestres Elementais"
+                >
+                  <span className="text-sm sm:text-base">👑</span>
+                  <span className="hidden xs:inline">{t("bossTrials")}</span>
+                </button>
+                <button
+                  onClick={() => { setIsTutorial(false); findOpponent(); }}
+                  disabled={!canFindOpponent}
+                  className="btn-king flex-1 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(245,158,11,0.6)] cursor-pointer active:scale-98 transition-all font-bold"
+                >
+                  <span className="text-base sm:text-xl">⚔️</span>
+                  <span className="font-bold tracking-wide">{t("findDuel")}</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -12773,7 +12782,7 @@ export default function MageDuel() {
     return (
       <div className="min-h-[100dvh] h-full sm:min-h-[100dvh] overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-between safe-all p-2 sm:p-2.5 md:p-3.5" style={{ color: T.textPrimary }}>
         {styles}{bg}
-        <div className="relative z-10 w-full max-w-xl md:max-w-3xl lg:max-w-4xl min-h-full sm:h-full flex flex-col justify-between">
+        <div className="relative z-10 game-container min-h-full sm:h-full flex flex-col justify-between">
           
           {/* Header & Tactical Loadout Countdown Timer */}
           <div className="w-full flex flex-col items-center py-1 flex-shrink-0">
@@ -14121,7 +14130,7 @@ export default function MageDuel() {
           ))}
         </div>
       )}
-      <div className="relative z-10 w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl h-full flex flex-col justify-between overflow-hidden min-h-0">
+      <div className="relative z-10 game-container h-full flex flex-col justify-between overflow-hidden min-h-0">
         
         {/* Turn Countdown & Arena Header Bar */}
         <TurnCountdownBar
