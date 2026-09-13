@@ -5153,6 +5153,7 @@ export default function MageDuel() {
   const [alchemyCrafted, setAlchemyCrafted] = useState(() => saved?.alchemyCrafted || 0);
   const [highestWinStreak, setHighestWinStreak] = useState(() => saved?.highestWinStreak || 0);
   const [showHeroJourneyModal, setShowHeroJourneyModal] = useState(false);
+  const [showDailyModModal, setShowDailyModModal] = useState(false);
   const [activeJourneyToast, setActiveJourneyToast] = useState(null);
 
   // Battle Pass State (Season of Embers)
@@ -8945,6 +8946,119 @@ export default function MageDuel() {
     const hat = findItem(hatId), aura = findItem(auraId), robeSkin = findItem(robeId), cape = findItem(capeId), pet = findItem(petId), offhand = findItem(offhandId), gloves = findItem(glovesId);
     const el = ELEMENTS[affinity] || ELEMENTS.fire;
 
+    return (
+      <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center relative py-1 sm:py-2 select-none">
+        {extra}
+
+        {/* Hero Showcase Centerpiece Card / Podium */}
+        <div className="relative flex flex-col items-center justify-center w-full max-w-sm sm:max-w-md my-auto">
+          {/* Atmospheric Ambient Glow behind Mage */}
+          <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-40">
+            <div
+              className="w-48 h-48 xs:w-56 xs:h-56 sm:w-72 sm:h-72 rounded-full blur-3xl transition-all duration-700"
+              style={{ background: `radial-gradient(circle, ${el.color}99 0%, rgba(139, 92, 246, 0.35) 50%, transparent 70%)` }}
+            />
+          </div>
+
+          {/* Interactive Character Sprite with Hover & Click to Inspect */}
+          <div
+            onClick={() => setShowInspectModal(true)}
+            className="relative z-10 flex flex-col items-center justify-center cursor-pointer group"
+            title={lang === "pt" ? "Toque para inspecionar seu mago" : "Tap to inspect your mage"}
+          >
+            {/* Mage Avatar with Responsive Hero Scaling: 1.65 mobile, 2.1 desktop */}
+            <div className="transform transition-transform duration-300 group-hover:scale-105 active:scale-98">
+              <div className="block sm:hidden">
+                <MageSprite mage={previewMage} facing="right" size={1.65} />
+              </div>
+              <div className="hidden sm:block">
+                <MageSprite mage={previewMage} facing="right" size={2.1} />
+              </div>
+            </div>
+
+            {/* Glowing Mystic Dais / Elemental Pedestal */}
+            <div
+              className="w-40 xs:w-48 sm:w-60 h-3 xs:h-3.5 sm:h-4 rounded-[50%] blur-sm pointer-events-none mt-1 transition-all duration-300"
+              style={{
+                background: `radial-gradient(ellipse, ${el.color}EE 0%, rgba(147, 51, 234, 0.6) 45%, transparent 75%)`,
+                boxShadow: `0 0 22px ${el.color}66`,
+              }}
+            />
+          </div>
+
+          {/* Character Identity & Badges Strip */}
+          <div className="relative z-10 flex items-center justify-center gap-1.5 flex-wrap mt-2">
+            {/* Affinity Badge */}
+            <span
+              className="px-2.5 py-0.5 rounded-full text-[9px] xs:text-[10px] sm:text-[11px] font-sans font-bold bg-indigo-950/85 border flex items-center gap-1 shadow-sm"
+              style={{ color: el.color, borderColor: `${el.color}66`, boxShadow: `0 0 10px ${el.color}33` }}
+            >
+              <span>{el.icon}</span>
+              <span>{getElementName(affinity, lang)}</span>
+            </span>
+
+            {/* Gender Toggle Pill */}
+            <button
+              onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
+              title={lang === "pt" ? "Alternar gênero" : "Toggle gender"}
+              className="px-2 py-0.5 rounded-full text-[9px] xs:text-[10px] sm:text-[11px] font-sans font-medium bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400/60 text-zinc-200 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+            >
+              <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
+              <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
+            </button>
+
+            {/* Equipped Relic Pill */}
+            {relic && relic.id !== "none" && (
+              <span
+                className="px-2 py-0.5 rounded-full text-[9px] xs:text-[10px] sm:text-[11px] font-sans font-semibold bg-indigo-950/80 border shadow-sm"
+                style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}66`, boxShadow: `0 0 10px ${RARITY[relic.rarity]?.color || T.gold}33` }}
+              >
+                ✦ {relic.name}
+              </span>
+            )}
+          </div>
+
+          {/* Quick Floating Action Dock (Skins, Equip, Inspecionar) */}
+          <div className="relative z-10 flex items-center justify-center gap-1.5 xs:gap-2 mt-2">
+            <button
+              onClick={() => setShowInspectModal(true)}
+              className="px-2.5 py-1 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-sans font-bold bg-amber-400/20 hover:bg-amber-400/30 border border-amber-400/60 text-amber-300 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+              title={lang === "pt" ? "Inspecionar personagem em tela cheia" : "Inspect character fullscreen"}
+            >
+              <span>👁️</span>
+              <span>{lang === "pt" ? "Inspecionar" : "Inspect"}</span>
+            </button>
+            <button
+              onClick={() => setTab("appearance")}
+              className="px-2.5 py-1 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-sans font-bold bg-indigo-950/85 hover:bg-indigo-900/90 border border-pink-500/50 hover:border-pink-400 text-pink-200 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+              title={lang === "pt" ? "Skins & Transmog" : "Skins & Transmog"}
+            >
+              <span>🪞</span>
+              <span>{lang === "pt" ? "Skins" : "Skins"}</span>
+            </button>
+            <button
+              onClick={() => setTab("gear")}
+              className="px-2.5 py-1 rounded-full text-[10px] xs:text-[11px] sm:text-xs font-sans font-bold bg-indigo-950/85 hover:bg-indigo-900/90 border border-sky-400/50 hover:border-sky-300 text-sky-200 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
+              title={lang === "pt" ? "Equipamentos & Atributos" : "Gear & Stats"}
+            >
+              <span>🛡️</span>
+              <span>{lang === "pt" ? "Equipamentos" : "Equipment"}</span>
+            </button>
+          </div>
+
+          {/* Weapon / Offhand Summary Subtitle */}
+          <div className="relative z-10 text-center text-[9px] xs:text-[10px] sm:text-[11px] font-sans text-zinc-300/80 truncate max-w-xs mt-1 font-medium">
+            <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
+              {previewMage.staffGear?.name}
+            </span>
+            {offhand && <span> · {offhand.name}</span>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderBottomNav() {
     const hasUnclaimedPass = BATTLE_PASS_REWARDS.some(entry => {
       if (entry.level > seasonLevel) return false;
       if (entry.free && !claimedRewards.has(`free_${entry.level}`)) return true;
@@ -8952,237 +9066,103 @@ export default function MageDuel() {
       return false;
     });
 
-    const totalConsumables = getTotalConsumablesCount(consumables);
-    const HUB_PORTALS = [
-      { id: "journey", label: lang === "pt" ? "Jornada" : "Journey", sub: lang === "pt" ? "História" : "Story", icon: "📜", color: "#F59E0B", hasNotice: hasClaimableJourney },
-      { id: "skills", label: lang === "pt" ? "Grimório" : "Grimoire", sub: `${unlockedSkills.size}/${SKILLS.length}`, icon: "📖", color: "#E8B44F" },
-      { id: "gear", label: lang === "pt" ? "Equipamentos" : "Equipment", sub: lang === "pt" ? "Atributos" : "Stats", icon: "🛡️", color: "#38BDF8" },
-      { id: "appearance", label: lang === "pt" ? "Skins" : "Skins", sub: lang === "pt" ? "Visual & Transmog" : "Looks & Transmog", icon: "🪞", color: "#EC4899" },
-      { id: "forge", label: lang === "pt" ? "Forja" : "Forge", sub: "Brokk", icon: "🔨", color: "#F59E0B" },
-      { id: "alchemy", label: lang === "pt" ? "Alquimia" : "Alchemy", sub: "Lyra", icon: "🧪", color: "#A855F7" },
-      { id: "leaderboard", label: lang === "pt" ? "Ranking" : "Rank", sub: `#${playerRank}`, icon: "🏆", color: playerTier.color },
-      { id: "shop", label: lang === "pt" ? "Loja" : "Shop", sub: `${shards}✦`, icon: "✦", color: "#F59E0B" },
-      { id: "pass", label: lang === "pt" ? "Passe" : "Pass", sub: `Nv.${seasonLevel}`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
+    const navItems = [
+      {
+        id: "journey",
+        label: lang === "pt" ? "Jornada" : "Journey",
+        icon: "📜",
+        color: "#F59E0B",
+        hasNotice: hasClaimableJourney,
+        action: () => setShowHeroJourneyModal(true),
+      },
+      {
+        id: "skills",
+        label: lang === "pt" ? "Grimório" : "Grimoire",
+        icon: "📖",
+        color: "#E8B44F",
+        action: () => setTab("skills"),
+      },
+      {
+        id: "gear",
+        label: lang === "pt" ? "Equip." : "Gear",
+        icon: "🛡️",
+        color: "#38BDF8",
+        action: () => setTab("gear"),
+      },
+      {
+        id: "appearance",
+        label: lang === "pt" ? "Skins" : "Skins",
+        icon: "🪞",
+        color: "#EC4899",
+        action: () => setTab("appearance"),
+      },
+      {
+        id: "forge",
+        label: lang === "pt" ? "Forja" : "Forge",
+        icon: "🔨",
+        color: "#F97316",
+        action: () => setShowForgeModal(true),
+      },
+      {
+        id: "alchemy",
+        label: lang === "pt" ? "Alquimia" : "Alchemy",
+        icon: "🧪",
+        color: "#A855F7",
+        action: () => setShowAlchemyModal(true),
+      },
+      {
+        id: "leaderboard",
+        label: lang === "pt" ? "Ranking" : "Rank",
+        icon: "🏆",
+        color: playerTier?.color || "#EAB308",
+        action: () => setShowLeaderboardModal(true),
+      },
+      {
+        id: "shop",
+        label: lang === "pt" ? "Loja" : "Shop",
+        icon: "✦",
+        color: "#FBBF24",
+        action: () => setTab("shop"),
+      },
+      {
+        id: "pass",
+        label: lang === "pt" ? "Passe" : "Pass",
+        icon: "🎫",
+        color: "#F43F5E",
+        hasNotice: hasUnclaimedPass,
+        action: () => setTab("pass"),
+      },
     ];
 
     return (
-      <div className="w-full flex flex-row sm:flex-row landscape:flex-row md:flex-row items-stretch justify-between gap-1.5 sm:gap-4 md:gap-5 my-0.5 sm:my-1 flex-shrink-0">
-        {/* Left Character Stage: Focused Hero Podium */}
-        <div className="w-[38%] xs:w-[40%] sm:w-5/12 landscape:w-5/12 md:w-5/12 flex-shrink-0 flex flex-col justify-center">
-          {/* Mobile Portrait Character Card */}
-          <div
-            onClick={() => setTab("appearance")}
-            className="flex sm:hidden landscape:hidden flex-col items-center justify-between p-1.5 rounded-xl glass-panel w-full h-full shadow-lg border relative overflow-hidden cursor-pointer group select-none"
-            style={{
-              borderColor: `${el.color}66`,
-              boxShadow: `0 4px 18px rgba(0,0,0,0.45), 0 0 16px ${el.color}25`,
-            }}
-            title={lang === "pt" ? "Toque para personalizar aparência & skins" : "Tap to customize looks & skins"}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bottom-nav-bar flex items-center justify-around sm:justify-center sm:gap-2 md:gap-3 px-1 xs:px-2 py-1 overflow-x-auto no-scrollbar bottom-safe-padding">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={item.action}
+            className="bottom-nav-item flex flex-col items-center justify-center py-1 px-1 xs:px-1.5 sm:px-2.5 rounded-xl min-w-[34px] xs:min-w-[40px] sm:min-w-[58px] flex-shrink-0 relative group"
+            title={item.label}
           >
-            {/* Ambient Background Aura */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
-              <div
-                className="w-20 h-20 rounded-full blur-lg"
-                style={{ background: el.color }}
-              />
-            </div>
-
-            {/* Top Header: Affinity & Name */}
-            <div className="relative z-10 flex flex-col items-center justify-center w-full px-0.5">
-              <div className="flex items-center justify-between w-full px-0.5">
-                <span className="text-[11.5px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
-                <span className="text-[9px] font-sans font-black text-amber-200 truncate max-w-[80px]">
-                  {mageName.trim() || t("newMage")}
-                </span>
-              </div>
-              <div className="mt-0.5 scale-90">
-                <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={(e) => { e.stopPropagation(); setShowHeroJourneyModal(true); }} />
-              </div>
-            </div>
-
-            {/* Focused Character Avatar on Mobile */}
-            <div className="relative z-10 transform origin-center scale-100 transition-transform group-hover:scale-105 my-0.5 flex items-center justify-center">
-              <MageSprite mage={previewMage} facing="right" size={1.38} />
-            </div>
-
-            {/* Bottom Actions: Skins & Equip */}
-            <div className="relative z-10 flex items-center justify-center gap-1 w-full mt-0.5">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setTab("appearance");
-                }}
-                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-indigo-950/90 border border-pink-500/50 text-pink-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
-                title={lang === "pt" ? "Skins & Transmog" : "Skins & Transmog"}
-              >
-                <span>🪞</span><span>{lang === "pt" ? "Skins" : "Skins"}</span>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setTab("gear");
-                }}
-                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-indigo-950/90 border border-sky-400/50 text-sky-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
-                title={lang === "pt" ? "Equipamentos & Stats" : "Gear & Stats"}
-              >
-                <span>🛡️</span><span>{lang === "pt" ? "Equip." : "Gear"}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Tablet / Desktop / Landscape layout */}
-          <div className="hidden sm:flex landscape:flex flex-col items-center justify-center relative py-1">
-            <div
-              className="flex flex-col items-center justify-center cursor-pointer group relative py-1 select-none"
-              onClick={() => setTab("appearance")}
-              title={lang === "pt" ? "Clique para customizar aparência & skins" : "Click to customize appearance & skins"}
+            {item.hasNotice && (
+              <span className="absolute top-0.5 right-1 sm:right-2 flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shadow-[0_0_8px_#F59E0B]"></span>
+              </span>
+            )}
+            <span
+              className="text-base xs:text-lg sm:text-xl drop-shadow-[0_0_8px_currentColor] transition-transform duration-150 group-hover:scale-115 group-active:scale-95"
+              style={{ color: item.color }}
             >
-              {/* Atmospheric Ambient Glow behind mage */}
-              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35">
-                <div
-                  className="w-36 h-36 sm:w-44 sm:h-44 rounded-full blur-2xl transition-all duration-500"
-                  style={{ background: `radial-gradient(circle, ${el.color}88 0%, transparent 70%)` }}
-                />
-              </div>
-
-              {/* Floating Mage Character Sprite */}
-              <div className="scale-90 sm:scale-100 md:scale-105 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110">
-                <MageSprite mage={previewMage} facing="right" size={1.75} />
-              </div>
-
-              {/* Luminous Elemental Pedestal Glow */}
-              <div
-                className="w-32 sm:w-40 h-3.5 sm:h-4 rounded-[50%] blur-sm pointer-events-none mt-1 transition-all duration-300"
-                style={{ background: `radial-gradient(ellipse, ${el.color}CC 0%, rgba(147, 51, 234, 0.55) 50%, transparent 75%)` }}
-              />
-
-              <div className="flex items-center gap-1.5 mt-1">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowInspectModal(true);
-                  }}
-                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 hover:bg-amber-400/30 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
-                  title={lang === "pt" ? "Ver personagem maior em tela cheia" : "Inspect character fullscreen"}
-                >
-                  <span>👁️</span><span>{lang === "pt" ? "Inspecionar" : "Inspect"}</span>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTab("appearance");
-                  }}
-                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-pink-500/50 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                  title={lang === "pt" ? "Skins & Transmog" : "Skins & Transmog"}
-                >
-                  <span>🪞</span><span>{lang === "pt" ? "Skins" : "Skins"}</span>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setTab("gear");
-                  }}
-                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-indigo-950/80 border border-sky-400/50 text-sky-200 hover:border-sky-300 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
-                  title={lang === "pt" ? "Equipamentos & Stats" : "Gear & Stats"}
-                >
-                  <span>🛡️</span><span>{lang === "pt" ? "Equipamentos" : "Equipment"}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Badges on desktop/landscape */}
-            <div className="flex justify-center gap-1 items-center flex-wrap mt-0.5">
-              <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={() => setShowHeroJourneyModal(true)} />
-
-              <span
-                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-bold bg-indigo-950/80 border flex items-center gap-1 shadow-sm"
-                style={{ color: el.color, borderColor: `${el.color}66`, boxShadow: `0 0 10px ${el.color}33` }}
-              >
-                <span>{el.icon}</span>
-                <span>{getElementName(affinity, lang)}</span>
-              </span>
-
-              <button
-                onClick={() => setGenderId(genderId === "gender_female" ? "gender_male" : "gender_female")}
-                title="Alternar gênero"
-                className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-medium bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400/60 text-zinc-200 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm"
-              >
-                <span>{genderId === "gender_female" ? "♀" : "♂"}</span>
-                <span>{genderId === "gender_female" ? t("female") : t("male")}</span>
-              </button>
-
-              {relic && relic.id !== "none" && (
-                <span
-                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-semibold bg-indigo-950/80 border shadow-sm"
-                  style={{ color: RARITY[relic.rarity]?.color || T.gold, borderColor: `${RARITY[relic.rarity]?.color || T.gold}66`, boxShadow: `0 0 10px ${RARITY[relic.rarity]?.color || T.gold}33` }}
-                >
-                  ✦ {relic.name}
-                </span>
-              )}
-            </div>
-
-            <div className="text-center text-[9.5px] sm:text-[10.5px] font-sans text-zinc-300 truncate max-w-xs mt-0.5 font-medium">
-              <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
-                {previewMage.staffGear?.name}
-              </span>
-              {offhand && <span> · {offhand.name}</span>}
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Modern 9 Hub Portals (3x3 grid) */}
-        <div className="flex-1 min-w-0 sm:w-7/12 landscape:w-7/12 md:w-7/12 flex flex-col justify-center flex-shrink-0">
-          {extra}
-
-          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-2.5 w-full h-full">
-            {HUB_PORTALS.map(portal => (
-              <button
-                key={portal.id}
-                onClick={() => {
-                  if (portal.id === "journey") {
-                    setShowHeroJourneyModal(true);
-                  } else if (portal.id === "leaderboard") {
-                    setShowLeaderboardModal(true);
-                  } else if (portal.id === "forge") {
-                    setShowForgeModal(true);
-                  } else if (portal.id === "alchemy" || portal.id === "bag") {
-                    setShowAlchemyModal(true);
-                  } else {
-                    setTab(portal.id);
-                  }
-                }}
-                className="glass-card p-1 sm:p-2 md:p-2.5 text-center transition-all relative overflow-hidden group select-none flex flex-col items-center justify-center min-h-[46px] xs:min-h-[50px] sm:min-h-[58px]"
-                style={{
-                  background: `linear-gradient(145deg, ${portal.color}22 0%, rgba(38, 30, 85, 0.85) 100%)`,
-                  borderColor: `${portal.color}55`,
-                  boxShadow: `0 4px 14px rgba(10, 8, 30, 0.35), 0 0 10px ${portal.color}20`,
-                }}
-              >
-                {/* Notification indicator dot */}
-                {portal.hasNotice && (
-                  <span className="absolute top-1 right-1 sm:top-2 sm:right-2 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500 shadow-[0_0_8px_#F59E0B]"></span>
-                  </span>
-                )}
-
-                <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                  <span className="text-base sm:text-xl md:text-2xl drop-shadow-[0_0_10px_currentColor] transition-transform duration-200 group-hover:scale-110" style={{ color: portal.color }}>
-                    {portal.icon}
-                  </span>
-
-                </div>
-
-                <div className="w-full text-center">
-                  <div className="font-sans text-[10px] xs:text-[11px] sm:text-[12px] md:text-[13px] font-bold tracking-tight transition-colors leading-tight text-zinc-100 group-hover:text-amber-200">
-                    {portal.label}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+              {item.icon}
+            </span>
+            <span
+              className="text-[8px] xs:text-[9px] sm:text-[10px] font-sans font-bold leading-tight mt-0.5 text-zinc-300 group-hover:text-amber-200 transition-colors truncate max-w-[46px] sm:max-w-none text-center"
+            >
+              {item.label}
+            </span>
+          </button>
+        ))}
+      </nav>
     );
   }
 
@@ -11531,6 +11511,57 @@ export default function MageDuel() {
     );
   }
 
+  function renderDailyModModal() {
+    if (!showDailyModModal) return null;
+    const todayMod = getTodayModifier();
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md safe-all"
+        onClick={() => setShowDailyModModal(false)}
+      >
+        <div
+          className="relative w-full max-w-sm sm:max-w-md bg-slate-950/95 border border-amber-500/40 rounded-2xl p-4 sm:p-6 shadow-[0_0_40px_rgba(245,158,11,0.25)] flex flex-col items-center text-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setShowDailyModModal(false)}
+            className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-900/90 border border-white/10 hover:border-white/30 text-zinc-400 hover:text-white flex items-center justify-center text-sm font-bold transition-all cursor-pointer"
+          >
+            ✕
+          </button>
+          
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/30 to-purple-600/30 border border-amber-400/60 flex items-center justify-center text-3xl mb-3 shadow-[0_0_20px_rgba(245,158,11,0.4)]">
+            {todayMod.icon}
+          </div>
+
+          <div className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 font-sans text-[10px] font-bold uppercase tracking-widest mb-1.5">
+            {t("dailyModifier")}
+          </div>
+
+          <h3 className="font-serif text-lg sm:text-xl font-black text-amber-200 mb-2">
+            {todayMod.name}
+          </h3>
+
+          <div className="w-full bg-indigo-950/60 border border-amber-500/25 rounded-xl p-3 mb-4 text-xs sm:text-sm text-zinc-200 leading-relaxed font-sans">
+            {todayMod.desc}
+          </div>
+
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-amber-300/90 text-xs font-mono">
+            <span>⚡ Efeito Ativo:</span>
+            <span className="font-bold text-white">{todayMod.shortDesc}</span>
+          </div>
+
+          <button
+            onClick={() => setShowDailyModModal(false)}
+            className="mt-5 w-full py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-serif font-bold text-sm shadow-[0_0_15px_rgba(245,158,11,0.4)] active:scale-98 transition-all cursor-pointer"
+          >
+            {lang === "pt" ? "Entendido" : "Understood"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   function renderInspectModal() {
     if (!showInspectModal) return null;
     const previewMage = buildPreviewMage();
@@ -12428,12 +12459,13 @@ export default function MageDuel() {
   // ================= LOADOUT =================
   if (phase === "loadout") {
     const canFindOpponent = chosen.length >= 4 && chosen.length <= maxSlots;
+    const todayMod = getTodayModifier();
 
     return (
       <div className="h-[100dvh] max-h-[100dvh] overflow-hidden sm:min-h-[100dvh] sm:h-auto sm:overflow-y-auto custom-scrollbar relative flex flex-col items-center justify-between safe-all p-1.5 xs:p-2 sm:p-2.5 md:p-3.5" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
-        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl h-full max-h-full flex flex-col justify-between p-0 gap-1 overflow-hidden">
+        <div className="relative z-10 w-full max-w-xl landscape:max-w-5xl md:max-w-4xl lg:max-w-5xl h-full max-h-full flex flex-col justify-between p-0 gap-1 overflow-hidden pb-14 xs:pb-16 sm:pb-18">
           {/* Modern AAA Header - Single Row on Mobile */}
           <div className="w-full flex items-center justify-between py-0.5 sm:py-1 flex-shrink-0 flex-nowrap gap-1 sm:gap-2">
             <div className="min-w-0 flex-1">
@@ -12458,7 +12490,7 @@ export default function MageDuel() {
               </p>
             </div>
 
-            {/* Right Controls: Minimalist Currency, Language, Friends & Settings Gear */}
+            {/* Right Controls: Minimalist Currency, Daily Mod, Language, Friends & Settings Gear */}
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               {pendingLevelDraft && (
                 <button
@@ -12470,17 +12502,17 @@ export default function MageDuel() {
                 </button>
               )}
 
-              {/* Hero's Journey Pill */}
+              {/* Compact Daily Modifier Badge */}
               <button
-                onClick={() => setShowHeroJourneyModal(true)}
-                title={lang === "pt" ? "A Senda do Arquimago (Jornada, Títulos & Conquistas)" : "The Archmage's Path (Journey, Titles & Achievements)"}
-                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-purple-600/25 border border-amber-400/50 hover:border-amber-400 text-amber-200 text-[10px] sm:text-xs font-serif font-bold transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5 active:scale-95 cursor-pointer relative"
+                onClick={() => setShowDailyModModal(true)}
+                title={`${todayMod.name}: ${todayMod.desc} (${lang === "pt" ? "Toque para detalhes" : "Tap for details"})`}
+                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-indigo-900/60 border border-amber-400/50 hover:border-amber-300 text-amber-300 text-[10px] sm:text-xs font-sans font-bold transition-all shadow-[0_0_10px_rgba(245,158,11,0.25)] flex items-center gap-1 hover:-translate-y-0.5 active:scale-95 cursor-pointer flex-shrink-0"
               >
-                <span>📜</span>
-                <span className="hidden xs:inline">{lang === "pt" ? "Jornada" : "Journey"}</span>
-                {hasClaimableJourney && (
-                  <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#F59E0B] animate-ping" />
-                )}
+                <span className="text-xs sm:text-sm">{todayMod.icon}</span>
+                <span className="hidden md:inline font-serif font-bold text-amber-200">{todayMod.name}</span>
+                <span className="text-[8px] xs:text-[9px] px-1 py-0.2 rounded bg-amber-400/20 border border-amber-400/30 text-amber-200 font-mono">
+                  {todayMod.shortDesc}
+                </span>
               </button>
 
               {/* Leaderboard Ranking Pill */}
@@ -12533,59 +12565,7 @@ export default function MageDuel() {
 
           {renderCharacterPreview(null)}
 
-          {/* Center: Elegant Daily Modifier Glass Banner with Shield Icon */}
-          {(() => {
-            const todayMod = getTodayModifier();
-            return (
-              <div
-                className="w-full rounded-xl p-1 sm:p-2 my-0.5 flex items-center justify-between gap-1.5 shadow-md border glass-panel transition-all flex-shrink-0"
-                style={{
-                  background: "linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(46, 38, 102, 0.75) 100%)",
-                  borderColor: "rgba(245, 158, 11, 0.5)",
-                  boxShadow: "0 4px 18px rgba(0,0,0,0.3), 0 0 16px rgba(245, 158, 11, 0.2)",
-                }}
-              >
-                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-                  <div
-                    className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl flex items-center justify-center text-xs sm:text-base border flex-shrink-0 shadow-[0_0_14px_rgba(245,158,11,0.4)]"
-                    style={{
-                      background: "linear-gradient(135deg, rgba(245, 158, 11, 0.4) 0%, rgba(46, 38, 102, 0.8) 100%)",
-                      borderColor: "rgba(245, 158, 11, 0.65)",
-                    }}
-                  >
-                    <span>🛡️</span>
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1 flex-wrap">
-                      <span className="text-[8.5px] sm:text-[9px] font-sans uppercase tracking-widest font-bold text-amber-300 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">
-                        {t("dailyModifier")}
-                      </span>
-                      <span className="text-indigo-300/60">·</span>
-                      <span className="text-[10.5px] sm:text-sm font-serif font-bold text-white whitespace-nowrap">
-                        {todayMod.icon} {todayMod.name}
-                      </span>
-                    </div>
-                    <div className="text-[9px] sm:text-[10.5px] font-sans text-indigo-100/80 truncate hidden xs:block">
-                      {todayMod.desc}
-                    </div>
-                  </div>
-                </div>
-                <span
-                  className="px-2 py-0.5 rounded-full text-[8.5px] sm:text-[10px] font-sans font-bold border flex-shrink-0 shadow-sm"
-                  style={{
-                    backgroundColor: "rgba(245, 158, 11, 0.25)",
-                    borderColor: "rgba(245, 158, 11, 0.6)",
-                    color: "#FEF08A",
-                    boxShadow: "0 0 10px rgba(245, 158, 11, 0.3)",
-                  }}
-                >
-                  {todayMod.shortDesc}
-                </span>
-              </div>
-            );
-          })()}
-
-          {/* Dynamic Loadout Slots Indicator - Always 7 Sockets in One Clean Row */}
+          {/* Dynamic Loadout Slots Indicator - Horizontal Sliding Carousel for all 7 Sockets */}
           <div className="w-full rounded-xl sm:rounded-2xl glass-panel p-1.5 sm:p-2.5 my-0.5 flex-shrink-0 shadow-lg border border-white/10">
             <div className="flex items-center justify-between mb-1 text-[11px] sm:text-xs font-sans">
               <div className="flex items-center gap-1.5">
@@ -12593,53 +12573,53 @@ export default function MageDuel() {
                   <span>🔮</span>
                   <span>{t("spellSlots")} ({chosen.length}/{maxSlots})</span>
                 </span>
-                <span className="text-[9.5px] text-zinc-500 hidden sm:inline">
+                <span className="text-[9.5px] text-zinc-400 hidden sm:inline">
                   {maxSlots < 7 ? (lang === "pt" ? `· Nv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} desbloqueia próximo slot` : `· Lv. ${maxSlots === 4 ? 10 : maxSlots === 5 ? 20 : 30} unlocks next socket`) : (lang === "pt" ? "· Todos os 7 slots liberados!" : "· All 7 sockets unlocked!")}
                 </span>
               </div>
               <button
                 onClick={() => setTab("skills")}
-                className="text-[10px] sm:text-[11px] font-sans font-medium text-amber-300/80 hover:text-amber-200 transition-colors flex items-center gap-1"
+                className="text-[10px] sm:text-[11px] font-sans font-medium text-amber-300/90 hover:text-amber-200 transition-colors flex items-center gap-1 cursor-pointer"
               >
-                <span>{t("fullGrimoire")}</span>
+                <span>{t("fullGrimoire")} ➔</span>
               </button>
             </div>
 
-            {/* Sockets Grid: Responsive 4 cols on mobile (generous width so names fit!) / 7 cols on desktop */}
-            <div className="grid grid-cols-4 sm:grid-cols-7 gap-1 sm:gap-2">
-              {Array.from({ length: 4 }).map((_, i) => {
+            {/* Sockets Carousel: Horizontal scrollable strip for all 7 sockets */}
+            <div className="flex flex-row flex-nowrap overflow-x-auto custom-scrollbar gap-1.5 sm:gap-2 pb-1 pt-0.5 items-stretch">
+              {Array.from({ length: 7 }).map((_, i) => {
                 const isUnlocked = i < maxSlots;
                 const skillId = chosen[i];
                 const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
-                const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : i === 6 ? 30 : 1;
+                const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : 30;
                 const el = skill ? ELEMENTS[skill.el] : null;
 
                 return (
                   <button
                     key={i}
                     onClick={() => isUnlocked ? setTab("skills") : null}
-                    className={`min-h-[44px] xs:min-h-[48px] sm:min-h-[56px] rounded-lg sm:rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
+                    className={`flex-shrink-0 min-w-[76px] xs:min-w-[86px] sm:min-w-[102px] h-[58px] xs:h-[62px] sm:h-[68px] rounded-xl text-center flex flex-col items-center justify-between p-1 sm:p-1.5 transition-all group relative overflow-hidden ${
                       !isUnlocked
                         ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
                         : skill
-                        ? "bg-indigo-950/85 hover:scale-[1.02] shadow-md border"
-                        : "border-dashed border-indigo-400/30 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40"
+                        ? "bg-indigo-950/85 hover:scale-[1.03] shadow-md border cursor-pointer"
+                        : "border-dashed border-indigo-400/35 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40 cursor-pointer"
                     }`}
                     style={{
-                      borderColor: skill && el ? `${el.color}88` : undefined,
+                      borderColor: skill && el ? `${el.color}99` : undefined,
                       boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
                     }}
                     title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
                   >
                     {!isUnlocked ? (
                       <div className="flex flex-col items-center justify-center my-auto">
-                        <span className="text-[10px] sm:text-[12px] opacity-60">🔒</span>
-                        <span className="text-[7px] sm:text-[8px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
+                        <span className="text-xs sm:text-sm opacity-60">🔒</span>
+                        <span className="text-[7.5px] sm:text-[8.5px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
                       </div>
                     ) : skill ? (
                       <>
                         <div className="flex items-center justify-between w-full px-0.5">
-                          <span className="text-[11px] sm:text-[12px] drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                          <span className="text-xs sm:text-sm drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
                           <span
                             className="text-[8px] sm:text-[9px] font-mono font-bold px-1 rounded border border-sky-400/40 text-sky-200"
                             style={{ background: "rgba(14, 165, 233, 0.25)" }}
@@ -12647,7 +12627,7 @@ export default function MageDuel() {
                             💧{skill.mana}
                           </span>
                         </div>
-                        <span className="text-[9px] xs:text-[9.5px] sm:text-[11px] font-serif font-bold text-white group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
+                        <span className="text-[9px] xs:text-[10px] sm:text-[11px] font-serif font-bold text-white group-hover:text-amber-200 transition-colors leading-tight truncate max-w-full px-0.5">
                           {skill.name}
                         </span>
                         <div className="flex items-center gap-1 text-[7.5px] sm:text-[8.5px] font-mono font-bold">
@@ -12660,56 +12640,8 @@ export default function MageDuel() {
                     ) : (
                       <div className="flex flex-col items-center justify-center my-auto group-hover:text-amber-300 transition-colors text-indigo-300/60">
                         <span className="text-xs sm:text-sm font-bold leading-none">+</span>
-                        <span className="text-[7px] sm:text-[8px] font-sans uppercase tracking-wider mt-0.5">S{i + 1}</span>
+                        <span className="text-[7.5px] sm:text-[8px] font-sans uppercase tracking-wider mt-0.5">Slot {i + 1}</span>
                       </div>
-                    )}
-                  </button>
-                );
-              })}
-              {/* Desktop additional sockets (5, 6, 7) */}
-              {Array.from({ length: 3 }).map((_, idx) => {
-                const i = idx + 4;
-                const isUnlocked = i < maxSlots;
-                const skillId = chosen[i];
-                const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
-                const unlockLvl = i === 4 ? 10 : i === 5 ? 20 : 30;
-                const el = skill ? ELEMENTS[skill.el] : null;
-
-                return (
-                  <button
-                    key={i}
-                    onClick={() => isUnlocked ? setTab("skills") : null}
-                    className={`hidden sm:flex min-h-[56px] rounded-xl text-center flex-col items-center justify-between p-1.5 transition-all group relative overflow-hidden ${
-                      !isUnlocked
-                        ? "opacity-40 cursor-not-allowed border-indigo-500/20 bg-indigo-950/40"
-                        : skill
-                        ? "bg-indigo-950/85 hover:scale-[1.02] shadow-md border"
-                        : "border-dashed border-indigo-400/30 bg-indigo-950/30 hover:border-amber-400/60 hover:bg-indigo-900/40"
-                    }`}
-                    style={{
-                      borderColor: skill && el ? `${el.color}88` : undefined,
-                      boxShadow: skill && el ? `0 0 16px ${el.color}35, inset 0 1px 0 rgba(255,255,255,0.1)` : undefined,
-                    }}
-                    title={!isUnlocked ? `Bloqueado até Nível ${unlockLvl}` : skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot vazio (Clique para equipar)"}
-                  >
-                    {!isUnlocked ? (
-                      <div className="flex flex-col items-center justify-center my-auto">
-                        <span className="text-[12px] opacity-60">🔒</span>
-                        <span className="text-[8px] font-sans font-bold text-indigo-300/60">Nv.{unlockLvl}</span>
-                      </div>
-                    ) : skill ? (
-                      <>
-                        <div className="flex items-center justify-between w-full px-0.5">
-                          <span className="text-[12px] drop-shadow-[0_0_8px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
-                          <span className="text-[9px] font-mono font-bold text-sky-200">💧{skill.mana}</span>
-                        </div>
-                        <span className="text-[10px] font-serif font-bold text-white truncate max-w-full">
-                          {skill.name}
-                        </span>
-                        <div className="text-[8px] font-mono font-bold text-red-300">⚔️{skill.dmg || 0}</div>
-                      </>
-                    ) : (
-                      <div className="my-auto text-indigo-300/60 font-bold">+</div>
                     )}
                   </button>
                 );
@@ -12717,8 +12649,8 @@ export default function MageDuel() {
             </div>
           </div>
 
-          {/* Action Row: Single Row on Smartphone - Never Requires Scrolling */}
-          <div className="w-full pt-0.5 pb-0.5 flex-shrink-0 flex flex-row gap-1.5 sm:gap-2 items-center">
+          {/* Action Row: King CTA Button */}
+          <div className="w-full pt-1 pb-1 flex-shrink-0 flex flex-row gap-1.5 sm:gap-2 items-center">
             <button
               onClick={startTutorial}
               className="btn-ghost rounded-xl py-2 px-2 sm:px-3.5 font-serif text-[11px] sm:text-[13px] font-bold flex items-center justify-center gap-1 border-sky-400/40 text-sky-200 hover:border-sky-300 flex-shrink-0 cursor-pointer active:scale-95 shadow-[0_0_12px_rgba(56,189,248,0.25)]"
@@ -12738,7 +12670,7 @@ export default function MageDuel() {
             <button
               onClick={() => { setIsTutorial(false); findOpponent(); }}
               disabled={!canFindOpponent}
-              className="btn-king flex-1 rounded-xl py-2 sm:py-2.5 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(245,158,11,0.5)] cursor-pointer active:scale-98"
+              className="btn-king flex-1 rounded-xl py-2.5 sm:py-3 px-3 sm:px-4 text-[13px] sm:text-[15px] md:text-[16px] flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(245,158,11,0.6)] cursor-pointer active:scale-98 transition-all font-bold"
             >
               <span className="text-base sm:text-xl">⚔️</span>
               <span className="font-bold tracking-wide">{t("findDuel")}</span>
@@ -12746,6 +12678,8 @@ export default function MageDuel() {
           </div>
         </div>
 
+        {renderBottomNav()}
+        {renderDailyModModal()}
         {renderGearModal()}
         {renderFriendsModal()}
         {renderChatModal()}
