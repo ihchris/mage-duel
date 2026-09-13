@@ -85,6 +85,8 @@ import {
   HeroJourneyModal,
 } from "./HeroJourneySystem.jsx";
 
+import { BottomNav } from "./BottomNav.jsx";
+
 // ================= DESIGN SYSTEM TOKENS (VIBRANT FANTASY) =================
 export const T = {
   // Backgrounds (hierarquia de profundidade mágica vívida)
@@ -9058,236 +9060,7 @@ export default function MageDuel() {
     );
   }
 
-  function renderBottomNav() {
-    const hasUnclaimedPass = BATTLE_PASS_REWARDS.some(entry => {
-      if (entry.level > seasonLevel) return false;
-      if (entry.free && !claimedRewards.has(`free_${entry.level}`)) return true;
-      if (passPremiumOwned && entry.premium && !claimedRewards.has(`premium_${entry.level}`)) return true;
-      return false;
-    });
 
-    const navItems = [
-      {
-        id: "shop",
-        label: lang === "pt" ? "Loja" : "Shop",
-        icon: "✦",
-        color: "#FBBF24",
-        hasNotice: shards >= 50,
-        action: () => setTab("shop"),
-      },
-      {
-        id: "skills",
-        label: lang === "pt" ? "Grimório" : "Cards",
-        icon: "📖",
-        color: "#E8B44F",
-        action: () => setTab("skills"),
-      },
-      {
-        id: "battle",
-        label: lang === "pt" ? "Batalha" : "Battle",
-        icon: "⚔️",
-        color: "#F59E0B",
-        isMain: true,
-        action: () => setTab(null),
-      },
-      {
-        id: "social",
-        label: lang === "pt" ? "Social" : "Social",
-        icon: "👥",
-        color: "#38BDF8",
-        badgeCount: friends.length,
-        action: () => setShowFriends(true),
-      },
-      {
-        id: "pass",
-        label: lang === "pt" ? "Passe" : "Pass",
-        icon: "🎫",
-        color: "#F43F5E",
-        hasNotice: hasUnclaimedPass,
-        action: () => setTab("pass"),
-      },
-    ];
-
-    return (
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bottom-nav-bar flex items-center justify-around px-2 py-1.5 bottom-safe-padding lg:hidden">
-        {navItems.map((item) => {
-          const isActive = (item.id === "battle" && tab === null) || tab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={item.action}
-              className={`bottom-nav-item flex flex-col items-center justify-center py-1 px-2 rounded-xl flex-1 max-w-[72px] relative group transition-all duration-150 ${
-                item.isMain
-                  ? "scale-110 -translate-y-1 bg-gradient-to-b from-amber-500/20 to-amber-900/40 border border-amber-400/60 shadow-[0_0_16px_rgba(245,158,11,0.4)]"
-                  : isActive
-                  ? "bg-white/10 border border-white/20"
-                  : "hover:bg-white/5"
-              }`}
-              title={item.label}
-            >
-              {item.hasNotice && (
-                <span className="absolute top-0.5 right-2 flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500 shadow-[0_0_8px_#F43F5E]"></span>
-                </span>
-              )}
-              {item.badgeCount > 0 && (
-                <span className="absolute top-0.5 right-1.5 px-1 py-0.2 rounded-full text-[8px] font-bold bg-sky-500 text-white shadow-sm">
-                  {item.badgeCount}
-                </span>
-              )}
-              <span
-                className={`text-xl sm:text-2xl drop-shadow-[0_0_10px_currentColor] transition-transform duration-150 group-hover:scale-110 group-active:scale-90 ${
-                  item.isMain ? "scale-115 text-amber-300" : ""
-                }`}
-                style={{ color: item.color }}
-              >
-                {item.icon}
-              </span>
-              <span
-                className={`text-[9px] sm:text-[10px] font-sans font-black leading-tight mt-0.5 tracking-tight truncate ${
-                  item.isMain ? "text-amber-200" : isActive ? "text-white" : "text-zinc-300"
-                }`}
-              >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
-    );
-  }
-
-  function renderDesktopSidebar() {
-    const hasUnclaimedPass = BATTLE_PASS_REWARDS.some(entry => {
-      if (entry.level > seasonLevel) return false;
-      if (entry.free && !claimedRewards.has(`free_${entry.level}`)) return true;
-      if (passPremiumOwned && entry.premium && !claimedRewards.has(`premium_${entry.level}`)) return true;
-      return false;
-    });
-
-    const sidebarItems = [
-      {
-        id: "shop",
-        label: lang === "pt" ? "Loja" : "Shop",
-        icon: "✦",
-        color: "#FBBF24",
-        hasNotice: shards >= 50,
-        action: () => setTab("shop"),
-      },
-      {
-        id: "skills",
-        label: lang === "pt" ? "Grimório" : "Cards",
-        icon: "📖",
-        color: "#E8B44F",
-        action: () => setTab("skills"),
-      },
-      {
-        id: "battle",
-        label: lang === "pt" ? "Batalha" : "Battle",
-        icon: "⚔️",
-        color: "#F59E0B",
-        isMain: true,
-        action: () => setTab(null),
-      },
-      {
-        id: "social",
-        label: lang === "pt" ? "Social" : "Social",
-        icon: "👥",
-        color: "#38BDF8",
-        badgeCount: friends.length,
-        action: () => setShowFriends(true),
-      },
-      {
-        id: "pass",
-        label: lang === "pt" ? "Passe" : "Pass",
-        icon: "🎫",
-        color: "#F43F5E",
-        hasNotice: hasUnclaimedPass,
-        action: () => setTab("pass"),
-      },
-    ];
-
-    return (
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-24 flex-col items-center justify-between py-6 z-40 desktop-sidebar select-none">
-        {/* Top Arcane Crest */}
-        <div
-          onClick={() => setTab(null)}
-          className="flex flex-col items-center gap-1 cursor-pointer group"
-          title="Mage Duel - Início"
-        >
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-b from-amber-400 to-amber-600 p-[2px] shadow-[0_0_20px_rgba(245,158,11,0.5)] group-hover:scale-110 transition-transform">
-            <div className="w-full h-full rounded-[14px] bg-[#0E0A24] flex items-center justify-center text-2xl">
-              🔮
-            </div>
-          </div>
-          <span className="font-serif text-[11px] font-black text-amber-200 tracking-wider">MAGE DUEL</span>
-        </div>
-
-        {/* Center Nav Stack (5 items) */}
-        <div className="flex flex-col items-center gap-3.5 w-full px-2">
-          {sidebarItems.map((item) => {
-            const isActive = (item.id === "battle" && tab === null) || tab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={item.action}
-                className={`w-full py-2.5 px-1 rounded-2xl flex flex-col items-center justify-center relative transition-all duration-200 cursor-pointer group ${
-                  isActive
-                    ? "bg-gradient-to-b from-amber-500/25 to-indigo-900/60 border-2 border-amber-400/80 shadow-[0_0_18px_rgba(245,158,11,0.45)] scale-105"
-                    : "hover:bg-white/10 border border-transparent hover:border-white/20 hover:scale-105"
-                }`}
-                title={item.label}
-              >
-                {item.hasNotice && (
-                  <span className="absolute top-1 right-2 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-rose-500 shadow-[0_0_8px_#F43F5E]"></span>
-                  </span>
-                )}
-                {item.badgeCount > 0 && (
-                  <span className="absolute top-1 right-2 px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-sky-500 text-white shadow">
-                    {item.badgeCount}
-                  </span>
-                )}
-                <span
-                  className="text-2xl drop-shadow-[0_0_12px_currentColor] transition-transform duration-200 group-hover:scale-115"
-                  style={{ color: item.color }}
-                >
-                  {item.icon}
-                </span>
-                <span
-                  className={`text-[10px] font-sans font-black mt-1 leading-none uppercase tracking-wider ${
-                    isActive ? "text-amber-200" : "text-zinc-400 group-hover:text-zinc-100"
-                  }`}
-                >
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Bottom Dock: Lang & Settings */}
-        <div className="flex flex-col items-center gap-2">
-          <button
-            onClick={toggleLang}
-            title={lang === "pt" ? "Mudar Idioma" : "Switch Language"}
-            className="w-10 h-10 rounded-xl bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-400/30 hover:border-amber-400/60 text-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer shadow"
-          >
-            {lang === "pt" ? "🇧🇷" : "🇺🇸"}
-          </button>
-          <button
-            onClick={() => setShowAdminModal(true)}
-            title={t("settings")}
-            className="w-10 h-10 rounded-xl bg-indigo-950/80 hover:bg-indigo-900 border border-indigo-400/30 hover:border-amber-400/60 text-lg flex items-center justify-center text-zinc-300 hover:text-white transition-all hover:scale-110 active:scale-95 cursor-pointer shadow"
-          >
-            ⚙️
-          </button>
-        </div>
-      </aside>
-    );
-  }
 
 
   // Battle Pass Helpers
@@ -12589,18 +12362,34 @@ export default function MageDuel() {
     const hasUnclaimedPass = unclaimedCount > 0;
 
     return (
-      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden sm:min-h-[100dvh] sm:h-auto sm:overflow-y-auto lg:h-[100dvh] lg:max-h-[100dvh] lg:overflow-hidden custom-scrollbar relative flex flex-col items-center justify-between safe-all p-1.5 xs:p-2 sm:p-2.5 md:p-3.5 lg:p-4" style={{ color: T.textPrimary }}>
+      <div className="h-[100dvh] max-h-[100dvh] overflow-hidden lg:h-screen lg:overflow-hidden relative flex flex-col lg:flex-row safe-all game-container p-1.5 xs:p-2 sm:p-3 lg:p-4 gap-2 lg:gap-4 select-none" style={{ color: T.textPrimary }}>
         {styles}{bg}
         {renderAdmToast()}
 
-        {/* ================= MOBILE VIEW (< 1024px) ================= */}
-        <div className="lg:hidden relative z-10 w-full h-full max-h-full flex flex-col justify-between p-0 gap-1 overflow-hidden pb-16 xs:pb-18 max-w-md mx-auto select-none">
-          {/* Top Profile Banner (Frankenstein Style) & Currencies */}
-          <div className="flex items-center justify-between gap-1.5 pt-1 pb-1 px-1 flex-shrink-0">
-            {/* Left: Player Frankenstein Profile Card */}
+        {/* 1. Barra / Sidebar de Navegação (BottomNav.jsx) */}
+        <BottomNav
+          tab={tab}
+          setTab={setTab}
+          shards={shards}
+          seasonLevel={seasonLevel}
+          unclaimedCount={unclaimedCount}
+          hasUnclaimedPass={hasUnclaimedPass}
+          friends={friends}
+          setShowFriends={setShowFriends}
+          setShowAdminModal={setShowAdminModal}
+          toggleLang={toggleLang}
+          lang={lang}
+        />
+
+        {/* 2. Palco Central (main-stage): Personagem como centro das atenções */}
+        <div className="main-stage flex-1 flex flex-col items-center justify-between h-full min-h-0 relative z-10 overflow-y-auto lg:overflow-hidden custom-scrollbar pb-16 lg:pb-0 px-1 xs:px-2 lg:px-4">
+          
+          {/* Top Bar / Header do Palco Central: Perfil & Recursos */}
+          <div className="w-full flex items-center justify-between py-1 px-1 flex-shrink-0 gap-2">
+            {/* Player Banner (Frankenstein Card Style) */}
             <div
               onClick={() => setShowInspectModal(true)}
-              className="flex items-center gap-2 px-2 py-1 rounded-2xl bg-gradient-to-r from-indigo-950/90 to-purple-950/80 border border-indigo-400/30 shadow-md cursor-pointer hover:border-amber-400/60 transition-all flex-1 min-w-0"
+              className="flex items-center gap-2 px-2 py-1 rounded-2xl bg-gradient-to-r from-indigo-950/90 to-purple-950/80 border border-indigo-400/30 shadow-md cursor-pointer hover:border-amber-400/60 transition-all flex-1 min-w-0 max-w-sm"
               title={lang === "pt" ? "Inspecionar Mago" : "Inspect Mage"}
             >
               <div className="relative w-9 h-9 rounded-xl bg-indigo-900/90 border border-amber-400/50 flex items-center justify-center flex-shrink-0 shadow-inner overflow-hidden">
@@ -12610,11 +12399,12 @@ export default function MageDuel() {
                 </span>
               </div>
               <div className="flex flex-col min-w-0 flex-1">
-                <div className="flex items-center gap-1 leading-tight">
+                <div className="flex items-center gap-1.5 leading-tight">
                   <span className="font-serif font-black text-xs text-amber-200 truncate drop-shadow">
                     {mageName.trim() || "Mage Duel"}
                   </span>
-                  <span className="text-[10px] text-amber-400 font-bold flex items-center gap-0.5 flex-shrink-0">
+                  <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={() => setShowHeroJourneyModal(true)} />
+                  <span className="text-[10px] text-amber-400 font-bold flex items-center gap-0.5 flex-shrink-0 ml-auto">
                     🏆 {trophies}
                   </span>
                 </div>
@@ -12628,9 +12418,9 @@ export default function MageDuel() {
               </div>
             </div>
 
-            {/* Right: Currency Pills */}
-            <div className="flex items-center gap-1 flex-shrink-0">
-              {/* Shards Pill with green 3D + */}
+            {/* Currency Pills & Quick Actions */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {/* Shards Pill */}
               <div
                 onClick={() => setTab("shop")}
                 className="flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full bg-indigo-950/90 border border-amber-400/40 shadow cursor-pointer hover:border-amber-400 transition-all"
@@ -12642,7 +12432,7 @@ export default function MageDuel() {
                 </button>
               </div>
 
-              {/* Pass Pill with green 3D + */}
+              {/* Pass Pill */}
               <div
                 onClick={() => setTab("pass")}
                 className="flex items-center gap-1 pl-2 pr-1 py-0.5 rounded-full bg-indigo-950/90 border border-rose-400/40 shadow cursor-pointer hover:border-rose-400 transition-all"
@@ -12654,16 +12444,17 @@ export default function MageDuel() {
                 </button>
               </div>
 
-              {/* Friends Pill */}
-              <button
-                onClick={() => setShowFriends(true)}
-                className="p-1.5 rounded-xl bg-indigo-950/80 border border-indigo-400/30 text-zinc-300 hover:text-white text-xs"
-                title={t("friends")}
-              >
-                👥
-              </button>
+              {/* Leaderboard Pill on Desktop */}
+              <div className="hidden sm:block">
+                <LeaderboardHeaderPill
+                  trophies={trophies}
+                  rank={playerRank}
+                  onClick={() => setShowLeaderboardModal(true)}
+                  lang={lang}
+                />
+              </div>
 
-              {/* Settings */}
+              {/* Settings Gear */}
               <button
                 onClick={() => setShowAdminModal(true)}
                 className="p-1.5 rounded-xl bg-indigo-950/80 border border-indigo-400/30 text-zinc-300 hover:text-white text-xs"
@@ -12674,10 +12465,10 @@ export default function MageDuel() {
             </div>
           </div>
 
-          {/* Center Stage: Mage Diorama with Floating Side Buttons & Trophy Bar */}
-          <div className="relative flex-1 min-h-0 flex flex-col items-center justify-center my-auto">
-            {/* Floating Side Action Buttons: Left Side */}
-            <div className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 items-center">
+          {/* Arena Mística Central com Personagem no Centro & Glow */}
+          <div className="relative flex-1 min-h-0 flex flex-col items-center justify-center my-auto w-full">
+            {/* Floating Side Action Buttons: Esquerda */}
+            <div className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 sm:gap-3 items-center">
               <button
                 onClick={() => setShowHeroJourneyModal(true)}
                 className="clash-floating-btn"
@@ -12689,7 +12480,7 @@ export default function MageDuel() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
                   </span>
                 )}
-                <span className="text-lg">📜</span>
+                <span className="text-lg sm:text-xl">📜</span>
               </button>
               <button
                 onClick={() => setShowBossTrialsModal(true)}
@@ -12697,27 +12488,27 @@ export default function MageDuel() {
                 style={{ background: "linear-gradient(180deg, #A855F7 0%, #7E22CE 50%, #581C87 100%)", borderColor: "#F3E8FF" }}
                 title="Desafios de Mestres / Boss Trials"
               >
-                <span className="text-lg">👑</span>
+                <span className="text-lg sm:text-xl">👑</span>
               </button>
               <button
                 onClick={() => setShowForgeModal(true)}
-                className="clash-floating-btn"
+                className="clash-floating-btn lg:hidden"
                 style={{ background: "linear-gradient(180deg, #F97316 0%, #EA580C 50%, #9A3412 100%)", borderColor: "#FFEDD5" }}
                 title="Forja Arcana"
               >
-                <span className="text-lg">🔨</span>
+                <span className="text-lg sm:text-xl">🔨</span>
               </button>
             </div>
 
-            {/* Floating Side Action Buttons: Right Side */}
-            <div className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 items-center">
+            {/* Floating Side Action Buttons: Direita */}
+            <div className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-2.5 sm:gap-3 items-center">
               <button
                 onClick={() => setTab("appearance")}
                 className="clash-floating-btn"
                 style={{ background: "linear-gradient(180deg, #EC4899 0%, #DB2777 50%, #9D174D 100%)", borderColor: "#FCE7F3" }}
                 title="Skins & Transmog"
               >
-                <span className="text-lg">🪞</span>
+                <span className="text-lg sm:text-xl">🪞</span>
               </button>
               <button
                 onClick={() => setTab("gear")}
@@ -12725,52 +12516,72 @@ export default function MageDuel() {
                 style={{ background: "linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #075985 100%)", borderColor: "#E0F2FE" }}
                 title="Equipamentos de Combate"
               >
-                <span className="text-lg">🛡️</span>
+                <span className="text-lg sm:text-xl">🛡️</span>
               </button>
               <button
                 onClick={() => setShowAlchemyModal(true)}
-                className="clash-floating-btn"
+                className="clash-floating-btn lg:hidden"
                 style={{ background: "linear-gradient(180deg, #10B981 0%, #059669 50%, #064E3B 100%)", borderColor: "#D1FAE5" }}
                 title="Alquimia de Poções"
               >
-                <span className="text-lg">🧪</span>
+                <span className="text-lg sm:text-xl">🧪</span>
               </button>
             </div>
 
-            {/* Mage Arena Diorama */}
+            {/* Personagem com Fundo de Arena Mágica e Efeito de Glow */}
             <div
               onClick={() => setShowInspectModal(true)}
-              className="flex flex-col items-center justify-center cursor-pointer group transform transition-transform group-hover:scale-105 active:scale-95"
+              className="flex flex-col items-center justify-center cursor-pointer group transform transition-transform group-hover:scale-105 active:scale-95 relative"
+              title={lang === "pt" ? "Clique para inspecionar em tela cheia" : "Click to inspect fullscreen"}
             >
-              {/* Ambient Elemental Glow */}
-              <div className="absolute w-44 h-44 rounded-full blur-2xl opacity-45 pointer-events-none" style={{ background: el.color }} />
-              <div className="relative z-10">
-                <MageSprite mage={previewMage} facing="right" size={1.65} />
-              </div>
-              {/* Mystical Dais Pedestal */}
+              {/* Efeito de Glow (Brilho) ao Redor da Arena */}
               <div
-                className="w-44 h-3.5 rounded-[50%] blur-[2px] mt-0.5"
+                className="absolute w-56 h-56 sm:w-72 sm:h-72 rounded-full blur-3xl opacity-45 pointer-events-none transition-all duration-700"
+                style={{ background: `radial-gradient(circle, ${el.color} 0%, rgba(147, 51, 234, 0.4) 60%, transparent 80%)` }}
+              />
+
+              {/* Sprite do Mago */}
+              <div className="relative z-10">
+                <div className="block lg:hidden">
+                  <MageSprite mage={previewMage} facing="right" size={1.65} />
+                </div>
+                <div className="hidden lg:block">
+                  <MageSprite mage={previewMage} facing="right" size={2.3} />
+                </div>
+              </div>
+
+              {/* Pedestal / Dais Místico da Arena */}
+              <div
+                className="w-48 sm:w-64 h-4 sm:h-5 rounded-[50%] blur-[2.5px] mt-1"
                 style={{
                   background: `radial-gradient(ellipse, ${el.color}EE 0%, rgba(147, 51, 234, 0.6) 45%, transparent 75%)`,
-                  boxShadow: `0 0 20px ${el.color}88`,
+                  boxShadow: `0 0 28px ${el.color}99`,
                 }}
               />
             </div>
 
-            {/* Trophy Progress Bar directly under the Pedestal */}
+            {/* Subtítulo de Armas e Offhand */}
+            <div className="text-center text-[10px] sm:text-xs font-sans text-zinc-300/90 mt-1.5 font-medium">
+              <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
+                {previewMage.staffGear?.name}
+              </span>
+              {offhand && <span> · {offhand.name}</span>}
+            </div>
+
+            {/* Barra de Progresso de Troféus (Abaixo do Pedestal) */}
             <div
               onClick={() => setShowLeaderboardModal(true)}
-              className="mt-3 w-52 py-1 px-2.5 rounded-full bg-indigo-950/90 border border-amber-400/40 shadow-lg flex items-center gap-2 cursor-pointer hover:border-amber-400 transition-all"
+              className="mt-2 w-52 sm:w-64 py-1 sm:py-1.5 px-3 rounded-full bg-indigo-950/90 border border-amber-400/40 shadow-lg flex items-center gap-2 cursor-pointer hover:border-amber-400 transition-all"
             >
-              <span className="text-xs">🏆</span>
+              <span className="text-xs sm:text-sm">🏆</span>
               <div className="flex-1">
-                <div className="flex justify-between items-center text-[9px] font-mono font-bold leading-none mb-1 text-amber-200">
+                <div className="flex justify-between items-center text-[9px] sm:text-[10px] font-mono font-bold leading-none mb-1 text-amber-200">
                   <span>{trophies} Troféus</span>
                   <span className="text-zinc-400">{playerTier?.name_pt || "Arena"}</span>
                 </div>
-                <div className="w-full h-1.5 rounded-full bg-slate-900 border border-white/10 overflow-hidden">
+                <div className="w-full h-1.5 sm:h-2 rounded-full bg-slate-900 border border-white/10 overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-amber-300"
+                    className="h-full rounded-full bg-gradient-to-r from-sky-400 via-amber-400 to-yellow-300"
                     style={{ width: `${Math.min(100, Math.max(15, (trophies % 1000) / 10))}%` }}
                   />
                 </div>
@@ -12778,76 +12589,71 @@ export default function MageDuel() {
             </div>
           </div>
 
-          {/* Primary Action Button (Supercell 3D King Battle CTA) */}
-          <div className="w-full px-1 py-1 flex-shrink-0 flex flex-col gap-1.5">
+          {/* Modificador Diário no Palco Central */}
+          <div
+            onClick={() => setShowDailyModModal(true)}
+            className="w-full max-w-md py-1 px-2.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-indigo-950/80 to-amber-500/15 border border-amber-400/40 hover:border-amber-300 flex items-center justify-between text-xs cursor-pointer my-1 transition-all"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-base">{todayMod.icon}</span>
+              <span className="font-serif font-bold text-amber-200 truncate">{todayMod.name}</span>
+            </div>
+            <span className="text-[9px] font-mono font-bold text-amber-300 px-1.5 py-0.2 rounded bg-amber-400/20 border border-amber-400/30 flex-shrink-0">
+              {todayMod.shortDesc}
+            </span>
+          </div>
+
+          {/* Botão "Encontrar Oponente": logo abaixo do personagem, fixo na parte inferior no mobile, centralizado no desktop */}
+          <div className="w-full flex items-center justify-center my-1.5 flex-shrink-0">
             <button
               onClick={() => { setIsTutorial(false); findOpponent(); }}
               disabled={!canFindOpponent}
-              className="btn-battle-3d w-full py-3.5 px-4 flex flex-col items-center justify-center"
+              className="btn-battle-3d w-full max-w-md py-3.5 sm:py-4 px-6 flex flex-col items-center justify-center gap-0.5"
             >
               <div className="flex items-center gap-2 text-lg sm:text-xl uppercase tracking-wider font-black drop-shadow">
                 <span>⚔️</span>
                 <span>{t("findDuel")}</span>
               </div>
-              <div className="flex items-center gap-1.5 text-[10.5px] font-sans font-bold text-amber-100 drop-shadow">
+              <div className="flex items-center gap-1.5 text-[10.5px] sm:text-xs font-sans font-bold text-amber-100 drop-shadow">
                 <span>{todayMod.icon}</span>
                 <span>{todayMod.name}</span>
-                <span className="text-amber-200/90">· {canFindOpponent ? (lang === "pt" ? "Ranqueado" : "Ranked") : (lang === "pt" ? "Equipe 4 feitiços" : "Equip 4 spells")}</span>
+                <span className="text-amber-200">· {canFindOpponent ? (lang === "pt" ? "Duelo Ranqueado" : "Ranked Duel") : (lang === "pt" ? "Equipe 4 feitiços" : "Equip 4 spells")}</span>
               </div>
             </button>
           </div>
 
-          {/* 4 Clash Royale Collectible Spell Slots */}
-          <div className="w-full px-1 pt-0.5 flex-shrink-0">
-            <div className="grid grid-cols-4 gap-1.5">
+          {/* Área "Slots de Feitiço": Cartas Colecionáveis em Carrossel no Mobile e Grade no Desktop */}
+          <div className="w-full flex flex-col gap-1.5 my-1 flex-shrink-0">
+            <div className="flex items-center justify-between text-xs px-1">
+              <span className="font-serif font-bold text-amber-300 flex items-center gap-1.5">
+                <span>🔮</span>
+                <span>{lang === "pt" ? "Feitiços de Combate" : "Combat Spells"} ({chosen.length}/{maxSlots})</span>
+              </span>
+              <button
+                onClick={() => setTab("skills")}
+                className="text-xs font-sans font-semibold text-amber-300 hover:text-amber-100 transition-colors flex items-center gap-1 cursor-pointer"
+              >
+                <span>{t("fullGrimoire")} ➔</span>
+              </button>
+            </div>
+
+            {/* Mobile: Carrossel Horizontal (overflow-x-auto flex gap-4) | Desktop: Grade (grid grid-cols-4 gap-4) */}
+            <div className="overflow-x-auto flex gap-3 sm:gap-4 lg:grid lg:grid-cols-4 w-full max-w-2xl mx-auto custom-scrollbar py-1">
               {Array.from({ length: 4 }).map((_, i) => {
                 const skillId = chosen[i];
                 const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
                 const skillEl = skill ? ELEMENTS[skill.el] : null;
 
                 return (
-                  <div
-                    key={i}
-                    onClick={() => setTab("skills")}
-                    className="clash-slot-card p-1 flex flex-col items-center justify-between h-[76px] xs:h-[82px]"
-                  >
-                    {/* Top Status Pill */}
-                    <div className="w-full flex items-center justify-center">
-                      {skill ? (
-                        <span className="text-[7.5px] xs:text-[8px] font-mono font-bold text-emerald-300 px-1 rounded bg-emerald-500/20 border border-emerald-500/40 truncate">
-                          ✓ Slot {i + 1}
-                        </span>
-                      ) : (
-                        <span className="text-[7.5px] xs:text-[8px] font-mono font-bold text-amber-300 px-1 rounded bg-amber-500/20 border border-amber-500/40">
-                          + Slot {i + 1}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Center Icon & Mana */}
-                    {skill && skillEl ? (
-                      <div className="flex flex-col items-center justify-center my-0.5">
-                        <span className="text-lg xs:text-xl drop-shadow-[0_0_8px_currentColor]" style={{ color: skillEl.color }}>
-                          {skillEl.icon}
-                        </span>
-                        <span className="text-[8px] xs:text-[9px] font-serif font-bold text-white truncate max-w-[64px] text-center leading-tight">
-                          {skill.name}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center my-auto text-indigo-300/50">
-                        <span className="text-base font-black">+</span>
-                      </div>
-                    )}
-
-                    {/* Bottom Mana / Stat */}
-                    <div className="w-full flex items-center justify-center text-[7.5px] xs:text-[8px] font-mono font-bold">
-                      {skill ? (
-                        <span className="text-sky-300">💧{skill.mana}</span>
-                      ) : (
-                        <span className="text-zinc-400">Vazio</span>
-                      )}
-                    </div>
+                  <div key={i} className="w-28 xs:w-32 sm:w-36 lg:w-full flex-shrink-0">
+                    <ModernSkillCard
+                      skill={skill}
+                      element={skillEl}
+                      lang={lang}
+                      isSlotEmpty={!skill}
+                      slotLabel={`Slot ${i + 1}`}
+                      onClick={() => setTab("skills")}
+                    />
                   </div>
                 );
               })}
@@ -12855,466 +12661,130 @@ export default function MageDuel() {
           </div>
         </div>
 
-        {/* ================= DESKTOP WIDESCREEN DASHBOARD (>= 1024px) ================= */}
-        <div className="hidden lg:flex relative z-10 flex-col h-full w-full max-w-7xl mx-auto lg:pl-28 py-2 gap-3 select-none">
-          {/* Top Global Bar */}
-          <header className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-950/85 via-slate-900/90 to-indigo-950/85 border border-indigo-400/25 shadow-xl flex-shrink-0">
-            {/* Left: Player Profile Frankenstein Header */}
-            <div
-              onClick={() => setShowInspectModal(true)}
-              className="flex items-center gap-3 cursor-pointer group"
-              title={lang === "pt" ? "Inspecionar Mago" : "Inspect Mage"}
+        {/* 3. Coluna Direita no Desktop (lg:w-80): Loja, Passe de Batalha e Estatísticas */}
+        <aside className="hidden lg:flex lg:w-80 flex-shrink-0 flex-col gap-3.5 h-full overflow-y-auto custom-scrollbar p-1 select-none z-10">
+          {/* Card da Loja Arcana */}
+          <div className="panel-elevated p-3.5 rounded-2xl border border-amber-400/40 hover:border-amber-300 shadow-lg transition-all hover:scale-[1.02]">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xl text-amber-400">✦</span>
+                <span className="font-serif font-bold text-xs text-amber-200">
+                  {t("shopTitle")}
+                </span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40">
+                {shards} Shards
+              </span>
+            </div>
+            <p className="text-[11px] font-sans text-zinc-300 leading-relaxed mb-3">
+              Adquira novos cajados, auras míticas e transmogs raros para seu mago.
+            </p>
+            <button
+              onClick={() => setTab("shop")}
+              className="btn-3d-blue w-full py-2 px-3 text-xs font-black uppercase tracking-wide flex items-center justify-center gap-1.5"
             >
-              <div className="relative w-11 h-11 rounded-2xl bg-indigo-900 border-2 border-amber-400/60 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform overflow-hidden">
-                <span className="text-2xl">{el.icon}</span>
-                <span className="absolute bottom-0 right-0 px-1 text-[9px] font-black bg-amber-500 text-slate-950 rounded-tl">
-                  {mageLevel}
+              <span>✦</span>
+              <span>{lang === "pt" ? "Visitar Loja Arcana" : "Visit Arcane Shop"}</span>
+            </button>
+          </div>
+
+          {/* Card do Passe de Batalha (Pass Royale) */}
+          <div className="panel-elevated p-3.5 rounded-2xl border border-rose-400/40 hover:border-rose-300 shadow-lg transition-all hover:scale-[1.02]">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xl">🎫</span>
+                <span className="font-serif font-bold text-xs text-rose-200">
+                  PASSE ARCANO
                 </span>
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-serif font-black text-lg text-amber-200 group-hover:text-amber-100 transition-colors">
-                    {mageName.trim() || "Mage Duel"}
-                  </h2>
-                  <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={() => setShowHeroJourneyModal(true)} />
-                </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] font-sans font-semibold text-indigo-200">
-                    {getElementName(affinity, lang)} +25%
-                  </span>
-                  <div className="w-32 h-2 rounded-full bg-slate-950 border border-white/10 overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-400 to-yellow-300"
-                      style={{ width: `${mageLevelInfo.percent}%` }}
-                    />
-                  </div>
-                  <span className="text-[10px] font-mono text-amber-300/80">
-                    {mageLevelInfo.currentInLevel}/{mageLevelInfo.neededForNext} XP
-                  </span>
-                </div>
+              <span className="text-[10px] font-mono font-bold text-rose-300 px-1.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/40">
+                Nv. {seasonLevel}
+              </span>
+            </div>
+            <p className="text-[11px] font-sans text-zinc-300 leading-relaxed mb-3">
+              {hasUnclaimedPass
+                ? `${unclaimedCount} recompensa(s) pronta(s) para resgate!`
+                : "Desbloqueie feitiços lendários e skins exclusivas nesta temporada."}
+            </p>
+            <button
+              onClick={() => setTab("pass")}
+              className="btn-3d-green w-full py-2 px-3 text-xs font-black uppercase tracking-wide flex items-center justify-center gap-1.5"
+            >
+              <span>{hasUnclaimedPass ? "🎁" : "👑"}</span>
+              <span>{hasUnclaimedPass ? (lang === "pt" ? "Resgatar Prêmios" : "Claim Rewards") : (lang === "pt" ? "Ver Passe" : "View Pass")}</span>
+            </button>
+          </div>
+
+          {/* Card de Estatísticas & Ranking */}
+          <div
+            onClick={() => setShowLeaderboardModal(true)}
+            className="panel-elevated p-3.5 rounded-2xl border border-indigo-400/30 hover:border-indigo-300 shadow-lg cursor-pointer transition-all hover:scale-[1.02] group"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-serif font-bold text-xs text-indigo-200 flex items-center gap-1.5">
+                <span>🏆</span>
+                <span>{lang === "pt" ? "Arena Ranqueada" : "Ranked Arena"}</span>
+              </span>
+              <span className="text-[10px] font-mono font-bold text-amber-300">
+                #{playerRank}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-center mb-2.5">
+              <div className="p-2 rounded-xl bg-slate-900/80 border border-white/5">
+                <span className="text-[10px] text-zinc-400 block font-medium">{lang === "pt" ? "Vitórias" : "Wins"}</span>
+                <span className="font-mono font-bold text-base text-emerald-400">{rankedWins}</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-900/80 border border-white/5">
+                <span className="text-[10px] text-zinc-400 block font-medium">{lang === "pt" ? "Sequência" : "Streak"}</span>
+                <span className="font-mono font-bold text-base text-amber-400">🔥 {winStreak}</span>
               </div>
             </div>
-
-            {/* Right: Currency Pills, Leaderboard, Friends, Settings */}
-            <div className="flex items-center gap-3">
-              {/* Shards Pill */}
-              <div
-                onClick={() => setTab("shop")}
-                className="flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-full bg-indigo-950/90 border border-amber-400/40 hover:border-amber-400 shadow-md cursor-pointer transition-all hover:scale-105"
-                title="Loja Arcana"
-              >
-                <span className="text-amber-400 font-mono font-bold text-sm">✦ {shards}</span>
-                <button className="btn-3d-green w-6 h-6 rounded-full flex items-center justify-center text-xs font-black p-0 leading-none">
-                  +
-                </button>
-              </div>
-
-              {/* Battle Pass Pill */}
-              <div
-                onClick={() => setTab("pass")}
-                className="flex items-center gap-2 pl-3 pr-1.5 py-1 rounded-full bg-indigo-950/90 border border-rose-400/40 hover:border-rose-400 shadow-md cursor-pointer transition-all hover:scale-105"
-                title="Passe de Batalha"
-              >
-                <span className="text-rose-300 font-mono font-bold text-sm">🎫 Nv. {seasonLevel}</span>
-                <button className="btn-3d-green w-6 h-6 rounded-full flex items-center justify-center text-xs font-black p-0 leading-none">
-                  +
-                </button>
-              </div>
-
-              {/* Leaderboard Pill */}
-              <LeaderboardHeaderPill
-                trophies={trophies}
-                rank={playerRank}
-                onClick={() => setShowLeaderboardModal(true)}
-                lang={lang}
-              />
-
-              {/* Friends Pill */}
-              <button
-                onClick={() => setShowFriends(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-950/80 border border-sky-400/30 hover:border-sky-300 text-sky-200 text-xs font-bold transition-all hover:scale-105 cursor-pointer shadow"
-                title={t("friends")}
-              >
-                <span>👥</span>
-                <span>{friends.length}</span>
-              </button>
-
-              {/* Settings Gear */}
-              <button
-                onClick={() => setShowAdminModal(true)}
-                className="p-2 rounded-xl bg-indigo-950/80 border border-indigo-400/30 hover:border-amber-400 text-zinc-200 hover:text-white transition-all hover:scale-105 cursor-pointer shadow"
-                title={t("settings")}
-              >
-                ⚙️
-              </button>
-            </div>
-          </header>
-
-          {/* 3-Column Grid Dashboard */}
-          <div className="grid grid-cols-12 gap-5 flex-1 min-h-0 items-start overflow-y-auto custom-scrollbar pr-1 pb-2">
-            {/* ================= LEFT COLUMN: Profile, Modifier, Ranked Stats (col-span-3) ================= */}
-            <div className="col-span-3 flex flex-col gap-3.5">
-              {/* Active Daily Modifier Card */}
-              <div
-                onClick={() => setShowDailyModModal(true)}
-                className="panel-elevated p-3.5 rounded-2xl border border-amber-400/40 hover:border-amber-300 shadow-lg cursor-pointer transition-all hover:scale-[1.02] group"
-              >
-                <div className="flex items-center justify-between mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl drop-shadow">{todayMod.icon}</span>
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400/90 font-bold block">
-                        {lang === "pt" ? "Modificador Diário" : "Daily Modifier"}
-                      </span>
-                      <h3 className="font-serif font-bold text-sm text-amber-200 group-hover:text-amber-100 transition-colors">
-                        {todayMod.name}
-                      </h3>
-                    </div>
-                  </div>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/30 text-amber-200 font-mono font-bold">
-                    {todayMod.shortDesc}
-                  </span>
-                </div>
-                <p className="text-[11px] font-sans text-zinc-300 leading-relaxed mb-2.5">
-                  {todayMod.desc}
-                </p>
-                <div className="w-full py-1 text-center text-[10.5px] font-sans font-bold text-amber-300 bg-amber-400/10 rounded-lg border border-amber-400/30 group-hover:bg-amber-400/20 transition-colors">
-                  {lang === "pt" ? "Ver Efeitos & Bônus ➔" : "View Effects & Bonuses ➔"}
-                </div>
-              </div>
-
-              {/* Ranked Stats & Win Streak Widget */}
-              <div
-                onClick={() => setShowLeaderboardModal(true)}
-                className="panel-elevated p-3.5 rounded-2xl border border-indigo-400/30 hover:border-indigo-300 shadow-lg cursor-pointer transition-all hover:scale-[1.02] group"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-serif font-bold text-xs text-indigo-200 flex items-center gap-1.5">
-                    <span>🏆</span>
-                    <span>{lang === "pt" ? "Arena Ranqueada" : "Ranked Arena"}</span>
-                  </span>
-                  <span className="text-[10px] font-mono font-bold text-amber-300">
-                    #{playerRank}
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2 text-center mb-2.5">
-                  <div className="p-2 rounded-xl bg-slate-900/80 border border-white/5">
-                    <span className="text-[10px] text-zinc-400 block font-medium">{lang === "pt" ? "Vitórias" : "Wins"}</span>
-                    <span className="font-mono font-bold text-base text-emerald-400">{rankedWins}</span>
-                  </div>
-                  <div className="p-2 rounded-xl bg-slate-900/80 border border-white/5">
-                    <span className="text-[10px] text-zinc-400 block font-medium">{lang === "pt" ? "Sequência" : "Streak"}</span>
-                    <span className="font-mono font-bold text-base text-amber-400">🔥 {winStreak}</span>
-                  </div>
-                </div>
-                <div className="w-full py-1 text-center text-[10.5px] font-sans font-bold text-indigo-200 bg-indigo-950/60 rounded-lg border border-indigo-400/30 group-hover:bg-indigo-900/60 transition-colors">
-                  {lang === "pt" ? "Classificação Completa ➔" : "Full Leaderboard ➔"}
-                </div>
-              </div>
-
-              {/* Quick Crafting Access: Forge & Alchemy */}
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => setShowForgeModal(true)}
-                  className="p-2.5 rounded-xl bg-gradient-to-b from-orange-950/60 to-slate-900/90 border border-orange-500/40 hover:border-orange-400 text-orange-200 flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 active:scale-95 shadow cursor-pointer"
-                >
-                  <span className="text-xl">🔨</span>
-                  <span className="font-serif text-xs font-bold">{lang === "pt" ? "Forja Arcana" : "Forge"}</span>
-                </button>
-                <button
-                  onClick={() => setShowAlchemyModal(true)}
-                  className="p-2.5 rounded-xl bg-gradient-to-b from-purple-950/60 to-slate-900/90 border border-purple-500/40 hover:border-purple-400 text-purple-200 flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 active:scale-95 shadow cursor-pointer"
-                >
-                  <span className="text-xl">🧪</span>
-                  <span className="font-serif text-xs font-bold">{lang === "pt" ? "Alquimia" : "Alchemy"}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* ================= CENTER COLUMN: Grand Arena, 3D King Battle, 4 Clash Cards (col-span-6) ================= */}
-            <div className="col-span-6 flex flex-col items-center gap-3">
-              {/* Grand Mystical Arena Stage */}
-              <div className="relative w-full flex flex-col items-center justify-center py-2">
-                {/* Ambient Glow */}
-                <div
-                  className="absolute w-72 h-72 rounded-full blur-3xl opacity-35 pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${el.color} 0%, rgba(147, 51, 234, 0.4) 60%, transparent 80%)` }}
-                />
-
-                {/* Floating Side Action Buttons: Left Side */}
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 items-center">
-                  <button
-                    onClick={() => setShowHeroJourneyModal(true)}
-                    className="clash-floating-btn"
-                    title="Jornada Heroica (Missões)"
-                  >
-                    {hasClaimableJourney && (
-                      <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
-                      </span>
-                    )}
-                    <span className="text-xl">📜</span>
-                  </button>
-                  <button
-                    onClick={() => setShowBossTrialsModal(true)}
-                    className="clash-floating-btn"
-                    style={{ background: "linear-gradient(180deg, #A855F7 0%, #7E22CE 50%, #581C87 100%)", borderColor: "#F3E8FF" }}
-                    title="Desafios de Mestres Elementais"
-                  >
-                    <span className="text-xl">👑</span>
-                  </button>
-                </div>
-
-                {/* Floating Side Action Buttons: Right Side */}
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 items-center">
-                  <button
-                    onClick={() => setTab("appearance")}
-                    className="clash-floating-btn"
-                    style={{ background: "linear-gradient(180deg, #EC4899 0%, #DB2777 50%, #9D174D 100%)", borderColor: "#FCE7F3" }}
-                    title="Skins & Transmog"
-                  >
-                    <span className="text-xl">🪞</span>
-                  </button>
-                  <button
-                    onClick={() => setTab("gear")}
-                    className="clash-floating-btn"
-                    style={{ background: "linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #075985 100%)", borderColor: "#E0F2FE" }}
-                    title="Equipamentos de Combate"
-                  >
-                    <span className="text-xl">🛡️</span>
-                  </button>
-                </div>
-
-                {/* Character Diorama with size 2.3 */}
-                <div
-                  onClick={() => setShowInspectModal(true)}
-                  className="flex flex-col items-center justify-center cursor-pointer group transform transition-transform duration-300 hover:scale-105 active:scale-98"
-                  title={lang === "pt" ? "Clique para inspecionar em tela cheia" : "Click to inspect fullscreen"}
-                >
-                  <div className="relative z-10">
-                    <MageSprite mage={previewMage} facing="right" size={2.3} />
-                  </div>
-                  {/* Elemental Dais Pedestal */}
-                  <div
-                    className="w-64 h-5 rounded-[50%] blur-[3px] mt-1"
-                    style={{
-                      background: `radial-gradient(ellipse, ${el.color}EE 0%, rgba(147, 51, 234, 0.6) 45%, transparent 75%)`,
-                      boxShadow: `0 0 30px ${el.color}AA`,
-                    }}
-                  />
-                </div>
-
-                {/* Weapon / Offhand Subtitle */}
-                <div className="text-center text-xs font-sans text-zinc-300/90 mt-2 font-medium">
-                  <span style={{ color: previewMage.staffGear ? RARITY[previewMage.staffGear.rarity]?.color : undefined }}>
-                    {previewMage.staffGear?.name}
-                  </span>
-                  {offhand && <span> · {offhand.name}</span>}
-                </div>
-
-                {/* Supercell Style Trophy Milestone Bar */}
-                <div
-                  onClick={() => setShowLeaderboardModal(true)}
-                  className="mt-2 w-64 py-1.5 px-3 rounded-full bg-indigo-950/90 border border-amber-400/50 shadow-xl flex items-center gap-2.5 cursor-pointer hover:scale-105 transition-all"
-                >
-                  <span className="text-sm">🏆</span>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center text-[10px] font-mono font-bold leading-none mb-1 text-amber-200">
-                      <span>{trophies} Troféus</span>
-                      <span className="text-zinc-400">{playerTier?.name_pt || "Arena"}</span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-slate-950 border border-white/10 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-sky-400 via-amber-400 to-yellow-300"
-                        style={{ width: `${Math.min(100, Math.max(15, (trophies % 1000) / 10))}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Giant 3D King Battle CTA Button */}
-              <div className="w-full flex items-center gap-3">
-                <button
-                  onClick={() => { setIsTutorial(false); findOpponent(); }}
-                  disabled={!canFindOpponent}
-                  className="btn-battle-3d flex-1 py-4 px-6 flex flex-col items-center justify-center gap-0.5"
-                >
-                  <div className="flex items-center gap-2.5 text-2xl uppercase tracking-wider font-black drop-shadow">
-                    <span>⚔️</span>
-                    <span>{t("findDuel")}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-sans font-bold text-amber-100 drop-shadow">
-                    <span>{todayMod.icon}</span>
-                    <span>{todayMod.name}</span>
-                    <span className="text-amber-200">· {canFindOpponent ? (lang === "pt" ? "Duelo Ranqueado" : "Ranked Duel") : (lang === "pt" ? "Equipe 4 feitiços" : "Equip 4 spells")}</span>
-                  </div>
-                </button>
-              </div>
-
-              {/* 4 Clash Royale Collectible Spell Cards */}
-              <div className="w-full flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-xs px-1">
-                  <span className="font-serif font-bold text-amber-300 flex items-center gap-1.5">
-                    <span>🔮</span>
-                    <span>{lang === "pt" ? "Feitiços de Combate" : "Combat Spells"} ({chosen.length}/{maxSlots})</span>
-                  </span>
-                  <button
-                    onClick={() => setTab("skills")}
-                    className="text-xs font-sans font-semibold text-amber-300 hover:text-amber-100 transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>{t("fullGrimoire")} ➔</span>
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-4 gap-2.5 w-full">
-                  {Array.from({ length: 4 }).map((_, i) => {
-                    const skillId = chosen[i];
-                    const skill = skillId ? SKILLS.find(s => s.id === skillId) : null;
-                    const skillEl = skill ? ELEMENTS[skill.el] : null;
-
-                    return (
-                      <div
-                        key={i}
-                        onClick={() => setTab("skills")}
-                        className="clash-slot-card p-2 flex flex-col items-center justify-between h-[105px]"
-                        title={skill ? `${skill.name} (Clique para alterar no Grimório)` : "Slot de Feitiço"}
-                      >
-                        {/* Status Pill */}
-                        <div className="w-full flex items-center justify-between px-0.5">
-                          <span className="text-[8.5px] font-mono font-bold text-emerald-300 px-1 py-0.2 rounded bg-emerald-500/20 border border-emerald-500/40">
-                            Slot {i + 1}
-                          </span>
-                          {skill && (
-                            <span className="text-[9px] font-mono font-bold text-sky-200 px-1 py-0.2 rounded bg-sky-500/25 border border-sky-400/40">
-                              💧{skill.mana}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Skill Icon & Name */}
-                        {skill && skillEl ? (
-                          <div className="flex flex-col items-center justify-center my-0.5">
-                            <span className="text-2xl drop-shadow-[0_0_10px_currentColor]" style={{ color: skillEl.color }}>
-                              {skillEl.icon}
-                            </span>
-                            <span className="text-xs font-serif font-bold text-white truncate max-w-[90px] text-center leading-tight mt-0.5">
-                              {skill.name}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center my-auto text-indigo-300/40">
-                            <span className="text-xl font-bold">+</span>
-                            <span className="text-[9px] font-sans uppercase tracking-wider">Vazio</span>
-                          </div>
-                        )}
-
-                        {/* Bottom Stats */}
-                        <div className="w-full flex items-center justify-center gap-1.5 text-[8.5px] font-mono font-bold">
-                          {skill ? (
-                            <>
-                              {skill.dmg > 0 && <span className="text-red-300">⚔️{skill.dmg}</span>}
-                              {skill.shield > 0 && <span className="text-sky-300">🛡️{skill.shield}</span>}
-                              {skill.heal > 0 && <span className="text-emerald-300">💚{skill.heal}</span>}
-                            </>
-                          ) : (
-                            <span className="text-zinc-400">Clique para equipar</span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* ================= RIGHT COLUMN: Pass Royale, Shop Preview, Training (col-span-3) ================= */}
-            <div className="col-span-3 flex flex-col gap-3.5">
-              {/* Pass Royale Featured Card */}
-              <div className="panel-elevated p-3.5 rounded-2xl border border-rose-400/40 hover:border-rose-300 shadow-lg transition-all hover:scale-[1.02]">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xl">🎫</span>
-                    <span className="font-serif font-bold text-xs text-rose-200">
-                      PASSE ARCANO
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono font-bold text-rose-300 px-1.5 py-0.5 rounded bg-rose-500/20 border border-rose-500/40">
-                    Nv. {seasonLevel}
-                  </span>
-                </div>
-                <p className="text-[11px] font-sans text-zinc-300 leading-relaxed mb-3">
-                  {hasUnclaimedPass
-                    ? `${unclaimedCount} recompensa(s) pronta(s) para resgate!`
-                    : "Desbloqueie feitiços lendários e skins exclusivas nesta temporada."}
-                </p>
-                <button
-                  onClick={() => setTab("pass")}
-                  className="btn-3d-green w-full py-2 px-3 text-xs font-black uppercase tracking-wide flex items-center justify-center gap-1.5"
-                >
-                  <span>{hasUnclaimedPass ? "🎁" : "👑"}</span>
-                  <span>{hasUnclaimedPass ? (lang === "pt" ? "Resgatar Prêmios" : "Claim Rewards") : (lang === "pt" ? "Ver Passe" : "View Pass")}</span>
-                </button>
-              </div>
-
-              {/* Arcane Shop Featured Showcase Card */}
-              <div className="panel-elevated p-3.5 rounded-2xl border border-amber-400/40 hover:border-amber-300 shadow-lg transition-all hover:scale-[1.02]">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xl text-amber-400">✦</span>
-                    <span className="font-serif font-bold text-xs text-amber-200">
-                      {t("shopTitle")}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono font-bold text-amber-300 px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40">
-                    {shards} Shards
-                  </span>
-                </div>
-                <p className="text-[11px] font-sans text-zinc-300 leading-relaxed mb-3">
-                  Adquira novos cajados, auras míticas e transmogs raros para seu mago.
-                </p>
-                <button
-                  onClick={() => setTab("shop")}
-                  className="btn-3d-blue w-full py-2 px-3 text-xs font-black uppercase tracking-wide flex items-center justify-center gap-1.5"
-                >
-                  <span>✦</span>
-                  <span>{lang === "pt" ? "Visitar Loja Arcana" : "Visit Arcane Shop"}</span>
-                </button>
-              </div>
-
-              {/* Training & Special Modes */}
-              <div className="panel-elevated p-3.5 rounded-2xl border border-indigo-400/30 shadow-lg flex flex-col gap-2">
-                <span className="font-serif font-bold text-xs text-indigo-200 mb-0.5">
-                  {lang === "pt" ? "Campos de Treino" : "Training Grounds"}
-                </span>
-                <button
-                  onClick={startTutorial}
-                  className="w-full py-2 px-3 rounded-xl bg-sky-950/50 hover:bg-sky-900/60 border border-sky-400/40 text-sky-200 text-xs font-bold flex items-center justify-between transition-all hover:scale-102 active:scale-98 cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span>🎯</span>
-                    <span>Espantalho Arcano</span>
-                  </span>
-                  <span className="text-[10px] text-sky-300">Treinar ➔</span>
-                </button>
-                <button
-                  onClick={() => setShowBossTrialsModal(true)}
-                  className="w-full py-2 px-3 rounded-xl bg-purple-950/50 hover:bg-purple-900/60 border border-purple-400/40 text-purple-200 text-xs font-bold flex items-center justify-between transition-all hover:scale-102 active:scale-98 cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <span>👑</span>
-                    <span>Mestres Elementais</span>
-                  </span>
-                  <span className="text-[10px] text-purple-300">Desafiar ➔</span>
-                </button>
-              </div>
+            <div className="w-full py-1 text-center text-[10.5px] font-sans font-bold text-indigo-200 bg-indigo-950/60 rounded-lg border border-indigo-400/30 group-hover:bg-indigo-900/60 transition-colors">
+              {lang === "pt" ? "Classificação Completa ➔" : "Full Leaderboard ➔"}
             </div>
           </div>
-        </div>
 
-        {renderDesktopSidebar()}
-        {renderBottomNav()}
+          {/* Atalhos Rápidos para Oficinas & Treino */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setShowForgeModal(true)}
+              className="p-2.5 rounded-xl bg-gradient-to-b from-orange-950/60 to-slate-900/90 border border-orange-500/40 hover:border-orange-400 text-orange-200 flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 active:scale-95 shadow cursor-pointer"
+            >
+              <span className="text-lg">🔨</span>
+              <span className="font-serif text-[11px] font-bold">{lang === "pt" ? "Forja" : "Forge"}</span>
+            </button>
+            <button
+              onClick={() => setShowAlchemyModal(true)}
+              className="p-2.5 rounded-xl bg-gradient-to-b from-purple-950/60 to-slate-900/90 border border-purple-500/40 hover:border-purple-400 text-purple-200 flex flex-col items-center justify-center gap-1 transition-all hover:scale-105 active:scale-95 shadow cursor-pointer"
+            >
+              <span className="text-lg">🧪</span>
+              <span className="font-serif text-[11px] font-bold">{lang === "pt" ? "Alquimia" : "Alchemy"}</span>
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-1.5 mt-auto">
+            <button
+              onClick={startTutorial}
+              className="w-full py-2 px-3 rounded-xl bg-sky-950/50 hover:bg-sky-900/60 border border-sky-400/40 text-sky-200 text-xs font-bold flex items-center justify-between transition-all hover:scale-102 active:scale-98 cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <span>🎯</span>
+                <span>Espantalho Arcano</span>
+              </span>
+              <span className="text-[10px] text-sky-300">Treinar ➔</span>
+            </button>
+            <button
+              onClick={() => setShowBossTrialsModal(true)}
+              className="w-full py-2 px-3 rounded-xl bg-purple-950/50 hover:bg-purple-900/60 border border-purple-400/40 text-purple-200 text-xs font-bold flex items-center justify-between transition-all hover:scale-102 active:scale-98 cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <span>👑</span>
+                <span>Mestres Elementais</span>
+              </span>
+              <span className="text-[10px] text-purple-300">Desafiar ➔</span>
+            </button>
+          </div>
+        </aside>
         {renderDailyModModal()}
         {renderGearModal()}
         {renderFriendsModal()}
