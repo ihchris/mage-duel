@@ -3868,19 +3868,19 @@ function StaffVoidglass() {
   return (
     <g>
       <defs>
-        {/* Fluted Obsidian Voidglass Pillar Gradient */}
+        {/* Fluted Obsidian-Amethyst Voidglass Pillar Gradient - Rich Opaque & Luminous */}
         <linearGradient id="voidglassShaftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#05030A" />
-          <stop offset="16%" stopColor="#160B29" />
-          <stop offset="45%" stopColor="#2E1065" />
-          <stop offset="70%" stopColor="#4C1D95" />
-          <stop offset="85%" stopColor="#1E0A3A" />
-          <stop offset="100%" stopColor="#05030A" />
+          <stop offset="0%" stopColor="#2E1065" />
+          <stop offset="25%" stopColor="#581C87" />
+          <stop offset="50%" stopColor="#7C3AED" />
+          <stop offset="75%" stopColor="#9333EA" />
+          <stop offset="100%" stopColor="#3B0764" />
         </linearGradient>
         {/* Pulsing Void Singularity Channel */}
         <linearGradient id="voidChannelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#E9D5FF" />
-          <stop offset="50%" stopColor="#C084FC" />
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="40%" stopColor="#E9D5FF" />
+          <stop offset="70%" stopColor="#C084FC" />
           <stop offset="100%" stopColor="#7C3AED" />
         </linearGradient>
         {/* Astrolabe Brass / Solarite Gold Gradient */}
@@ -3889,7 +3889,7 @@ function StaffVoidglass() {
           <stop offset="25%" stopColor="#FDE68A" />
           <stop offset="55%" stopColor="#F59E0B" />
           <stop offset="82%" stopColor="#B45309" />
-          <stop offset="100%" stopColor="#451A03" />
+          <stop offset="100%" stopColor="#78350F" />
         </linearGradient>
         {/* Dark Matter Tesseract Prism Facets */}
         <linearGradient id="voidTesseractLight" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -3899,108 +3899,112 @@ function StaffVoidglass() {
           <stop offset="100%" stopColor="#9333EA" />
         </linearGradient>
         <linearGradient id="voidTesseractDark" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#7C3AED" />
-          <stop offset="45%" stopColor="#581C87" />
-          <stop offset="85%" stopColor="#2E1065" />
-          <stop offset="100%" stopColor="#0F051D" />
+          <stop offset="0%" stopColor="#9333EA" />
+          <stop offset="45%" stopColor="#6D28D9" />
+          <stop offset="85%" stopColor="#4C1D95" />
+          <stop offset="100%" stopColor="#2E1065" />
         </linearGradient>
         {/* Singularity Aura Glow */}
         <radialGradient id="voidCoreGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.85" />
-          <stop offset="25%" stopColor="#E9D5FF" stopOpacity="0.55" />
-          <stop offset="55%" stopColor="#9333EA" stopOpacity="0.25" />
-          <stop offset="80%" stopColor="#581C87" stopOpacity="0.08" />
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
+          <stop offset="25%" stopColor="#E9D5FF" stopOpacity="0.65" />
+          <stop offset="55%" stopColor="#9333EA" stopOpacity="0.35" />
+          <stop offset="80%" stopColor="#581C87" stopOpacity="0.12" />
           <stop offset="100%" stopColor="#1E1B4B" stopOpacity="0" />
         </radialGradient>
         {/* Royal Violet Velvet Grip */}
         <linearGradient id="voidglassVelvetGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#0B0516" />
-          <stop offset="25%" stopColor="#240E42" />
-          <stop offset="60%" stopColor="#3B1266" />
-          <stop offset="85%" stopColor="#240E42" />
-          <stop offset="100%" stopColor="#0B0516" />
+          <stop offset="0%" stopColor="#3B0764" />
+          <stop offset="30%" stopColor="#581C87" />
+          <stop offset="70%" stopColor="#6D28D9" />
+          <stop offset="100%" stopColor="#3B0764" />
         </linearGradient>
       </defs>
 
       {/* Cosmic Singularity Aura behind Crown */}
-      <circle cx="317" cy="126" r="34" fill="url(#voidCoreGlow)" />
+      <circle cx="317" cy="126" r="36" fill="url(#voidCoreGlow)" />
 
       {/* 1. Base Astrolabe Cage & Void Cone Finial (Y: 438 to 458) */}
-      <polygon points="314,456 317,458 320,456 322,442 312,442" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="0.8" />
-      <path d="M312 442 C312 450 315 456 317 458" stroke="url(#voidglassGoldGrad)" strokeWidth="1" fill="none" />
-      <path d="M322 442 C322 450 319 456 317 458" stroke="url(#voidglassGoldGrad)" strokeWidth="1" fill="none" />
-      <rect x="311" y="438" width="12" height="5" rx="1.2" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.7" />
-      <circle cx="317" cy="440.5" r="1.4" fill="#C084FC" />
+      <polygon points="313,456 317,460 321,456 324,440 310,440" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="1" />
+      <path d="M310 440 C310 450 314 458 317 460" stroke="url(#voidglassGoldGrad)" strokeWidth="1.4" fill="none" />
+      <path d="M324 440 C324 450 320 458 317 460" stroke="url(#voidglassGoldGrad)" strokeWidth="1.4" fill="none" />
+      <rect x="309.5" y="436" width="15" height="6" rx="1.5" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.9" />
+      <circle cx="317" cy="439" r="2" fill="#E9D5FF" />
 
-      {/* 2. Fluted Obsidian Voidglass Column (Y: 148 to 438) */}
-      <rect x="312" y="148" width="10" height="290" rx="2" fill="url(#voidglassShaftGrad)" stroke="#05030A" strokeWidth="1" />
-      <line x1="317" y1="152" x2="317" y2="434" stroke="url(#voidChannelGrad)" strokeWidth="1.8" />
-      <g stroke="#E9D5FF" strokeWidth="1.2" fill="none" opacity="0.85">
-        <path d="M315 170 L318 176 L315 182" />
-        <circle cx="318" cy="176" r="1.2" fill="#FFFFFF" />
-        <path d="M319 230 L315 237 L318 244" />
-        <circle cx="315" cy="237" r="1.2" fill="#FFFFFF" />
-        <path d="M315 350 L318 358 L316 366" />
-        <circle cx="318" cy="358" r="1.2" fill="#FFFFFF" />
+      {/* 2. Solid, Opaque Fluted Obsidian-Amethyst Column (14px wide, Y: 148 to 438) */}
+      <rect x="310" y="148" width="14" height="290" rx="3" fill="url(#voidglassShaftGrad)" stroke="#1E0A38" strokeWidth="1.2" />
+      {/* Central Luminous Void Channel */}
+      <rect x="315" y="152" width="4" height="282" rx="2" fill="url(#voidChannelGrad)" />
+      <line x1="317" y1="152" x2="317" y2="434" stroke="#FFFFFF" strokeWidth="1.2" />
+      {/* Crystalline Facet Sparkle Points */}
+      <g fill="#FFFFFF">
+        <circle cx="317" cy="176" r="1.8" />
+        <circle cx="317" cy="237" r="1.8" />
+        <circle cx="317" cy="358" r="1.8" />
       </g>
 
-      {/* Astronomical Brass Collars with Degree Hash Marks */}
+      {/* Astronomical Solid Brass Collars with Degree Hash Marks */}
       <g>
-        <rect x="310.5" y="196" width="13" height="5" rx="1" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
-        <line x1="313" y1="198.5" x2="321" y2="198.5" stroke="#451A03" strokeWidth="0.8" />
-        <rect x="310.5" y="380" width="13" height="5" rx="1" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
-        <line x1="313" y1="382.5" x2="321" y2="382.5" stroke="#451A03" strokeWidth="0.8" />
+        <rect x="308.5" y="196" width="17" height="6" rx="1.5" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
+        <circle cx="317" cy="199" r="1.6" fill="#EDE9FE" />
+        <rect x="308.5" y="380" width="17" height="6" rx="1.5" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
+        <circle cx="317" cy="383" r="1.6" fill="#EDE9FE" />
       </g>
 
-      {/* 3. Royal Violet Velvet Grip with Gold Filigree Braiding (Y: 274 to 324) */}
-      <rect x="309.5" y="274" width="15" height="50" rx="2" fill="url(#voidglassVelvetGrad)" stroke="#7C3AED" strokeWidth="0.9" />
+      {/* 3. Royal Violet Velvet Grip with Solid Gold Filigree Braiding (Y: 274 to 324) */}
+      <rect x="308" y="274" width="18" height="50" rx="2.5" fill="url(#voidglassVelvetGrad)" stroke="#6D28D9" strokeWidth="1.2" />
       {[0, 8, 16, 24, 32, 40].map((yOff, i) => (
         <g key={i}>
-          <line x1="310" y1={278 + yOff} x2="324" y2={283 + yOff} stroke="url(#voidglassGoldGrad)" strokeWidth="1.3" strokeLinecap="round" />
-          <line x1="310" y1={283 + yOff} x2="324" y2={278 + yOff} stroke="url(#voidglassGoldGrad)" strokeWidth="1.3" strokeLinecap="round" />
-          <circle cx="317" cy={280.5 + yOff} r="1.3" fill="#E9D5FF" stroke="#7C3AED" strokeWidth="0.5" />
+          <line x1="309" y1={278 + yOff} x2="325" y2={283 + yOff} stroke="url(#voidglassGoldGrad)" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="309" y1={283 + yOff} x2="325" y2={278 + yOff} stroke="url(#voidglassGoldGrad)" strokeWidth="1.6" strokeLinecap="round" />
+          <circle cx="317" cy={280.5 + yOff} r="1.6" fill="#FDE68A" stroke="#78350F" strokeWidth="0.6" />
         </g>
       ))}
-      <rect x="309" y="272" width="16" height="3" rx="0.8" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
-      <rect x="309" y="323" width="16" height="3" rx="0.8" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
+      <rect x="307" y="271" width="20" height="4" rx="1" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
+      <rect x="307" y="323" width="20" height="4" rx="1" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
 
       {/* 4. Astrolabe Crown Mounting Socket */}
-      <rect x="310" y="148" width="14" height="6" rx="1.5" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.8" />
-      <circle cx="317" cy="151" r="2.2" fill="#7C3AED" stroke="#E9D5FF" strokeWidth="0.8" />
+      <rect x="308" y="146" width="18" height="8" rx="2" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="1" />
+      <circle cx="317" cy="150" r="2.8" fill="#7C3AED" stroke="#EDE9FE" strokeWidth="1" />
 
-      {/* 5. Outer Astronomical Gyroscopic Gold Ring (Tilted -26 deg) */}
+      {/* 5. Outer Solid Astronomical Gyroscopic Gold Ring (Tilted -26 deg) */}
       <g transform="rotate(-26 317 126)">
-        <ellipse cx="317" cy="126" rx="27" ry="9.5" fill="none" stroke="url(#voidglassGoldGrad)" strokeWidth="2.8" />
-        <ellipse cx="317" cy="126" rx="27" ry="9.5" fill="none" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.6" />
-        <circle cx="290" cy="126" r="2.2" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
-        <circle cx="344" cy="126" r="2.2" fill="url(#voidglassGoldGrad)" stroke="#451A03" strokeWidth="0.6" />
-        <circle cx="290" cy="126" r="1.1" fill="#C084FC" />
-        <circle cx="344" cy="126" r="1.1" fill="#C084FC" />
+        {/* Solid Shaded Ring Body */}
+        <ellipse cx="317" cy="126" rx="28" ry="10" fill="#3B0764" stroke="url(#voidglassGoldGrad)" strokeWidth="3.5" />
+        <ellipse cx="317" cy="126" rx="24" ry="7.5" fill="#1C0A35" />
+        {/* Golden Ring Edge Glint */}
+        <ellipse cx="317" cy="126" rx="28" ry="10" fill="none" stroke="#FFFBEB" strokeWidth="1" opacity="0.8" />
+        <circle cx="289" cy="126" r="3" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
+        <circle cx="345" cy="126" r="3" fill="url(#voidglassGoldGrad)" stroke="#78350F" strokeWidth="0.8" />
+        <circle cx="289" cy="126" r="1.5" fill="#FFFFFF" />
+        <circle cx="345" cy="126" r="1.5" fill="#FFFFFF" />
       </g>
 
-      {/* 6. Floating Faceted Void Tesseract / Octahedron Prism */}
-      <polygon points="317,100 304,126 317,126" fill="url(#voidTesseractLight)" stroke="#C084FC" strokeWidth="0.6" />
-      <polygon points="317,100 330,126 317,126" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="0.6" />
-      <polygon points="317,152 304,126 317,126" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="0.6" />
-      <polygon points="317,152 330,126 317,126" fill="url(#voidTesseractLight)" stroke="#C084FC" strokeWidth="0.6" />
-      <polygon points="317,112 325,126 317,140 309,126" fill="url(#voidTesseractLight)" stroke="#FFFFFF" strokeWidth="1" />
-      <circle cx="317" cy="126" r="4.2" fill="#FFFFFF" />
-      <circle cx="317" cy="126" r="2" fill="#E9D5FF" />
+      {/* 6. Solid Floating Faceted Void Tesseract / Octahedron Prism */}
+      <polygon points="317,96 302,126 317,126" fill="url(#voidTesseractLight)" stroke="#C084FC" strokeWidth="0.8" />
+      <polygon points="317,96 332,126 317,126" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="0.8" />
+      <polygon points="317,156 302,126 317,126" fill="url(#voidTesseractDark)" stroke="#C084FC" strokeWidth="0.8" />
+      <polygon points="317,156 332,126 317,126" fill="url(#voidTesseractLight)" stroke="#C084FC" strokeWidth="0.8" />
+      {/* Front Polished Facet */}
+      <polygon points="317,110 326,126 317,142 308,126" fill="#EDE9FE" stroke="#FFFFFF" strokeWidth="1.2" />
+      <circle cx="317" cy="126" r="5" fill="#FFFFFF" />
+      <circle cx="317" cy="126" r="2.5" fill="#C084FC" />
 
-      {/* 7. Inner Astronomical Gyroscopic Gold Ring (Tilted +42 deg) */}
+      {/* 7. Inner Solid Astronomical Gyroscopic Gold Ring (Tilted +42 deg) */}
       <g transform="rotate(42 317 126)">
-        <ellipse cx="317" cy="126" rx="22" ry="7.5" fill="none" stroke="url(#voidglassGoldGrad)" strokeWidth="2.2" />
-        <ellipse cx="317" cy="126" rx="22" ry="7.5" fill="none" stroke="#FFFFFF" strokeWidth="0.6" opacity="0.6" />
-        <circle cx="295" cy="126" r="1.6" fill="#FDE68A" />
-        <circle cx="339" cy="126" r="1.6" fill="#FDE68A" />
+        <ellipse cx="317" cy="126" rx="22" ry="8" fill="#2E1065" stroke="url(#voidglassGoldGrad)" strokeWidth="2.8" opacity="0.9" />
+        <ellipse cx="317" cy="126" rx="19" ry="6" fill="#160829" />
+        <ellipse cx="317" cy="126" rx="22" ry="8" fill="none" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.7" />
+        <circle cx="295" cy="126" r="2" fill="#FDE68A" />
+        <circle cx="339" cy="126" r="2" fill="#FDE68A" />
       </g>
 
       {/* 8. Orbiting Cosmic Stardust Motes & Arcane Sparks */}
-      <circle className="holySparkle" cx="292" cy="112" r="2" fill="#E9D5FF" />
-      <circle className="holySparkle" style={{ animationDelay: "0.6s" }} cx="342" cy="116" r="2.2" fill="#C084FC" />
-      <circle className="holySparkle" style={{ animationDelay: "1.2s" }} cx="328" cy="94" r="2.4" fill="#FFFFFF" />
-      <circle className="holySparkle" style={{ animationDelay: "1.8s" }} cx="304" cy="144" r="1.8" fill="#F472B6" />
-      <path className="holySparkle" style={{ animationDelay: "0.9s" }} d="M340,140 L341.5,143 L345,144 L341.5,145 L340,148 L338.5,145 L335,144 L338.5,143 Z" fill="#E9D5FF" />
+      <circle className="holySparkle" cx="290" cy="110" r="2.5" fill="#EDE9FE" />
+      <circle className="holySparkle" style={{ animationDelay: "0.6s" }} cx="344" cy="114" r="2.6" fill="#C084FC" />
+      <circle className="holySparkle" style={{ animationDelay: "1.2s" }} cx="328" cy="90" r="2.8" fill="#FFFFFF" />
+      <circle className="holySparkle" style={{ animationDelay: "1.8s" }} cx="302" cy="146" r="2.2" fill="#F472B6" />
+      <path className="holySparkle" style={{ animationDelay: "0.9s" }} d="M340,138 L342,142 L346,143 L342,145 L340,149 L338,145 L334,143 L338,142 Z" fill="#EDE9FE" />
     </g>
   );
 }
@@ -4369,7 +4373,7 @@ function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1
         }} />
       )}
       <StatusFXOverlay mage={mage} />
-      <svg width={w} height={h} viewBox="0 0 400 500" style={{ position: "relative", transform: facing === "left" ? "scaleX(-1)" : "none", filter: casting ? "brightness(1.25)" : "none" }}>
+      <svg width={w} height={h} viewBox="-20 -25 440 550" style={{ position: "relative", transform: facing === "left" ? "scaleX(-1)" : "none", filter: casting ? "brightness(1.25)" : "none" }}>
         {/* Floor Ground Shadow - stays anchored to the ground plane */}
         <ellipse cx="200" cy="466" rx="68" ry="13" fill="#000000" className="groundShadow" />
         {Staff && <ellipse cx="317" cy="466" rx="15" ry="4.5" fill="#000000" className="groundShadow" opacity="0.35" />}
@@ -8946,30 +8950,30 @@ export default function MageDuel() {
             </p>
           </div>
 
-          {/* Huge Sprite Stage with Dynamic Affinity Aura */}
-          <div className="relative w-full py-4 sm:py-6 flex flex-col items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-900/60 to-slate-950/90 border border-white/5 shadow-inner">
-            {/* Ambient Element Particle Glow */}
-            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35">
+          {/* Huge Sprite Stage with Dynamic Affinity Aura - Unclipped with Headroom */}
+          <div className="relative w-full py-5 sm:py-7 px-2 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-950/95 border border-amber-500/25 shadow-inner overflow-visible">
+            {/* Ambient Element Particle Glow (Constrained) */}
+            <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 overflow-hidden rounded-2xl">
               <div
                 className="w-56 h-56 sm:w-72 sm:h-72 rounded-full blur-3xl transition-all duration-700 animate-pulse"
                 style={{ background: el.color }}
               />
             </div>
 
-            {/* Giant Sprite */}
-            <div className="relative z-10 transition-transform duration-200">
+            {/* Giant Sprite (size 2.35 for perfect vertical balance, no cropping) */}
+            <div className="relative z-10 transition-transform duration-200 my-1">
               <MageSprite
                 mage={previewMage}
                 facing={inspectFacing}
                 hurt={inspectAction === "hurt"}
                 casting={inspectAction === "cast"}
-                size={2.7}
+                size={2.35}
               />
             </div>
 
             {/* Pedestal Ground Shadow */}
             <div
-              className="w-44 sm:w-56 h-4 sm:h-5 rounded-[50%] blur-sm pointer-events-none mt-1"
+              className="w-40 sm:w-52 h-3.5 sm:h-4.5 rounded-[50%] blur-sm pointer-events-none mt-0.5"
               style={{ background: `radial-gradient(ellipse, ${el.color}66 0%, rgba(0,0,0,0.8) 70%)` }}
             />
 

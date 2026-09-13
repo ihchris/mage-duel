@@ -16,14 +16,16 @@ export function StaffStormcaller() {
     <g>
       <defs>
         <linearGradient id="stormShaftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#0B0914" />
-          <stop offset="30%" stopColor="#1E1736" />
-          <stop offset="70%" stopColor="#2E1065" />
-          <stop offset="100%" stopColor="#0B0914" />
+          <stop offset="0%" stopColor="#1E1B4B" />
+          <stop offset="25%" stopColor="#312E81" />
+          <stop offset="55%" stopColor="#4338CA" />
+          <stop offset="80%" stopColor="#6366F1" />
+          <stop offset="100%" stopColor="#1E1B4B" />
         </linearGradient>
         <linearGradient id="stormProngGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#EDE9FE" />
-          <stop offset="40%" stopColor="#A78BFA" />
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="30%" stopColor="#C4B5FD" />
+          <stop offset="70%" stopColor="#7C3AED" />
           <stop offset="100%" stopColor="#4C1D95" />
         </linearGradient>
         <radialGradient id="stormOrbGlow" cx="50%" cy="50%" r="50%">
@@ -34,32 +36,41 @@ export function StaffStormcaller() {
         </radialGradient>
       </defs>
 
-      {/* Main Staff Shaft */}
-      <path d="M315 150 L319 150 L320 460 L314 460 Z" fill="url(#stormShaftGrad)" stroke="#3B0764" strokeWidth="0.8" />
-      {/* Gold ferrule rings */}
-      <rect x="313" y="445" width="8" height="6" rx="1" fill={GOLD} stroke={GOLD_D} strokeWidth="0.8" />
-      <rect x="313.5" y="290" width="7" height="8" rx="1" fill={GOLD} stroke={GOLD_D} strokeWidth="0.8" />
-      <rect x="313.5" y="165" width="7" height="5" rx="1" fill={GOLD} stroke={GOLD_D} strokeWidth="0.8" />
+      {/* Solid Substantial Staff Shaft (13px wide) */}
+      <rect x="310.5" y="152" width="13" height="294" rx="2.5" fill="url(#stormShaftGrad)" stroke="#1E1B4B" strokeWidth="1.2" />
+      {/* Central Lightning Arc Inlay */}
+      <line x1="317" y1="156" x2="317" y2="440" stroke="#A5B4FC" strokeWidth="1.8" />
+      <line x1="316.2" y1="160" x2="316.2" y2="436" stroke="#FFFFFF" strokeWidth="0.8" opacity="0.9" />
 
-      {/* Forked Lightning Metal Prongs */}
+      {/* Solid Polished Gold Rings and Ferrules */}
+      <rect x="309" y="442" width="16" height="8" rx="1.5" fill={GOLD} stroke={GOLD_D} strokeWidth="1" />
+      <circle cx="317" cy="446" r="2" fill="#FDE047" />
+      <rect x="308.5" y="278" width="17" height="48" rx="2" fill="#2E1065" stroke={GOLD} strokeWidth="1" />
+      <line x1="309" y1="290" x2="325" y2="290" stroke={GOLD} strokeWidth="1.2" />
+      <line x1="309" y1="302" x2="325" y2="302" stroke={GOLD} strokeWidth="1.2" />
+      <line x1="309" y1="314" x2="325" y2="314" stroke={GOLD} strokeWidth="1.2" />
+      <rect x="309" y="160" width="16" height="7" rx="1.5" fill={GOLD} stroke={GOLD_D} strokeWidth="1" />
+
+      {/* Solid Sculpted Forked Lightning Metal Prongs */}
       {/* Left prong */}
-      <path d="M314 165 C308 150 298 135 304 110 C306 100 311 96 314 102 C312 115 315 132 316 150 Z" fill="url(#stormProngGrad)" stroke="#6D28D9" strokeWidth="1" />
+      <path d="M312 165 C304 148 294 132 300 106 C304 94 312 92 314 100 C310 114 313 134 315 152 Z" fill="url(#stormProngGrad)" stroke="#4C1D95" strokeWidth="1.2" />
       {/* Right prong */}
-      <path d="M320 165 C326 150 336 135 330 110 C328 100 323 96 320 102 C322 115 319 132 318 150 Z" fill="url(#stormProngGrad)" stroke="#6D28D9" strokeWidth="1" />
+      <path d="M322 165 C330 148 340 132 334 106 C330 94 322 92 320 100 C324 114 321 134 319 152 Z" fill="url(#stormProngGrad)" stroke="#4C1D95" strokeWidth="1.2" />
 
-      {/* Central Floating Tempest Crystal */}
-      <circle cx="317" cy="115" r="14" fill="url(#stormOrbGlow)" opacity="0.4" className="matchPulse" />
-      <polygon points="317,98 324,115 317,132 310,115" fill="#DDD6FE" stroke="#FDE047" strokeWidth="1.2" />
-      <polygon points="317,104 321,115 317,126 313,115" fill="#7C3AED" />
+      {/* Central Solid Floating Tempest Crystal Core */}
+      <circle cx="317" cy="115" r="16" fill="url(#stormOrbGlow)" opacity="0.6" className="matchPulse" />
+      <polygon points="317,94 326,115 317,136 308,115" fill="#EDE9FE" stroke="#FDE047" strokeWidth="1.5" />
+      <polygon points="317,102 322,115 317,128 312,115" fill="#7C3AED" stroke="#C4B5FD" strokeWidth="0.8" />
+      <circle cx="317" cy="115" r="3" fill="#FFFFFF" />
 
       {/* Crackling Lightning Arcs between Prongs */}
-      <path d="M307 108 L314 114 L310 117 L317 122 L326 112" stroke="#FDE047" strokeWidth="1.4" fill="none" className="holySparkle" />
-      <path d="M327 106 L321 113 L325 116 L317 120 L309 114" stroke="#C084FC" strokeWidth="1.2" fill="none" className="holySparkle" style={{ animationDelay: "0.6s" }} />
+      <path d="M305 106 L313 113 L309 117 L317 122 L329 110" stroke="#FDE047" strokeWidth="1.8" fill="none" className="holySparkle" />
+      <path d="M329 104 L322 112 L327 116 L317 121 L307 113" stroke="#C084FC" strokeWidth="1.5" fill="none" className="holySparkle" style={{ animationDelay: "0.6s" }} />
 
       {/* Floating Sparkles */}
-      <circle cx="302" cy="112" r="1.5" fill="#FDE047" className="holySparkle" />
-      <circle cx="332" cy="108" r="1.8" fill="#DDD6FE" className="holySparkle" style={{ animationDelay: "0.9s" }} />
-      <circle cx="317" cy="88" r="1.5" fill="#FDE047" className="holySparkle" style={{ animationDelay: "0.4s" }} />
+      <circle cx="300" cy="110" r="2.2" fill="#FDE047" className="holySparkle" />
+      <circle cx="334" cy="106" r="2.4" fill="#DDD6FE" className="holySparkle" style={{ animationDelay: "0.9s" }} />
+      <circle cx="317" cy="84" r="2.2" fill="#FDE047" className="holySparkle" style={{ animationDelay: "0.4s" }} />
     </g>
   );
 }
@@ -74,52 +85,63 @@ export function StaffBloodpact() {
     <g>
       <defs>
         <linearGradient id="bloodShaftGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#1C0505" />
-          <stop offset="40%" stopColor="#450A0A" />
-          <stop offset="70%" stopColor="#7F1D1D" />
-          <stop offset="100%" stopColor="#1C0505" />
+          <stop offset="0%" stopColor="#450A0A" />
+          <stop offset="25%" stopColor="#7F1D1D" />
+          <stop offset="55%" stopColor="#991B1B" />
+          <stop offset="80%" stopColor="#B91C1C" />
+          <stop offset="100%" stopColor="#450A0A" />
         </linearGradient>
         <radialGradient id="bloodGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#F87171" />
-          <stop offset="50%" stopColor="#DC2626" />
+          <stop offset="0%" stopColor="#FCA5A5" />
+          <stop offset="40%" stopColor="#DC2626" />
+          <stop offset="75%" stopColor="#991B1B" />
           <stop offset="100%" stopColor="transparent" />
         </radialGradient>
       </defs>
 
-      {/* Main Staff Shaft */}
-      <path d="M315 145 L319 145 L320 460 L314 460 Z" fill="url(#bloodShaftGrad)" stroke="#2B0505" strokeWidth="0.9" />
+      {/* Solid Substantial Blood-Forged Shaft (13px wide) */}
+      <rect x="310.5" y="146" width="13" height="302" rx="2.5" fill="url(#bloodShaftGrad)" stroke="#2B0505" strokeWidth="1.2" />
 
       {/* Pulsing Cursed Blood Veins on the Shaft */}
-      <path d="M315 420 Q318 380 316 340 Q319 300 316 260 Q318 220 316 170" stroke="#EF4444" strokeWidth="1.3" fill="none" opacity="0.85" className="wingEmber" />
-      <path d="M318 390 Q315 350 318 310 Q315 270 318 210 Q315 180 317 150" stroke="#F87171" strokeWidth="0.9" fill="none" opacity="0.75" className="wingEmber" style={{ animationDelay: "0.5s" }} />
+      <path d="M314 430 Q320 380 315 340 Q321 300 315 260 Q321 220 315 170" stroke="#EF4444" strokeWidth="2.2" fill="none" opacity="0.9" className="wingEmber" />
+      <path d="M319 400 Q314 350 319 310 Q314 270 319 210 Q314 180 318 150" stroke="#FCA5A5" strokeWidth="1.2" fill="none" opacity="0.8" className="wingEmber" style={{ animationDelay: "0.5s" }} />
 
-      {/* Bone Skull Crown at Top */}
+      {/* Dark Bone Ferrules & Pommel */}
+      <rect x="309" y="440" width="16" height="8" rx="1.5" fill="#E7E5E4" stroke="#78716C" strokeWidth="1" />
+      <circle cx="317" cy="444" r="2" fill="#DC2626" />
+      <rect x="308.5" y="276" width="17" height="50" rx="2" fill="#1C0505" stroke="#991B1B" strokeWidth="1.2" />
+      <line x1="309" y1="288" x2="325" y2="288" stroke="#DC2626" strokeWidth="1.2" />
+      <line x1="309" y1="301" x2="325" y2="301" stroke="#DC2626" strokeWidth="1.2" />
+      <line x1="309" y1="314" x2="325" y2="314" stroke="#DC2626" strokeWidth="1.2" />
+
+      {/* Solid Bone Skull Crown at Top */}
       <g transform="translate(317 130)">
         {/* Blood Aura */}
-        <circle cx="0" cy="-5" r="20" fill="url(#bloodGlow)" opacity="0.45" className="matchPulse" />
+        <circle cx="0" cy="-5" r="24" fill="url(#bloodGlow)" opacity="0.6" className="matchPulse" />
 
-        {/* Skull Head Base */}
-        <path d="M-9 -16 C-10 -24 10 -24 9 -16 C10 -10 6 -4 6 2 C3 4 -3 4 -6 2 C-6 -4 -10 -10 -9 -16 Z" fill="#F5F0E6" stroke="#450A0A" strokeWidth="1.2" />
+        {/* Sculpted Skull Base */}
+        <path d="M-11 -16 C-13 -26 13 -26 11 -16 C12 -9 7 -3 7 4 C4 6 -4 6 -7 4 C-7 -3 -12 -9 -11 -16 Z" fill="#F5F5F4" stroke="#450A0A" strokeWidth="1.4" />
         {/* Skull Cheekbones & Teeth */}
-        <path d="M-5 2 L-5 7 L5 7 L5 2 Z" fill="#E6DFD1" stroke="#450A0A" strokeWidth="0.9" />
-        <line x1="-2.5" y1="2" x2="-2.5" y2="7" stroke="#450A0A" strokeWidth="0.8" />
-        <line x1="0" y1="2" x2="0" y2="7" stroke="#450A0A" strokeWidth="0.8" />
-        <line x1="2.5" y1="2" x2="2.5" y2="7" stroke="#450A0A" strokeWidth="0.8" />
+        <path d="M-6 4 L-6 9 L6 9 L6 4 Z" fill="#E7E5E4" stroke="#450A0A" strokeWidth="1.2" />
+        <line x1="-3" y1="4" x2="-3" y2="9" stroke="#450A0A" strokeWidth="1" />
+        <line x1="0" y1="4" x2="0" y2="9" stroke="#450A0A" strokeWidth="1" />
+        <line x1="3" y1="4" x2="3" y2="9" stroke="#450A0A" strokeWidth="1" />
         {/* Eye sockets with blazing crimson fire */}
-        <ellipse cx="-4" cy="-12" rx="2.5" ry="3.2" fill="#2B0505" />
-        <circle cx="-4" cy="-12" r="1.3" fill="#EF4444" className="matchPulse" />
-        <ellipse cx="4" cy="-12" rx="2.5" ry="3.2" fill="#2B0505" />
-        <circle cx="4" cy="-12" r="1.3" fill="#EF4444" className="matchPulse" />
+        <ellipse cx="-5" cy="-12" rx="3" ry="3.8" fill="#1C0505" />
+        <circle cx="-5" cy="-12" r="1.8" fill="#EF4444" className="matchPulse" />
+        <ellipse cx="5" cy="-12" rx="3" ry="3.8" fill="#1C0505" />
+        <circle cx="5" cy="-12" r="1.8" fill="#EF4444" className="matchPulse" />
         {/* Nasal Cavity */}
-        <polygon points="0,-8 -1.2,-5 1.2,-5" fill="#2B0505" />
+        <polygon points="0,-8 -1.5,-4 1.5,-4" fill="#1C0505" />
 
-        {/* Pulsing Ruby Gem Crested in Forehead */}
-        <polygon points="0,-24 4,-19 0,-14 -4,-19" fill="#DC2626" stroke="#FEF08A" strokeWidth="0.9" />
-        <circle cx="0" cy="-19" r="1.4" fill="#FFFFFF" />
+        {/* Solid Pulsing Ruby Gem Crested in Forehead */}
+        <polygon points="0,-28 6,-21 0,-14 -6,-21" fill="#DC2626" stroke="#FEF08A" strokeWidth="1.3" className="holySparkle" />
+        <polygon points="0,-25 3,-21 0,-17 -3,-21" fill="#EF4444" />
+        <circle cx="0" cy="-21" r="2" fill="#FFFFFF" />
 
         {/* Floating Blood Droplets */}
-        <circle cx="-8" cy="-22" r="1.6" fill="#DC2626" className="holySparkle" />
-        <circle cx="9" cy="-20" r="1.4" fill="#F87171" className="holySparkle" style={{ animationDelay: "0.8s" }} />
+        <circle cx="-10" cy="-23" r="2.2" fill="#DC2626" className="holySparkle" />
+        <circle cx="11" cy="-21" r="2" fill="#F87171" className="holySparkle" style={{ animationDelay: "0.8s" }} />
       </g>
     </g>
   );
@@ -134,9 +156,10 @@ export function StaffCoralScepter() {
   return (
     <g>
       <defs>
-        <linearGradient id="coralBranchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#F472B6" />
-          <stop offset="50%" stopColor="#FB7185" />
+        <linearGradient id="coralBranchGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#BE185D" />
+          <stop offset="30%" stopColor="#FB7185" />
+          <stop offset="70%" stopColor="#F43F5E" />
           <stop offset="100%" stopColor="#0284C7" />
         </linearGradient>
         <radialGradient id="pearlGlow" cx="50%" cy="50%" r="50%">
@@ -146,28 +169,48 @@ export function StaffCoralScepter() {
         </radialGradient>
       </defs>
 
-      {/* Main Living Coral Branching Shaft */}
-      <path d="M315 160 C317 220 313 280 317 350 C315 390 318 430 316 460" stroke="url(#coralBranchGrad)" strokeWidth="6" strokeLinecap="round" fill="none" />
-      <path d="M315 160 C317 220 313 280 317 350 C315 390 318 430 316 460" stroke="#FDF2F8" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.6" />
+      {/* Solid Substantial Sculpted Coral Shaft (14px wide solid body) */}
+      <path
+        d="M311 155 
+           C318 210, 309 280, 318 350 
+           C313 390, 321 425, 318 456
+           L312 456
+           C307 425, 313 390, 309 350
+           C304 280, 312 210, 308 155 Z"
+        fill="url(#coralBranchGrad)"
+        stroke="#881337"
+        strokeWidth="1.5"
+      />
+      {/* Bioluminescent Sea-Essence Veins */}
+      <path d="M312 165 C316 220 311 285 316 355" stroke="#38BDF8" strokeWidth="1.8" fill="none" opacity="0.85" />
+      <path d="M314 170 C317 225 313 290 317 360" stroke="#FFFFFF" strokeWidth="0.8" fill="none" opacity="0.9" />
 
-      {/* Secondary Coral Side Branches */}
-      <path d="M315 270 C306 255 302 245 300 238" stroke="#F472B6" strokeWidth="3" strokeLinecap="round" fill="none" />
-      <path d="M317 330 C326 315 330 305 332 295" stroke="#38BDF8" strokeWidth="2.8" strokeLinecap="round" fill="none" />
+      {/* Solid Coral Side Knots & Nodules */}
+      <circle cx="318" cy="245" r="3.5" fill="#FB7185" stroke="#881337" strokeWidth="0.8" />
+      <circle cx="310" cy="320" r="3.8" fill="#F43F5E" stroke="#881337" strokeWidth="0.8" />
+      <circle cx="317" cy="395" r="3.2" fill="#0284C7" stroke="#0369A1" strokeWidth="0.8" />
 
-      {/* Top Open Sea Shell with Radiant Pearl */}
+      {/* Solid Coral Side Branches */}
+      <path d="M309 270 C302 258 299 248 297 240 C301 243 306 252 310 262 Z" fill="#FB7185" stroke="#881337" strokeWidth="1" />
+      <path d="M318 330 C326 318 331 308 333 298 C330 302 324 314 317 322 Z" fill="#38BDF8" stroke="#0284C7" strokeWidth="1" />
+
+      {/* Top Solid Open Nautilus Shell with Radiant Pearl */}
       <g transform="translate(317 135)">
         {/* Back Shell Half */}
-        <path d="M-14 8 C-18 -10 18 -10 14 8 Z" fill="#FBCFE8" stroke="#DB2777" strokeWidth="1" />
-        <line x1="0" y1="8" x2="0" y2="-6" stroke="#F472B6" strokeWidth="1" opacity="0.6" />
-        <line x1="-7" y1="8" x2="-10" y2="-4" stroke="#F472B6" strokeWidth="0.8" opacity="0.6" />
-        <line x1="7" y1="8" x2="10" y2="-4" stroke="#F472B6" strokeWidth="0.8" opacity="0.6" />
+        <path d="M-15 8 C-20 -12 20 -12 15 8 Z" fill="#FBCFE8" stroke="#9D174D" strokeWidth="1.5" />
+        <line x1="0" y1="8" x2="0" y2="-8" stroke="#DB2777" strokeWidth="1.2" opacity="0.8" />
+        <line x1="-8" y1="8" x2="-12" y2="-5" stroke="#DB2777" strokeWidth="1" opacity="0.8" />
+        <line x1="8" y1="8" x2="12" y2="-5" stroke="#DB2777" strokeWidth="1" opacity="0.8" />
 
         {/* Radiant Luminous Pearl */}
-        <circle cx="0" cy="2" r="8" fill="url(#pearlGlow)" className="matchPulse" />
-        <circle cx="-2.5" cy="-0.5" r="2.2" fill="#FFFFFF" />
+        <circle cx="0" cy="0" r="22" fill="url(#pearlGlow)" opacity="0.5" className="matchPulse" />
+        <circle cx="0" cy="0" r="9.5" fill="#FFFFFF" stroke="#0284C7" strokeWidth="1.4" />
+        <circle cx="-3" cy="-3" r="3.8" fill="#E0F2FE" />
+        <circle cx="-3.5" cy="-3.5" r="1.8" fill="#FFFFFF" />
 
-        {/* Front Shell Lip */}
-        <path d="M-13 8 C-8 12 8 12 13 8 Z" fill="#F472B6" stroke="#BE185D" strokeWidth="1" />
+        {/* Front Shell Half */}
+        <path d="M-15 8 C-17 20 17 20 15 8 Z" fill="#F472B6" stroke="#881337" strokeWidth="1.5" />
+        <circle cx="0" cy="12" r="2" fill="#FDE047" />
 
         {/* Tiny swimming ocean fish */}
         <g transform="translate(-16 -12) scale(0.7)" className="holySparkle">
