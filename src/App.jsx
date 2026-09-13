@@ -427,50 +427,50 @@ const HAIR_COLORS = [
   { id: "hair_violet",  name: "Violet",  hair: "#7C3AED", hairD: "#5B21B6" },
 ];
 const HAIR_STYLES = [
-  { id: "hair_wavy",    name: "Wavy Locks" },
-  { id: "hair_short",   name: "Mage Crop" },
-  { id: "hair_long",    name: "Flowing Long" },
-  { id: "hair_topknot", name: "Scholar Knot" },
-  { id: "hair_wild",    name: "Arcane Wild" },
-  { id: "hair_braids",  name: "Twin Braids" },
-  { id: "hair_bob",     name: "Mystic Bob" },
+  { id: "hair_wavy",    name: "Wavy Locks",    name_pt: "Ondulado Clássico", desc: "Classic wavy locks.", desc_pt: "Ondas clássicas de mago." },
+  { id: "hair_short",   name: "Mage Crop",     name_pt: "Curto de Mago",     desc: "Practical cropped mage cut.", desc_pt: "Corte curto prático para estudos arcanos." },
+  { id: "hair_long",    name: "Flowing Long",  name_pt: "Longo Fluido",      desc: "Flowing silken hair.", desc_pt: "Cabelos longos e esvoaçantes com essência arcana." },
+  { id: "hair_topknot", name: "Scholar Knot",  name_pt: "Coque de Erudito",  desc: "Traditional scholar topknot.", desc_pt: "Coque tradicional dos altos eruditos da academia." },
+  { id: "hair_wild",    name: "Arcane Wild",   name_pt: "Selvagem Arcano",   desc: "Untamed locks crackling with magic.", desc_pt: "Fios rebeldes crepitando com mana pura." },
+  { id: "hair_braids",  name: "Twin Braids",   name_pt: "Tranças Duplas",    desc: "Intricately woven battle braids.", desc_pt: "Tranças duplas entrelaçadas de duelo." },
+  { id: "hair_bob",     name: "Mystic Bob",    name_pt: "Chanel Místico",    desc: "Sleek mystical bob cut.", desc_pt: "Corte chanel geométrico e encantador." },
 ];
 const BEARD_STYLES = [
-  { id: "beard_long",    name: "Elder Long" },
-  { id: "beard_short",   name: "Boxed Short" },
-  { id: "beard_stubble", name: "Stubble" },
-  { id: "beard_braided", name: "Twin Braided" },
-  { id: "beard_goatee",  name: "Goatee" },
-  { id: "beard_none",    name: "Clean Shaven" },
+  { id: "beard_none",    name: "Clean Shaven",  name_pt: "Sem Barba",        desc: "Clean shaven face.", desc_pt: "Rosto limpo e barbeado." },
+  { id: "beard_stubble", name: "Stubble",       name_pt: "Por Fazer",        desc: "Rugged arcane stubble.", desc_pt: "Sombra estilosa de barba por fazer." },
+  { id: "beard_short",   name: "Boxed Short",   name_pt: "Curta Aparada",    desc: "Neatly trimmed boxed beard.", desc_pt: "Barba curta e perfeitamente desenhada." },
+  { id: "beard_long",    name: "Elder Long",    name_pt: "Longa de Ancião",  desc: "Magnificent elder wizard beard.", desc_pt: "Longa barba majestosa de sábio ancião." },
+  { id: "beard_braided", name: "Twin Braided",  name_pt: "Trançada Dupla",   desc: "Dual braided battle beard.", desc_pt: "Barba trançada dupla adornada com anéis." },
+  { id: "beard_goatee",  name: "Goatee",        name_pt: "Cavanhaque",       desc: "Sharp aristocratic goatee.", desc_pt: "Cavanhaque pontiagudo de duelista refinado." },
 ];
 const EYE_COLORS = [
-  { id: "eye_dark",   name: "Dark",    color: "#2B2430" },
-  { id: "eye_blue",   name: "Blue",    color: "#3D6B8A" },
-  { id: "eye_green",  name: "Green",   color: "#4A7A4A" },
-  { id: "eye_amber",  name: "Amber",   color: "#A8712E" },
-  { id: "eye_violet", name: "Violet",  color: "#8E5FD1" },
-  { id: "eye_ruby",   name: "Crimson", color: "#B91C1C" },
+  { id: "eye_dark",   name: "Dark",    name_pt: "Escuro",   color: "#2B2430" },
+  { id: "eye_blue",   name: "Blue",    name_pt: "Azul",     color: "#3D6B8A" },
+  { id: "eye_green",  name: "Green",   name_pt: "Verde",    color: "#4A7A4A" },
+  { id: "eye_amber",  name: "Amber",   name_pt: "Âmbar",    color: "#A8712E" },
+  { id: "eye_violet", name: "Violet",  name_pt: "Violeta",  color: "#8E5FD1" },
+  { id: "eye_ruby",   name: "Crimson", name_pt: "Carmesim", color: "#B91C1C" },
 ];
 const GENDERS = [
   { id: "gender_male",   name: "Male" },
   { id: "gender_female", name: "Female" },
 ];
 const FACES = [
-  { id: "face_round", name: "Round", noseRx: 11, noseRy: 9,  eyeR: 7.2, chinWidth: 30, jawDrop: 0 },
-  { id: "face_slim",  name: "Slim",  noseRx: 8,  noseRy: 11, eyeR: 6.5, chinWidth: 20, jawDrop: 3 },
-  { id: "face_soft",  name: "Soft",  noseRx: 9.5,noseRy: 8.5,eyeR: 7.8, chinWidth: 26, jawDrop: -1 },
-  { id: "face_sharp", name: "Sharp", noseRx: 7.5,noseRy: 12, eyeR: 6.2, chinWidth: 16, jawDrop: 4 },
+  { id: "face_round", name: "Round", name_pt: "Redondo",  desc: "Youthful rounded face contours.", desc_pt: "Contorno facial jovial e arredondado.", noseRx: 11, noseRy: 9,  eyeR: 7.2, chinWidth: 30, jawDrop: 0 },
+  { id: "face_slim",  name: "Slim",  name_pt: "Fino",     desc: "Slender intellectual face profile.", desc_pt: "Perfil fino e intelecto refinado.", noseRx: 8,  noseRy: 11, eyeR: 6.5, chinWidth: 20, jawDrop: 3 },
+  { id: "face_soft",  name: "Soft",  name_pt: "Suave",    desc: "Gentle harmonious facial features.", desc_pt: "Feições suaves, serenas e harmoniosas.", noseRx: 9.5,noseRy: 8.5,eyeR: 7.8, chinWidth: 26, jawDrop: -1 },
+  { id: "face_sharp", name: "Sharp", name_pt: "Marcante", desc: "Chiseled striking arcane jawline.", desc_pt: "Maxilar marcante esculpido pela disciplina mágica.", noseRx: 7.5,noseRy: 12, eyeR: 6.2, chinWidth: 16, jawDrop: 4 },
 ];
 const EARRINGS = [
-  { id: "earring_none",   name: "None" },
-  { id: "earring_gold",   name: "Gold Studs",   color: "#E8B44F", hoop: false },
-  { id: "earring_silver", name: "Silver Hoops", color: "#C9CDD6", hoop: true },
-  { id: "earring_ruby",   name: "Ruby Drops",   color: "#E11D48", drop: true },
+  { id: "earring_none",   name: "None",         name_pt: "Nenhum",           desc: "No earrings.", desc_pt: "Nenhum brinco." },
+  { id: "earring_gold",   name: "Gold Studs",   name_pt: "Pontos de Ouro",   desc: "Subtle gleaming gold studs.", desc_pt: "Delicados pontos de ouro puro reluzente.", color: "#E8B44F", hoop: false },
+  { id: "earring_silver", name: "Silver Hoops", name_pt: "Argolas de Prata", desc: "Shimmering lunar silver hoops.", desc_pt: "Argolas prateadas forjadas sob a lua cheia.", color: "#C9CDD6", hoop: true },
+  { id: "earring_ruby",   name: "Ruby Drops",   name_pt: "Gotas de Rubi",    desc: "Radiant crimson ruby drops.", desc_pt: "Pingentes de rubi carmesim flamejante.", color: "#E11D48", drop: true },
 ];
 const NOSE_RINGS = [
-  { id: "nosering_none",   name: "None" },
-  { id: "nosering_gold",   name: "Gold Stud",   color: "#E8B44F", ring: false },
-  { id: "nosering_silver", name: "Silver Ring", color: "#C9CDD6", ring: true },
+  { id: "nosering_none",   name: "None",        name_pt: "Nenhum",           desc: "No nose piercing.", desc_pt: "Nenhum piercing no nariz." },
+  { id: "nosering_gold",   name: "Gold Stud",   name_pt: "Ponto de Ouro",    desc: "Refined gold nostril stud.", desc_pt: "Discreto e elegante ponto de ouro.", color: "#E8B44F", ring: false },
+  { id: "nosering_silver", name: "Silver Ring", name_pt: "Argola de Prata",  desc: "Polished silver nostril hoop.", desc_pt: "Argola prateada polida com encantamento.", color: "#C9CDD6", ring: true },
 ];
 
 const RARITY = {
@@ -772,7 +772,14 @@ const START_OWNED = [
   "offhand_none", "offhand_tome",
   "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare",
   "boots_apprentice", "boots_windstride",
-  "ring_none", "ring_cinder", "ring_glacier"
+  "ring_none", "ring_cinder", "ring_glacier",
+  // Estilos de aparência iniciais (gratuitos)
+  "hair_wavy", "hair_short",
+  "beard_none", "beard_stubble",
+  "face_round", "face_slim",
+  "earring_none", "nosering_none",
+  "hair_white", "hair_gray", "hair_brown", "hair_black", "hair_ginger",
+  "eye_dark", "eye_blue", "eye_green", "eye_amber"
 ];
 const LOOTABLE = [
   "verdant", "voidglass", "sunfire", "foxcharm", "phoenix", "hat_wide", "hat_crown", "hat_circlet",
@@ -797,14 +804,38 @@ const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
 // ================= TABELA DE ITENS DA LOJA (100% COSMÉTICO) =================
 // Preços em Arcane Shards (✦). Todos os itens são puramente cosméticos (zero stats de combate).
 const SHOP_ITEMS = [
+  // Cabelos & Cores de Cabelo
   { id: "hair_violet",    price: 80,  category: "hair" },
   { id: "hair_crimson",   price: 80,  category: "hair" },
   { id: "hair_blonde",    price: 60,  category: "hair" },
+  { id: "hair_long",      price: 75,  category: "hair_style" },
+  { id: "hair_topknot",   price: 80,  category: "hair_style" },
+  { id: "hair_wild",      price: 90,  category: "hair_style" },
+  { id: "hair_braids",    price: 85,  category: "hair_style" },
+  { id: "hair_bob",       price: 70,  category: "hair_style" },
+
+  // Barbas Arcanas
+  { id: "beard_short",    price: 60,  category: "beard" },
+  { id: "beard_long",     price: 85,  category: "beard" },
+  { id: "beard_braided",  price: 95,  category: "beard" },
+  { id: "beard_goatee",   price: 70,  category: "beard" },
+
+  // Olhos Místicos
   { id: "eye_ruby",       price: 60,  category: "eyes" },
   { id: "eye_violet",     price: 60,  category: "eyes" },
-  { id: "earring_ruby",   price: 100, category: "jewelry" },
+
+  // Formatos de Rosto
+  { id: "face_soft",      price: 50,  category: "face" },
+  { id: "face_sharp",     price: 65,  category: "face" },
+
+  // Brincos & Piercings Faciais
+  { id: "earring_gold",   price: 70,  category: "jewelry" },
   { id: "earring_silver", price: 80,  category: "jewelry" },
+  { id: "earring_ruby",   price: 100, category: "jewelry" },
+  { id: "nosering_gold",  price: 60,  category: "jewelry" },
   { id: "nosering_silver",price: 60,  category: "jewelry" },
+
+  // Roupas & Luvas
   { id: "gloves_arcane",  price: 150, category: "gloves" },
   { id: "gloves_wraps",   price: 120, category: "gloves" },
   { id: "robe_crimson",   price: 400, category: "robe" },
@@ -835,7 +866,7 @@ const SHOP_ITEMS = [
 function resolveShopItem(entry) {
   let base = findItem(entry.id);
   if (!base) {
-    base = [...HAIR_COLORS, ...EYE_COLORS, ...EARRINGS, ...NOSE_RINGS].find(i => i.id === entry.id);
+    base = [...HAIR_COLORS, ...EYE_COLORS, ...HAIR_STYLES, ...BEARD_STYLES, ...FACES, ...EARRINGS, ...NOSE_RINGS].find(i => i.id === entry.id);
   }
   let rarity = base?.rarity;
   if (!rarity) {
@@ -853,12 +884,21 @@ function resolveShopItem(entry) {
     displayName = `${displayName} Eyes`;
     displayNamePt = `Olhos ${displayNamePt}`;
   }
+  const defaultIcon = (
+    entry.category === "hair_style" ? "✂️" :
+    entry.category === "hair" ? "💇" :
+    entry.category === "beard" ? "🧔" :
+    entry.category === "face" ? "🎭" :
+    entry.category === "eyes" ? "👁️" :
+    entry.category === "jewelry" ? "💍" : "✨"
+  );
   return {
     ...base,
     id: entry.id,
     name: displayName,
     name_pt: displayNamePt,
     rarity,
+    icon: base?.icon || defaultIcon,
     desc: base?.desc || `${entry.category.toUpperCase()} Cosmético`,
     desc_pt: base?.desc_pt || base?.desc || `${entry.category.toUpperCase()} Cosmético`,
     price: entry.price,
@@ -1573,9 +1613,9 @@ function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hat
   const beardStyle = look.beardStyle || "beard_long";
   const hairStyle = look.hairStyle || (look.gender === "gender_female" ? "hair_long" : "hair_wavy");
   const isFemale = look.gender === "gender_female";
-  const face = look.face || FACES[0];
-  const earrings = look.earrings || EARRINGS[0];
-  const noseRing = look.noseRing || NOSE_RINGS[0];
+  const face = (typeof look.face === "string" ? FACES.find(f => f.id === look.face) : look.face) || FACES[0];
+  const earrings = (typeof look.earrings === "string" ? EARRINGS.find(e => e.id === look.earrings) : look.earrings) || EARRINGS[0];
+  const noseRing = (typeof look.noseRing === "string" ? NOSE_RINGS.find(n => n.id === look.noseRing) : look.noseRing) || NOSE_RINGS[0];
   const eyeR = face.eyeR ?? 7.2;
   const noseRx = face.noseRx ?? 10, noseRy = face.noseRy ?? 9;
   const nosePX = 192, nosePY = 189;
@@ -4702,6 +4742,17 @@ export default function MageDuel() {
     initial.add("wings_demon");
     initial.add("wings_phoenix");
     initial.add("wings_fae");
+    [
+      "hair_wavy", "hair_short", "beard_none", "beard_stubble",
+      "face_round", "face_slim", "earring_none", "nosering_none",
+      "hair_white", "hair_gray", "hair_brown", "hair_black", "hair_ginger",
+      "eye_dark", "eye_blue", "eye_green", "eye_amber"
+    ].forEach(id => initial.add(id));
+    if (saved?.hairStyleId) initial.add(saved.hairStyleId);
+    if (saved?.beardStyleId) initial.add(saved.beardStyleId);
+    if (saved?.faceId) initial.add(saved.faceId);
+    if (saved?.earringId) initial.add(saved.earringId);
+    if (saved?.noseRingId) initial.add(saved.noseRingId);
     return initial;
   });
   const [shards, setShards] = useState(() => saved?.shards ?? 0);
@@ -5111,11 +5162,15 @@ export default function MageDuel() {
   const [purchasing, setPurchasing] = useState(false);
   const [shopCategory, setShopCategory] = useState("all");
   const [shopPreviewItem, setShopPreviewItem] = useState(null);
+  const [appearancePreviewItem, setAppearancePreviewItem] = useState(null);
 
   function equipCosmetic(itemId) {
     const entry = SHOP_ITEMS.find(i => i.id === itemId);
     if (!entry) return;
     if (entry.category === "hair") setHairColorId(itemId);
+    else if (entry.category === "hair_style") setHairStyleId(itemId);
+    else if (entry.category === "beard") setBeardStyleId(itemId);
+    else if (entry.category === "face") setFaceId(itemId);
     else if (entry.category === "eyes") setEyeColorId(itemId);
     else if (entry.category === "jewelry") {
       if (itemId.startsWith("earring")) setEarringId(itemId);
@@ -7791,25 +7846,32 @@ export default function MageDuel() {
     let activePet = petId;
     let activeGloves = glovesId;
     let activeHairColor = hairColorId;
+    let activeHairStyle = hairStyleId;
+    let activeBeardStyle = beardStyleId;
+    let activeFace = faceId;
     let activeEyeColor = eyeColorId;
     let activeEarring = earringId;
     let activeNoseRing = noseRingId;
 
-    if (tab === "shop" && shopPreviewItem) {
-      const shopEntry = SHOP_ITEMS.find(i => i.id === shopPreviewItem);
+    const previewId = tab === "shop" ? shopPreviewItem : (tab === "appearance" ? appearancePreviewItem : null);
+    if (previewId) {
+      const shopEntry = SHOP_ITEMS.find(i => i.id === previewId);
       if (shopEntry) {
-        if (shopEntry.category === "hair") activeHairColor = shopPreviewItem;
-        else if (shopEntry.category === "eyes") activeEyeColor = shopPreviewItem;
+        if (shopEntry.category === "hair") activeHairColor = previewId;
+        else if (shopEntry.category === "hair_style") activeHairStyle = previewId;
+        else if (shopEntry.category === "beard") activeBeardStyle = previewId;
+        else if (shopEntry.category === "face") activeFace = previewId;
+        else if (shopEntry.category === "eyes") activeEyeColor = previewId;
         else if (shopEntry.category === "jewelry") {
-          if (shopPreviewItem.startsWith("earring")) activeEarring = shopPreviewItem;
-          else if (shopPreviewItem.startsWith("nosering")) activeNoseRing = shopPreviewItem;
+          if (previewId.startsWith("earring")) activeEarring = previewId;
+          else if (previewId.startsWith("nosering")) activeNoseRing = previewId;
         }
-        else if (shopEntry.category === "gloves") activeGloves = shopPreviewItem;
-        else if (shopEntry.category === "robe") activeRobe = shopPreviewItem;
-        else if (shopEntry.category === "cape" || shopEntry.category === "wings") activeCape = shopPreviewItem;
-        else if (shopEntry.category === "pet") activePet = shopPreviewItem;
-        else if (shopEntry.category === "hat") activeHat = shopPreviewItem;
-        else if (shopEntry.category === "aura") activeAura = shopPreviewItem;
+        else if (shopEntry.category === "gloves") activeGloves = previewId;
+        else if (shopEntry.category === "robe") activeRobe = previewId;
+        else if (shopEntry.category === "cape" || shopEntry.category === "wings") activeCape = previewId;
+        else if (shopEntry.category === "pet") activePet = previewId;
+        else if (shopEntry.category === "hat") activeHat = previewId;
+        else if (shopEntry.category === "aura") activeAura = previewId;
       }
     }
 
@@ -7831,8 +7893,8 @@ export default function MageDuel() {
       hatGear: HATS.find(h => h.id === activeHat) || null,
       glovesGear: GLOVES.find(g => g.id === activeGloves) || null,
       bootsGear: BOOTS.find(b => b.id === bootsId) || null,
-      skinTone: skinToneId, hairColor: activeHairColor, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: activeEyeColor, gender: genderId,
-      face: faceId, earrings: activeEarring, noseRing: activeNoseRing,
+      skinTone: skinToneId, hairColor: activeHairColor, hairStyle: activeHairStyle, beardStyle: activeBeardStyle, eyeColor: activeEyeColor, gender: genderId,
+      face: activeFace, earrings: activeEarring, noseRing: activeNoseRing,
       status: {},
     };
   }
@@ -8213,8 +8275,9 @@ export default function MageDuel() {
                 </div>
 
                 {/* Badges of current equipped items or shop preview banner */}
-                {tab === "shop" && shopPreviewItem ? (() => {
-                  const previewEntry = SHOP_ITEMS.find(i => i.id === shopPreviewItem);
+                {(tab === "shop" && shopPreviewItem) || (tab === "appearance" && appearancePreviewItem) ? (() => {
+                  const currentPreviewId = tab === "shop" ? shopPreviewItem : appearancePreviewItem;
+                  const previewEntry = SHOP_ITEMS.find(i => i.id === currentPreviewId);
                   const previewObj = previewEntry ? resolveShopItem(previewEntry) : null;
                   const isOwned = previewEntry ? owned.has(previewEntry.id) : false;
                   const canAfford = previewEntry ? shards >= previewEntry.price : false;
@@ -8226,7 +8289,10 @@ export default function MageDuel() {
                       </span>
                       {!isOwned ? (
                         <button
-                          onClick={() => buyCosmetic(previewEntry.id)}
+                          onClick={() => {
+                            buyCosmetic(previewEntry.id);
+                            if (tab === "appearance") setAppearancePreviewItem(null);
+                          }}
                           disabled={!canAfford}
                           className={`px-3 py-1 rounded-lg text-[11px] font-mono font-bold transition-all flex items-center gap-1 shadow-md ${
                             canAfford ? "bg-amber-400 hover:bg-amber-300 text-slate-950 active:scale-95 cursor-pointer shadow-[0_0_12px_rgba(245,158,11,0.5)]" : "bg-slate-800 text-zinc-500 border border-white/10 cursor-not-allowed"
@@ -8237,7 +8303,10 @@ export default function MageDuel() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => equipCosmetic(previewEntry.id)}
+                          onClick={() => {
+                            equipCosmetic(previewEntry.id);
+                            if (tab === "appearance") setAppearancePreviewItem(null);
+                          }}
                           className="px-3 py-1 rounded-lg text-[11px] font-mono font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all flex items-center gap-1 shadow-md cursor-pointer active:scale-95"
                         >
                           <span>✓</span>
@@ -8245,7 +8314,10 @@ export default function MageDuel() {
                         </button>
                       )}
                       <button
-                        onClick={() => setShopPreviewItem(null)}
+                        onClick={() => {
+                          if (tab === "shop") setShopPreviewItem(null);
+                          if (tab === "appearance") setAppearancePreviewItem(null);
+                        }}
                         className="text-[10px] font-mono text-zinc-400 hover:text-white underline cursor-pointer ml-1"
                       >
                         {lang === "pt" ? "Resetar Visual" : "Reset Look"}
@@ -8761,182 +8833,222 @@ export default function MageDuel() {
             </div>
           )}
 
-          {tab === "appearance" && (
-            <div>
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Gender</p>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {GENDERS.map(g => (
-                  <button key={g.id} onClick={() => setGenderId(g.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: genderId === g.id ? "#E8B44F" : "#3A3356", background: genderId === g.id ? "#E8B44F1F" : "#1C1833", color: genderId === g.id ? "#E8B44F" : "#B7AE95" }}>
-                    {g.name}
-                  </button>
-                ))}
-              </div>
+          {tab === "appearance" && (() => {
+            const renderOptionButton = (item, currentId, onEquip) => {
+              const shopEntry = SHOP_ITEMS.find(si => si.id === item.id);
+              const isLocked = shopEntry && !owned.has(item.id);
+              const isSelected = currentId === item.id;
+              const isPreviewing = appearancePreviewItem === item.id;
+              const displayName = (lang === "pt" && item.name_pt) ? item.name_pt : item.name;
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Tom de Pele" : "Skin Tone"}</p>
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {SKIN_TONES.map(s => (
-                  <button key={s.id} onClick={() => setSkinToneId(s.id)} title={(lang === "pt" && s.name_pt) ? s.name_pt : s.name}
-                    className="rounded-full transition-transform"
-                    style={{ width: 34, height: 34, background: s.skin, border: skinToneId === s.id ? "3px solid #E8B44F" : "3px solid #3A3356", boxShadow: skinToneId === s.id ? "0 0 10px #E8B44F88" : "none", transform: skinToneId === s.id ? "scale(1.1)" : "none" }} />
-                ))}
-              </div>
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    if (isLocked) {
+                      setAppearancePreviewItem(item.id);
+                    } else {
+                      setAppearancePreviewItem(null);
+                      onEquip(item.id);
+                    }
+                  }}
+                  className={`rounded-xl border py-2 px-2.5 font-mono text-xs transition-all relative flex items-center justify-between gap-1.5 cursor-pointer hover:border-amber-400/50 active:scale-95 ${
+                    isSelected && !isPreviewing ? "border-amber-400 bg-amber-400/15 text-amber-300 font-bold shadow-[0_0_10px_rgba(245,158,11,0.2)]" :
+                    isPreviewing ? "border-sky-400 bg-sky-400/20 text-sky-200 font-bold shadow-[0_0_12px_rgba(56,189,248,0.3)] ring-1 ring-sky-400/50" :
+                    isLocked ? "border-slate-800 bg-slate-900/60 text-zinc-400 opacity-80" :
+                    "border-slate-800 bg-slate-900/80 text-zinc-300 hover:text-white"
+                  }`}
+                >
+                  <span className="truncate flex items-center gap-1">
+                    {isLocked && <span className="text-[11px] leading-none">🔒</span>}
+                    <span>{displayName}</span>
+                  </span>
+                  {isLocked && (
+                    <span className="text-[10px] font-bold text-amber-400 flex-shrink-0 flex items-center gap-0.5">
+                      <span>✦</span>
+                      <span>{shopEntry.price}</span>
+                    </span>
+                  )}
+                  {isSelected && !isLocked && (
+                    <span className="text-[10px] text-amber-400 flex-shrink-0 font-bold">✓</span>
+                  )}
+                  {isPreviewing && (
+                    <span className="text-[10px] text-sky-300 flex-shrink-0 animate-pulse font-bold">✨</span>
+                  )}
+                </button>
+              );
+            };
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hair Color</p>
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {HAIR_COLORS.map(h => {
-                  const isShop = SHOP_ITEMS.some(si => si.id === h.id);
-                  const locked = isShop && !owned.has(h.id);
-                  return (
-                    <button key={h.id}
-                      onClick={() => {
-                        if (locked) { setTab("shop"); setShopCategory("hair"); }
-                        else { setHairColorId(h.id); }
-                      }}
-                      title={locked ? `${h.name} (Bloqueado - Comprar na Loja)` : h.name}
-                      className="rounded-full transition-transform relative flex items-center justify-center"
-                      style={{
-                        width: 34, height: 34, background: h.hair,
-                        border: hairColorId === h.id ? "3px solid #E8B44F" : "3px solid #3A3356",
-                        boxShadow: hairColorId === h.id ? "0 0 10px #E8B44F88" : "none",
-                        transform: hairColorId === h.id ? "scale(1.1)" : "none",
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {locked && <span className="text-[10px] leading-none">🔒</span>}
+            const renderColorButton = (item, currentId, onEquip, colorVal) => {
+              const shopEntry = SHOP_ITEMS.find(si => si.id === item.id);
+              const isLocked = shopEntry && !owned.has(item.id);
+              const isSelected = currentId === item.id;
+              const isPreviewing = appearancePreviewItem === item.id;
+              const displayName = (lang === "pt" && item.name_pt) ? item.name_pt : item.name;
+
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    if (isLocked) {
+                      setAppearancePreviewItem(item.id);
+                    } else {
+                      setAppearancePreviewItem(null);
+                      onEquip(item.id);
+                    }
+                  }}
+                  title={`${displayName}${isLocked ? ` (Bloqueado · ✦ ${shopEntry.price})` : ""}`}
+                  className="rounded-full transition-all relative flex items-center justify-center hover:scale-110 active:scale-95 cursor-pointer"
+                  style={{
+                    width: 36, height: 36, background: colorVal,
+                    border: isPreviewing ? "3px solid #38BDF8" : isSelected ? "3px solid #E8B44F" : "2px solid #3A3356",
+                    boxShadow: isPreviewing ? "0 0 12px #38BDF8aa" : isSelected ? "0 0 10px #E8B44F88" : "none",
+                    transform: (isSelected || isPreviewing) ? "scale(1.15)" : "none",
+                    opacity: isLocked && !isPreviewing ? 0.65 : 1,
+                  }}
+                >
+                  {isLocked && <span className="text-[10px] leading-none drop-shadow">🔒</span>}
+                  {isSelected && !isLocked && <span className="text-[10px] font-bold text-white drop-shadow">✓</span>}
+                  {isPreviewing && <span className="text-[9px] font-bold text-sky-200 drop-shadow">👁️</span>}
+                </button>
+              );
+            };
+
+            return (
+              <div className="relative pb-10">
+                {/* Header com Saldo de Shards e Link rápido para a Loja */}
+                <div className="flex items-center justify-between mb-4 px-3 py-2.5 rounded-xl bg-slate-900/80 border border-amber-500/30 shadow-md">
+                  <div className="flex items-center gap-2">
+                    <span className="text-amber-400 font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                      <span>🪞</span>
+                      <span>{lang === "pt" ? "Visual & Customização" : "Character Look"}</span>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 font-mono text-xs">
+                    <div className="flex items-center gap-1 text-amber-300 font-bold bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/30">
+                      <span>✦</span>
+                      <span>{shards} Shards</span>
+                    </div>
+                    <button
+                      onClick={() => setTab("shop")}
+                      className="text-[11px] font-bold text-amber-400 hover:text-amber-300 transition-colors underline cursor-pointer"
+                    >
+                      {lang === "pt" ? "Loja Arcana" : "Shop"} →
                     </button>
-                  );
-                })}
-              </div>
+                  </div>
+                </div>
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Hairstyle</p>
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {HAIR_STYLES.map(hs => (
-                  <button key={hs.id} onClick={() => setHairStyleId(hs.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: hairStyleId === hs.id ? "#E8B44F" : "#3A3356", background: hairStyleId === hs.id ? "#E8B44F1F" : "#1C1833", color: hairStyleId === hs.id ? "#E8B44F" : "#B7AE95" }}>
-                    {hs.name}
-                  </button>
-                ))}
-              </div>
-
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Beard</p>
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {BEARD_STYLES.map(bs => (
-                  <button key={bs.id} onClick={() => setBeardStyleId(bs.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: beardStyleId === bs.id ? "#E8B44F" : "#3A3356", background: beardStyleId === bs.id ? "#E8B44F1F" : "#1C1833", color: beardStyleId === bs.id ? "#E8B44F" : "#B7AE95" }}>
-                    {bs.name}
-                  </button>
-                ))}
-              </div>
-
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Eye Color</p>
-              <div className="flex gap-2 mb-4 flex-wrap">
-                {EYE_COLORS.map(e => {
-                  const isShop = SHOP_ITEMS.some(si => si.id === e.id);
-                  const locked = isShop && !owned.has(e.id);
-                  return (
-                    <button key={e.id}
-                      onClick={() => {
-                        if (locked) { setTab("shop"); setShopCategory("eyes"); }
-                        else { setEyeColorId(e.id); }
-                      }}
-                      title={locked ? `${e.name} (Bloqueado - Comprar na Loja)` : e.name}
-                      className="rounded-full transition-transform relative flex items-center justify-center"
-                      style={{
-                        width: 34, height: 34, background: e.color,
-                        border: eyeColorId === e.id ? "3px solid #E8B44F" : "3px solid #3A3356",
-                        boxShadow: eyeColorId === e.id ? "0 0 10px #E8B44F88" : "none",
-                        transform: eyeColorId === e.id ? "scale(1.1)" : "none",
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {locked && <span className="text-[10px] leading-none">🔒</span>}
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Gênero" : "Gender"}</p>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {GENDERS.map(g => (
+                    <button key={g.id} onClick={() => setGenderId(g.id)} className="rounded-md border py-2 font-mono text-xs cursor-pointer"
+                      style={{ borderColor: genderId === g.id ? "#E8B44F" : "#3A3356", background: genderId === g.id ? "#E8B44F1F" : "#1C1833", color: genderId === g.id ? "#E8B44F" : "#B7AE95" }}>
+                      {g.name}
                     </button>
-                  );
-                })}
-              </div>
+                  ))}
+                </div>
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Face Shape</p>
-              <div className="grid grid-cols-4 gap-2 mb-4">
-                {FACES.map(f => (
-                  <button key={f.id} onClick={() => setFaceId(f.id)} className="rounded-md border py-2 font-mono text-xs"
-                    style={{ borderColor: faceId === f.id ? "#E8B44F" : "#3A3356", background: faceId === f.id ? "#E8B44F1F" : "#1C1833", color: faceId === f.id ? "#E8B44F" : "#B7AE95" }}>
-                    {f.name}
-                  </button>
-                ))}
-              </div>
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Tom de Pele" : "Skin Tone"}</p>
+                <div className="flex gap-2.5 mb-4 flex-wrap">
+                  {SKIN_TONES.map(s => (
+                    <button key={s.id} onClick={() => setSkinToneId(s.id)} title={(lang === "pt" && s.name_pt) ? s.name_pt : s.name}
+                      className="rounded-full transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                      style={{ width: 34, height: 34, background: s.skin, border: skinToneId === s.id ? "3px solid #E8B44F" : "2px solid #3A3356", boxShadow: skinToneId === s.id ? "0 0 10px #E8B44F88" : "none", transform: skinToneId === s.id ? "scale(1.1)" : "none" }} />
+                  ))}
+                </div>
 
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Earrings</p>
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {EARRINGS.map(e => {
-                  const isShop = SHOP_ITEMS.some(si => si.id === e.id);
-                  const locked = isShop && !owned.has(e.id);
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Cor do Cabelo" : "Hair Color"}</p>
+                <div className="flex gap-2.5 mb-4 flex-wrap">
+                  {HAIR_COLORS.map(h => renderColorButton(h, hairColorId, setHairColorId, h.hair))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Estilo de Cabelo / Penteado" : "Hairstyle"}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                  {HAIR_STYLES.map(hs => renderOptionButton(hs, hairStyleId, setHairStyleId))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Estilo de Barba" : "Beard"}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                  {BEARD_STYLES.map(bs => renderOptionButton(bs, beardStyleId, setBeardStyleId))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Cor dos Olhos" : "Eye Color"}</p>
+                <div className="flex gap-2.5 mb-4 flex-wrap">
+                  {EYE_COLORS.map(e => renderColorButton(e, eyeColorId, setEyeColorId, e.color))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Formato do Rosto" : "Face Shape"}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                  {FACES.map(f => renderOptionButton(f, faceId, setFaceId))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Brincos Arcanos" : "Earrings"}</p>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {EARRINGS.map(e => renderOptionButton(e, earringId, setEarringId))}
+                </div>
+
+                <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Piercing de Nariz" : "Nose Piercing"}</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+                  {NOSE_RINGS.map(n => renderOptionButton(n, noseRingId, setNoseRingId))}
+                </div>
+
+                <p className="font-mono text-sm mb-2 mt-4" style={{ color: "#E8B44F" }}>{lang === "pt" ? "Luvas & Mãos" : "Gloves & Hands"}</p>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {GLOVES.map(gl => renderOptionButton(gl, glovesId, setGlovesId))}
+                </div>
+
+                {/* Barra Flutuante de Prova e Compra 1-Click em Tempo Real */}
+                {appearancePreviewItem && (() => {
+                  const shopEntry = SHOP_ITEMS.find(si => si.id === appearancePreviewItem);
+                  if (!shopEntry || owned.has(appearancePreviewItem)) return null;
+                  const itemObj = resolveShopItem(shopEntry);
+                  const canAfford = shards >= shopEntry.price;
+                  const name = (lang === "pt" && itemObj.name_pt) ? itemObj.name_pt : itemObj.name;
                   return (
-                    <button key={e.id}
-                      onClick={() => {
-                        if (locked) { setTab("shop"); setShopCategory("jewelry"); }
-                        else { setEarringId(e.id); }
-                      }}
-                      className="rounded-md border py-2 font-mono text-xs"
-                      style={{
-                        borderColor: earringId === e.id ? "#E8B44F" : "#3A3356",
-                        background: earringId === e.id ? "#E8B44F1F" : "#1C1833",
-                        color: earringId === e.id ? "#E8B44F" : "#B7AE95",
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {locked ? `🔒 ${e.name}` : e.name}
-                    </button>
+                    <div className="sticky bottom-2 z-30 mt-4 p-3 rounded-xl bg-slate-900/95 border border-amber-400 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 animate-fadeIn">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[10px] uppercase tracking-wider font-mono text-amber-400 font-bold flex items-center gap-1">
+                          <span>✨</span>
+                          <span>{lang === "pt" ? "Provando no Personagem" : "Live Character Preview"}</span>
+                        </div>
+                        <div className="text-xs font-mono font-bold text-white truncate flex items-center gap-1.5 mt-0.5">
+                          <span>{itemObj.icon || "✨"}</span>
+                          <span>{name}</span>
+                          <span className="text-amber-300 font-bold">· ✦ {shopEntry.price} Shards</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <button
+                          onClick={() => {
+                            const success = buyCosmetic(shopEntry.id);
+                            if (success) {
+                              setAppearancePreviewItem(null);
+                            }
+                          }}
+                          disabled={!canAfford}
+                          className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all shadow-md flex items-center gap-1 cursor-pointer ${
+                            canAfford
+                              ? "bg-amber-400 hover:bg-amber-300 text-slate-950 active:scale-95 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                              : "bg-slate-800 text-zinc-500 border border-white/10 cursor-not-allowed"
+                          }`}
+                        >
+                          <span>✦</span>
+                          <span>{canAfford ? (lang === "pt" ? "Comprar & Equipar" : "Buy & Equip") : (lang === "pt" ? "Sem Shards" : "Need Shards")}</span>
+                        </button>
+                        <button
+                          onClick={() => setAppearancePreviewItem(null)}
+                          className="px-2 py-1.5 rounded-lg font-mono text-xs text-zinc-400 hover:text-white border border-white/10 hover:border-white/30 cursor-pointer"
+                          title={lang === "pt" ? "Cancelar prova" : "Cancel preview"}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
                   );
-                })}
+                })()}
               </div>
-
-              <p className="font-mono text-sm mb-2" style={{ color: "#E8B44F" }}>Nose Piercing</p>
-              <div className="grid grid-cols-3 gap-2">
-                {NOSE_RINGS.map(n => {
-                  const isShop = SHOP_ITEMS.some(si => si.id === n.id);
-                  const locked = isShop && !owned.has(n.id);
-                  return (
-                    <button key={n.id}
-                      onClick={() => {
-                        if (locked) { setTab("shop"); setShopCategory("jewelry"); }
-                        else { setNoseRingId(n.id); }
-                      }}
-                      className="rounded-md border py-2 font-mono text-xs"
-                      style={{
-                        borderColor: noseRingId === n.id ? "#E8B44F" : "#3A3356",
-                        background: noseRingId === n.id ? "#E8B44F1F" : "#1C1833",
-                        color: noseRingId === n.id ? "#E8B44F" : "#B7AE95",
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {locked ? `🔒 ${n.name}` : n.name}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <p className="font-mono text-sm mb-2 mt-4" style={{ color: "#E8B44F" }}>Gloves & Hands</p>
-              <div className="grid grid-cols-2 gap-2">
-                {GLOVES.map(gl => {
-                  const isShop = SHOP_ITEMS.some(si => si.id === gl.id);
-                  const locked = isShop && !owned.has(gl.id);
-                  return (
-                    <button key={gl.id}
-                      onClick={() => {
-                        if (locked) { setTab("shop"); setShopCategory("clothes"); }
-                        else { setGlovesId(gl.id); }
-                      }}
-                      className="rounded-md border py-2 px-2 font-mono text-xs text-left transition-colors truncate"
-                      style={{
-                        borderColor: glovesId === gl.id ? "#E8B44F" : "#3A3356",
-                        background: glovesId === gl.id ? "#E8B44F1F" : "#1C1833",
-                        color: glovesId === gl.id ? "#E8B44F" : "#B7AE95",
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {locked ? `🔒 ${gl.name}` : gl.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {tab === "shop" && (
             <div>
@@ -8990,21 +9102,23 @@ export default function MageDuel() {
                 </div>
               </div>
 
-              {/* Filtros: Todas / Cabelo / Olhos / Joias / Roupas / Asas / Pets */}
+              {/* Filtros: Todas / Cabelos / Barbas / Rostos / Olhos / Joias / Roupas / Asas / Pets */}
               <div className="flex gap-2 mb-3 overflow-x-auto pb-1 text-xs font-mono">
                 {[
-                  ["all", "Todas"],
-                  ["hair", "Cabelo"],
-                  ["eyes", "Olhos"],
-                  ["jewelry", "Joias"],
-                  ["clothes", "Roupas"],
-                  ["wings", "Asas"],
-                  ["pet", "Pets"],
+                  ["all", lang === "pt" ? "Todas" : "All"],
+                  ["hair", lang === "pt" ? "Cabelo" : "Hair"],
+                  ["beard", lang === "pt" ? "Barba" : "Beard"],
+                  ["face", lang === "pt" ? "Rosto" : "Face"],
+                  ["eyes", lang === "pt" ? "Olhos" : "Eyes"],
+                  ["jewelry", lang === "pt" ? "Joias" : "Jewelry"],
+                  ["clothes", lang === "pt" ? "Roupas" : "Clothes"],
+                  ["wings", lang === "pt" ? "Asas" : "Wings"],
+                  ["pet", lang === "pt" ? "Pets" : "Pets"],
                 ].map(([fKey, label]) => (
                   <button
                     key={fKey}
                     onClick={() => setShopCategory(fKey)}
-                    className="btn-surface px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors text-[11px] font-bold"
+                    className="btn-surface px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors text-[11px] font-bold cursor-pointer"
                     style={{
                       borderColor: shopCategory === fKey ? T.gold : undefined,
                       background: shopCategory === fKey ? `${T.gold}22` : undefined,
@@ -9021,10 +9135,12 @@ export default function MageDuel() {
                 {SHOP_ITEMS
                   .filter(entry => {
                     if (shopCategory === "all") return true;
-                    if (shopCategory === "hair") return entry.category === "hair";
+                    if (shopCategory === "hair") return entry.category === "hair" || entry.category === "hair_style";
+                    if (shopCategory === "beard") return entry.category === "beard";
+                    if (shopCategory === "face") return entry.category === "face";
                     if (shopCategory === "eyes") return entry.category === "eyes";
                     if (shopCategory === "jewelry") return entry.category === "jewelry";
-                    if (shopCategory === "clothes") return entry.category === "robe" || entry.category === "gloves" || entry.category === "cape";
+                    if (shopCategory === "clothes") return entry.category === "robe" || entry.category === "gloves" || entry.category === "cape" || entry.category === "hat";
                     if (shopCategory === "wings") return entry.category === "wings";
                     if (shopCategory === "pet") return entry.category === "pet";
                     return true;
