@@ -1,22 +1,22 @@
 // ================= DESIGN TOKENS (VIBRANT FANTASY GLASSMORPHISM) =================
 export const T = {
-  // Backgrounds (Vibrant Jewel-Toned Depth)
-  bgDeep:     "#0D0B24",                 // Enchanted astral indigo
-  bgBase:     "rgba(32, 26, 74, 0.78)",   // Vibrant royal amethyst / sapphire glass
-  bgSurface:  "rgba(46, 38, 102, 0.68)",  // Jewel-toned frosted glass cards
-  bgElevated: "rgba(66, 54, 142, 0.75)",  // Elevated cosmic highlight
-  bgOverlay:  "rgba(16, 12, 42, 0.88)",   // Rich magical modal backdrop
+  // Backgrounds (Deep Obsidian Fantasy Depth)
+  bgDeep:     "#06050F",                 // Deep obsidian void
+  bgBase:     "rgba(14, 12, 30, 0.90)",   // Dark midnight amethyst glass
+  bgSurface:  "rgba(20, 17, 44, 0.84)",  // Deep dark frosted cards
+  bgElevated: "rgba(30, 25, 66, 0.88)",  // Elevated dark card highlight
+  bgOverlay:  "rgba(4, 3, 11, 0.94)",    // Dark backdrop overlay
 
-  // Borders (Luminous & Colorful)
-  borderSubtle:  "rgba(167, 139, 250, 0.22)",
-  borderDefault: "rgba(196, 181, 253, 0.35)",
-  borderStrong:  "rgba(251, 191, 36, 0.65)",
+  // Borders (Dark-toned & subtle)
+  borderSubtle:  "rgba(167, 139, 250, 0.14)",
+  borderDefault: "rgba(196, 181, 253, 0.22)",
+  borderStrong:  "rgba(251, 191, 36, 0.50)",
 
-  // Text (High Contrast & Radiant)
+  // Text (High Contrast on Dark Surfaces)
   textPrimary:   "#FFFFFF", // Crisp bright white
-  textSecondary: "#E2E8F0", // Slate 200 (bright, clean)
-  textTertiary:  "#CBD5E1", // Slate 300
-  textMuted:     "#94A3B8", // Slate 400
+  textSecondary: "#CBD5E1", // Slate 300
+  textTertiary:  "#94A3B8", // Slate 400
+  textMuted:     "#64748B", // Slate 500
 
   // Brand / Radiant Gold
   gold:      "#FBBF24",

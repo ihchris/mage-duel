@@ -85,23 +85,23 @@ import {
 
 // ================= DESIGN SYSTEM TOKENS (VIBRANT FANTASY) =================
 export const T = {
-  // Backgrounds (hierarquia de profundidade mágica vívida)
-  bgDeep:     "#0D0B24",                 // Fundo astral anil profundo
-  bgBase:     "rgba(32, 26, 74, 0.78)",   // Painéis principais ametista / safira real
-  bgSurface:  "rgba(46, 38, 102, 0.68)",  // Cards em vidro lapidado
-  bgElevated: "rgba(66, 54, 142, 0.75)",  // Cards destacados com brilho cósmico
-  bgOverlay:  "rgba(16, 12, 42, 0.88)",   // Modais com backdrop mágico
+  // Backgrounds (Profundidade Obsidian Escura)
+  bgDeep:     "#06050F",                 // Fundo obsidian profundo
+  bgBase:     "rgba(14, 12, 30, 0.90)",   // Painéis principais escuros meia-noite
+  bgSurface:  "rgba(20, 17, 44, 0.84)",  // Cards em vidro escuro
+  bgElevated: "rgba(30, 25, 66, 0.88)",  // Cards destacados escuros
+  bgOverlay:  "rgba(4, 3, 11, 0.94)",    // Modais com backdrop escuro
 
   // Borders
-  borderSubtle:  "rgba(167, 139, 250, 0.22)",
-  borderDefault: "rgba(196, 181, 253, 0.35)",
-  borderStrong:  "rgba(251, 191, 36, 0.65)",
+  borderSubtle:  "rgba(167, 139, 250, 0.14)",
+  borderDefault: "rgba(196, 181, 253, 0.22)",
+  borderStrong:  "rgba(251, 191, 36, 0.50)",
 
   // Text
   textPrimary:   "#FFFFFF",
-  textSecondary: "#E2E8F0",
-  textTertiary:  "#CBD5E1",
-  textMuted:     "#94A3B8",
+  textSecondary: "#CBD5E1",
+  textTertiary:  "#94A3B8",
+  textMuted:     "#64748B",
 
   // Brand
   gold:      "#FBBF24",
@@ -7732,23 +7732,23 @@ export default function MageDuel() {
       }
 
       .panel-base {
-        background-color: rgba(11, 15, 26, 0.88);
-        border: 1px solid rgba(255, 255, 255, 0.09);
+        background-color: rgba(8, 10, 22, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
-        box-shadow: 0 12px 36px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.07);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.05);
       }
 
       .panel-elevated {
-        background-color: rgba(15, 23, 42, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background-color: rgba(12, 15, 30, 0.96);
+        border: 1px solid rgba(255, 255, 255, 0.10);
         border-radius: 16px;
-        box-shadow: 0 14px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+        box-shadow: 0 14px 40px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.07);
       }
 
       .card-surface {
-        background: rgba(15, 23, 42, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        background: rgba(12, 15, 30, 0.88);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
         border-radius: 14px;
         transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
         will-change: transform;
@@ -7756,7 +7756,7 @@ export default function MageDuel() {
       .card-surface:hover {
         border-color: rgba(245, 158, 11, 0.45);
         transform: translateY(-2px);
-        box-shadow: 0 10px 28px rgba(0,0,0,0.5), 0 0 14px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255,255,255,0.1);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.7), 0 0 14px rgba(245, 158, 11, 0.15), inset 0 1px 0 rgba(255,255,255,0.08);
       }
 
       @keyframes modalEnter {
@@ -7771,16 +7771,16 @@ export default function MageDuel() {
       }
 
       .modal-backdrop {
-        background-color: rgba(2, 6, 23, 0.82);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        background-color: rgba(2, 3, 10, 0.90);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
 
       .modal-window {
         animation: modalEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        background: rgba(15, 23, 42, 0.98);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        box-shadow: 0 25px 70px rgba(0,0,0,0.85), 0 0 35px rgba(245,158,11,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+        background: rgba(8, 10, 22, 0.98);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        box-shadow: 0 25px 70px rgba(0,0,0,0.95), 0 0 35px rgba(245,158,11,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
         border-radius: 20px;
       }
 
@@ -7814,26 +7814,26 @@ export default function MageDuel() {
   );
 
   const bg = (
-    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -10%, #3B2A82 0%, #241A5C 30%, #15103E 65%, #0D092A 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
+    <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 50% -10%, #150F30 0%, #0D0A20 30%, #070514 65%, #030208 100%)", overflow: "hidden", zIndex: 0, contain: "strict", pointerEvents: "none" }}>
       {/* 4 Luminous Elemental Aurora Glow Orbs */}
       <div style={{
         position: "absolute", top: "-10%", left: "-10%", width: "55vw", height: "55vw", borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(217, 70, 239, 0.26) 0%, rgba(147, 51, 234, 0.12) 45%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(217, 70, 239, 0.14) 0%, rgba(147, 51, 234, 0.05) 45%, transparent 70%)",
         filter: "blur(50px)", pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", top: "-5%", right: "-10%", width: "50vw", height: "50vw", borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(0, 210, 255, 0.24) 0%, rgba(59, 130, 246, 0.12) 45%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(0, 210, 255, 0.12) 0%, rgba(59, 130, 246, 0.05) 45%, transparent 70%)",
         filter: "blur(50px)", pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", bottom: "-10%", left: "-5%", width: "45vw", height: "45vw", borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.08) 50%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(16, 185, 129, 0.10) 0%, rgba(5, 150, 105, 0.03) 50%, transparent 70%)",
         filter: "blur(60px)", pointerEvents: "none",
       }} />
       <div style={{
         position: "absolute", bottom: "-10%", right: "-5%", width: "45vw", height: "45vw", borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, rgba(220, 38, 38, 0.1) 50%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(245, 158, 11, 0.11) 0%, rgba(220, 38, 38, 0.04) 50%, transparent 70%)",
         filter: "blur(60px)", pointerEvents: "none",
       }} />
 
@@ -7860,10 +7860,10 @@ export default function MageDuel() {
         }} />
       ))}
 
-      {/* Horizontal scrolling mist layer with purple astral glow */}
+      {/* Horizontal scrolling mist layer with subtle astral glow */}
       <div className="hidden sm:block" style={{
         position: "absolute", bottom: 0, left: 0, width: "200%", height: "35%",
-        background: "linear-gradient(to top, rgba(38, 25, 92, 0.4) 0%, transparent 100%)",
+        background: "linear-gradient(to top, rgba(14, 10, 32, 0.5) 0%, transparent 100%)",
         animation: "scrollMist 25s linear infinite",
         pointerEvents: "none", opacity: 0.5,
         willChange: "transform",
@@ -7872,7 +7872,7 @@ export default function MageDuel() {
       {/* Soft celestial vignette */}
       <div style={{
         position: "fixed", inset: 0,
-        background: "radial-gradient(circle at center, transparent 45%, rgba(13, 9, 38, 0.55) 100%)",
+        background: "radial-gradient(circle at center, transparent 40%, rgba(3, 2, 8, 0.75) 100%)",
         pointerEvents: "none", zIndex: 1,
       }} />
     </div>
