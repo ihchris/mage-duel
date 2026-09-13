@@ -73,6 +73,16 @@ import {
   AlchemySanctumModal,
 } from "./AlchemySpellSystem.jsx";
 
+import {
+  TITLES,
+  findTitle,
+  HERO_JOURNEY_CHAPTERS,
+  ACHIEVEMENTS,
+  TitleBadge,
+  AchievementToast,
+  HeroJourneyModal,
+} from "./HeroJourneySystem.jsx";
+
 // ================= DESIGN SYSTEM TOKENS (VIBRANT FANTASY) =================
 export const T = {
   // Backgrounds (hierarquia de profundidade mágica vívida)
@@ -5063,6 +5073,33 @@ export default function MageDuel() {
   const [showBattleBagModal, setShowBattleBagModal] = useState(false);
   const [showAlchemyModal, setShowAlchemyModal] = useState(false);
 
+  // Hero's Journey, Arcane Titles, Achievements & Personal Chronicle State
+  const [equippedTitleId, setEquippedTitleId] = useState(() => saved?.equippedTitleId || "title_apprentice");
+  const [unlockedTitleIds, setUnlockedTitleIds] = useState(() => saved?.unlockedTitleIds || ["title_apprentice"]);
+  const [heroJourneyProgress, setHeroJourneyProgress] = useState(() => saved?.heroJourneyProgress || {
+    currentChapter: 1,
+    claimedChapters: {},
+  });
+  const [achievementsProgress, setAchievementsProgress] = useState(() => saved?.achievementsProgress || {});
+  const [storyChronicle, setStoryChronicle] = useState(() => saved?.storyChronicle || [
+    {
+      id: "chronicle_init",
+      date: "Era Arcana",
+      title: "A Centelha Desperta",
+      text: "Você deu os primeiros passos na Torre dos Duelos e empunhou seu primeiro cajado.",
+      icon: "🌱",
+    },
+  ]);
+  const [totalDamageDealt, setTotalDamageDealt] = useState(() => saved?.totalDamageDealt || 0);
+  const [critsLanded, setCritsLanded] = useState(() => saved?.critsLanded || 0);
+  const [clutchWins, setClutchWins] = useState(() => saved?.clutchWins || 0);
+  const [highHpWins, setHighHpWins] = useState(() => saved?.highHpWins || 0);
+  const [itemsCrafted, setItemsCrafted] = useState(() => saved?.itemsCrafted || 0);
+  const [alchemyCrafted, setAlchemyCrafted] = useState(() => saved?.alchemyCrafted || 0);
+  const [highestWinStreak, setHighestWinStreak] = useState(() => saved?.highestWinStreak || 0);
+  const [showHeroJourneyModal, setShowHeroJourneyModal] = useState(false);
+  const [activeJourneyToast, setActiveJourneyToast] = useState(null);
+
   // Battle Pass State (Season of Embers)
   const [seasonXp, setSeasonXp] = useState(() => saved?.seasonXp ?? 0);
   const [passPremiumOwned, setPassPremiumOwned] = useState(() => saved?.passPremiumOwned ?? false);
@@ -5135,9 +5172,21 @@ export default function MageDuel() {
       claimedTierRewards: [...claimedTierRewards],
       materials,
       consumables,
+      equippedTitleId,
+      unlockedTitleIds,
+      heroJourneyProgress,
+      achievementsProgress,
+      storyChronicle,
+      totalDamageDealt,
+      critsLanded,
+      clutchWins,
+      highHpWins,
+      itemsCrafted,
+      alchemyCrafted,
+      highestWinStreak,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, bootsId, ring1Id, ring2Id, necklaceId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, bootsId, ring1Id, ring2Id, necklaceId, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables, equippedTitleId, unlockedTitleIds, heroJourneyProgress, achievementsProgress, storyChronicle, totalDamageDealt, critsLanded, clutchWins, highHpWins, itemsCrafted, alchemyCrafted, highestWinStreak]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -5180,26 +5229,32 @@ export default function MageDuel() {
     else setRing2Id("ring_none");
   }
 
-  const playerDataForLeaderboard = useMemo(() => ({
-    name: mageName,
-    affinity,
-    trophies,
-    rankedWins,
-    rankedLosses,
-    winStreak,
-    staffId,
-    relicId,
-    ring1Id,
-    ring2Id,
-    necklaceId,
-    hatId,
-    auraId,
-    capeId,
-    robeId,
-    petId,
-    look: { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId },
-    chosen,
-  }), [mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, ring1Id, ring2Id, necklaceId, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
+  const playerDataForLeaderboard = useMemo(() => {
+    const curTitle = findTitle(equippedTitleId);
+    return {
+      name: mageName,
+      title_pt: curTitle.name_pt,
+      title_en: curTitle.name_en,
+      titleId: equippedTitleId,
+      affinity,
+      trophies,
+      rankedWins,
+      rankedLosses,
+      winStreak,
+      staffId,
+      relicId,
+      ring1Id,
+      ring2Id,
+      necklaceId,
+      hatId,
+      auraId,
+      capeId,
+      robeId,
+      petId,
+      look: { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId },
+      chosen,
+    };
+  }, [equippedTitleId, mageName, affinity, trophies, rankedWins, rankedLosses, winStreak, staffId, relicId, ring1Id, ring2Id, necklaceId, hatId, auraId, capeId, robeId, petId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, chosen]);
 
   const { playerRank, playerTier } = useMemo(() => buildRankedLadder(playerDataForLeaderboard), [playerDataForLeaderboard]);
 
@@ -5276,9 +5331,17 @@ export default function MageDuel() {
 
     // Add item to owned
     setOwned(o => new Set([...o, recipe.resultItemId]));
+    setItemsCrafted(c => c + 1);
     const itm = findItem(recipe.resultItemId);
     const itemName = itm?.name_pt || itm?.name || recipe.resultItemId;
     addLog(`🔨 Brokk forjou ${itemName} com sucesso na bigorna mágica!`);
+    addChronicleEntry(
+      lang === "pt" ? `Artefato Forjado: ${itemName}` : `Artifact Forged: ${itemName}`,
+      lang === "pt"
+        ? `O lendário ferreiro Brokk moldou ${itemName} na bigorna com aço e faíscas arcanas.`
+        : `Master smith Brokk shaped ${itemName} on the arcane anvil with enchanted steel.`,
+      "🔨"
+    );
   }
 
   function renderForgeModal() {
@@ -5310,6 +5373,16 @@ export default function MageDuel() {
       ...prev,
       [itemId]: (prev[itemId] || 0) + quantity
     }));
+    setAlchemyCrafted(a => a + 1);
+    const itm = CONSUMABLES[itemId];
+    const itmName = itm?.name_pt || itm?.name || itemId;
+    addChronicleEntry(
+      lang === "pt" ? `Alquimia: ${itmName}` : `Alchemy: ${itmName}`,
+      lang === "pt"
+        ? `Você preparou ${quantity}x ${itmName} no caldeirão de essências de Lyra.`
+        : `You brewed ${quantity}x ${itmName} in Lyra's essence cauldron.`,
+      "🧪"
+    );
   }
 
   function handleLearnSpell(skillId, reqMats, reqShards) {
@@ -5322,6 +5395,16 @@ export default function MageDuel() {
     });
     if (reqShards > 0) setShards(s => Math.max(0, s - reqShards));
     setUnlockedSkills(prev => new Set([...prev, skillId]));
+    setAlchemyCrafted(a => a + 1);
+    const sk = SKILLS.find(s => s.id === skillId);
+    const skName = sk ? ((lang === "pt" && sk.name_pt) ? sk.name_pt : sk.name) : skillId;
+    addChronicleEntry(
+      lang === "pt" ? `Feitiço Alquímico: ${skName}` : `Alchemical Spell: ${skName}`,
+      lang === "pt"
+        ? `Você decifrou as runas proibidas com Lyra e dominou o feitiço ${skName}!`
+        : `You deciphered forbidden runes with Lyra and mastered ${skName}!`,
+      "✨"
+    );
   }
 
   function renderAlchemyModal() {
@@ -5350,6 +5433,184 @@ export default function MageDuel() {
         player={player}
         busy={busy}
         currentTurn={currentTurn}
+        lang={lang}
+      />
+    );
+  }
+
+  // ================= JORNADA DO HERÓI & CRÔNICAS ARCANAS =================
+  function addChronicleEntry(title, text, icon = "📜") {
+    const entry = {
+      id: "chronicle_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5),
+      date: new Date().toLocaleDateString(lang === "pt" ? "pt-BR" : "en-US", { month: "short", day: "numeric" }),
+      title,
+      text,
+      icon,
+    };
+    setStoryChronicle(prev => [entry, ...(prev || []).slice(0, 49)]);
+  }
+
+  const playerJourneyStats = useMemo(() => {
+    const hasRelic = relicId && relicId !== "none";
+    const totalWins = rankedWins;
+    const completedChapters = HERO_JOURNEY_CHAPTERS.filter(ch => {
+      return ch.quests.every(q => {
+        let val = 0;
+        if (q.statKey === "wins") val = totalWins;
+        else if (q.statKey === "equippedSpells") val = chosen.length;
+        else if (q.statKey === "totalDamageDealt") val = totalDamageDealt;
+        else if (q.statKey === "itemsCrafted") val = itemsCrafted;
+        else if (q.statKey === "alchemyCrafted") val = alchemyCrafted;
+        else if (q.statKey === "highestWinStreak") val = Math.max(highestWinStreak, winStreak);
+        else if (q.statKey === "critsLanded") val = critsLanded;
+        else if (q.statKey === "highHpWins") val = highHpWins;
+        else if (q.statKey === "hasRelicEquipped") val = hasRelic ? 1 : 0;
+        else if (q.statKey === "trophies") val = trophies;
+        else if (q.statKey === "unlockedSpellsCount") val = unlockedSkills.size;
+        else if (q.statKey === "clutchWins") val = clutchWins;
+        else if (q.statKey === "totalCrafts") val = itemsCrafted + alchemyCrafted;
+        else if (q.statKey === "bossesDefeatedCount") val = bossesDefeated.size;
+        else if (q.statKey === "ownedItemsCount") val = owned.size;
+        return val >= q.target;
+      });
+    }).length;
+
+    return {
+      wins: totalWins,
+      equippedSpells: chosen.length,
+      totalDamageDealt,
+      itemsCrafted,
+      alchemyCrafted,
+      highestWinStreak: Math.max(highestWinStreak, winStreak),
+      critsLanded,
+      highHpWins,
+      hasRelicEquipped: hasRelic ? 1 : 0,
+      trophies,
+      unlockedSpellsCount: unlockedSkills.size,
+      clutchWins,
+      totalCrafts: itemsCrafted + alchemyCrafted,
+      bossesDefeatedCount: bossesDefeated.size,
+      ownedItemsCount: owned.size,
+      completedChaptersCount: completedChapters,
+    };
+  }, [rankedWins, chosen.length, totalDamageDealt, itemsCrafted, alchemyCrafted, highestWinStreak, winStreak, critsLanded, highHpWins, relicId, trophies, unlockedSkills.size, clutchWins, bossesDefeated.size, owned.size]);
+
+  const hasClaimableJourney = useMemo(() => {
+    for (const ch of HERO_JOURNEY_CHAPTERS) {
+      const isClaimed = Boolean(heroJourneyProgress?.claimedChapters?.[ch.id]);
+      if (!isClaimed) {
+        const isCompleted = ch.quests.every(q => (playerJourneyStats[q.statKey] || 0) >= q.target);
+        if (isCompleted) return true;
+      }
+    }
+    for (const ach of ACHIEVEMENTS) {
+      const isClaimed = Boolean(achievementsProgress?.[ach.id]?.claimed);
+      if (!isClaimed) {
+        const isCompleted = (achievementsProgress?.[ach.id]?.completed) || ((playerJourneyStats[ach.statKey] || 0) >= ach.target);
+        if (isCompleted) return true;
+      }
+    }
+    return false;
+  }, [heroJourneyProgress, achievementsProgress, playerJourneyStats]);
+
+  function handleClaimChapterReward(chapter) {
+    if (heroJourneyProgress?.claimedChapters?.[chapter.id]) return;
+    setShards(s => s + chapter.rewardShards);
+    if (chapter.rewardTitleId) {
+      setUnlockedTitleIds(prev => [...new Set([...prev, chapter.rewardTitleId])]);
+    }
+    setHeroJourneyProgress(prev => ({
+      ...prev,
+      currentChapter: Math.min(7, Math.max(prev.currentChapter || 1, chapter.chapterNumber + 1)),
+      claimedChapters: {
+        ...(prev.claimedChapters || {}),
+        [chapter.id]: true,
+      },
+    }));
+    const rewTitle = chapter.rewardTitleId ? findTitle(chapter.rewardTitleId) : null;
+    setActiveJourneyToast({
+      isJourney: true,
+      title_pt: `Capítulo ${chapter.chapterNumber}: ${chapter.title_pt}`,
+      title_en: `Chapter ${chapter.chapterNumber}: ${chapter.title_en}`,
+      rewardShards: chapter.rewardShards,
+      rewardTitle: rewTitle,
+      rarity: "legendary",
+      icon: chapter.icon,
+    });
+    addChronicleEntry(
+      lang === "pt" ? `Capítulo Concluído: ${chapter.title_pt}` : `Chapter Conquered: ${chapter.title_en}`,
+      lang === "pt"
+        ? `Você superou todas as provas do Capítulo ${chapter.chapterNumber} e recebeu o prestígio dos mestres.`
+        : `You conquered all trials of Chapter ${chapter.chapterNumber} and earned the masters' respect.`,
+      chapter.icon
+    );
+    addLog(`📜 ${lang === "pt" ? "Capítulo Concluído!" : "Chapter Completed!"} +${chapter.rewardShards} ✦ Shards!`);
+  }
+
+  function handleClaimAchievementReward(achievement) {
+    if (achievementsProgress?.[achievement.id]?.claimed) return;
+    setShards(s => s + achievement.rewardShards);
+    setAchievementsProgress(prev => ({
+      ...prev,
+      [achievement.id]: {
+        ...(prev[achievement.id] || {}),
+        completed: true,
+        claimed: true,
+      },
+    }));
+    setActiveJourneyToast({
+      isJourney: false,
+      title_pt: achievement.name_pt,
+      title_en: achievement.name_en,
+      rewardShards: achievement.rewardShards,
+      rarity: achievement.rarity,
+      icon: achievement.icon,
+    });
+    addChronicleEntry(
+      lang === "pt" ? `Conquista: ${achievement.name_pt}` : `Achievement: ${achievement.name_en}`,
+      lang === "pt" ? achievement.desc_pt : achievement.desc_en,
+      achievement.icon
+    );
+    addLog(`🏆 ${lang === "pt" ? "Conquista Resgatada:" : "Achievement Claimed:"} ${achievement.name_pt} (+${achievement.rewardShards} ✦)!`);
+  }
+
+  function handleEquipTitle(titleId) {
+    setEquippedTitleId(titleId);
+    const tObj = findTitle(titleId);
+    addChronicleEntry(
+      lang === "pt" ? `Título Adotado: ${tObj.name_pt}` : `Title Adopted: ${tObj.name_en}`,
+      lang === "pt"
+        ? `Você assumiu solenemente o título de "${tObj.name_pt}".`
+        : `You solemnly assumed the title of "${tObj.name_en}".`,
+      tObj.icon
+    );
+    addLog(`🎖️ ${lang === "pt" ? "Novo título equipado:" : "New title equipped:"} ${tObj.name_pt}!`);
+  }
+
+  function renderHeroJourneyModal() {
+    return (
+      <HeroJourneyModal
+        isOpen={showHeroJourneyModal}
+        onClose={() => setShowHeroJourneyModal(false)}
+        lang={lang}
+        heroJourneyProgress={heroJourneyProgress}
+        onClaimChapterReward={handleClaimChapterReward}
+        equippedTitleId={equippedTitleId}
+        onEquipTitle={handleEquipTitle}
+        unlockedTitleIds={unlockedTitleIds}
+        achievementsProgress={achievementsProgress}
+        onClaimAchievementReward={handleClaimAchievementReward}
+        storyChronicle={storyChronicle}
+        playerStats={playerJourneyStats}
+      />
+    );
+  }
+
+  function renderAchievementToast() {
+    return (
+      <AchievementToast
+        toast={activeJourneyToast}
+        onClose={() => setActiveJourneyToast(null)}
         lang={lang}
       />
     );
@@ -6088,6 +6349,10 @@ export default function MageDuel() {
       }
       d.hp -= remaining;
       didDamage = true;
+      if (side === "p") {
+        setTotalDamageDealt(td => td + remaining);
+        if (crit) setCritsLanded(cl => cl + 1);
+      }
       lines.push(`${crit ? "CRITICAL HIT! " : ""}${remaining} damage.`);
       addFloat(side === "p" ? "e" : "p", `-${remaining}`, crit ? "#E8B44F" : "#F2EAD8", crit, isCombo ? "COMBO!" : crit ? "CRIT!" : null);
 
@@ -6383,6 +6648,13 @@ export default function MageDuel() {
         setLoot({ isBoss: true, boss: bossEncounter, skill: rewardSkill });
         addLog(`👑 VITÓRIA DE ARQUIMAGO! ${bossEncounter.name} foi derrotado!`);
         addLog(`✨ Feitiço Mestre aprendido: ${rewardSkill ? rewardSkill.name : ""}`);
+        addChronicleEntry(
+          lang === "pt" ? `Queda do Titã: ${bossEncounter.name}` : `Titan Slain: ${bossEncounter.name}`,
+          lang === "pt"
+            ? `Você derrotou o colosso ancestral ${bossEncounter.name} nas Provas de Treinamento!`
+            : `You defeated the ancient colossus ${bossEncounter.name} in the Boss Trials!`,
+          "👑"
+        );
       } else if (isWin) {
         // Normal duel victory: 35% chance to drop an ancient Spell Tome if unlearned tomes exist
         const unlearnedTomes = TOMES.filter(t => !unlockedSkills.has(t.skillId));
@@ -6398,14 +6670,36 @@ export default function MageDuel() {
           if (drop) { setLoot(findItem(drop)); setOwned(o => new Set([...o, drop])); }
         }
         setShards(s => s + 5); // +5 por vitória
-        setWinStreak(s => {
-          const next = s + 1;
-          if (next >= 3) {
-            setShowShootingStars(true);
-            setTimeout(() => setShowShootingStars(false), 3000);
-          }
-          return next;
-        });
+        const nextStreak = winStreak + 1;
+        setWinStreak(nextStreak);
+        setHighestWinStreak(prev => Math.max(prev, nextStreak));
+        const pHp = player?.hp || 0;
+        const pMaxHp = player?.maxHp || 100;
+        if (pHp > 0 && pHp <= pMaxHp * 0.25) setClutchWins(c => c + 1);
+        if (pHp >= pMaxHp * 0.6) setHighHpWins(h => h + 1);
+
+        if (rankedWins === 0) {
+          addChronicleEntry(
+            lang === "pt" ? "Primeiro Sangue Arcano" : "First Arcane Blood",
+            lang === "pt"
+              ? `Você venceu seu primeiro duelo oficial contra ${enemy?.name || "o oponente"}!`
+              : `You won your first official duel against ${enemy?.name || "the opponent"}!`,
+            "⚔️"
+          );
+        } else if (nextStreak === 3 || nextStreak === 5) {
+          addChronicleEntry(
+            lang === "pt" ? `Sequência de Fogo: ${nextStreak} Vitórias!` : `Blazing Streak: ${nextStreak} Wins!`,
+            lang === "pt"
+              ? `Sua concentração nas linhas de ley é inabalável.`
+              : `Your focus along the leylines remains unbroken.`,
+            "🔥"
+          );
+        }
+
+        if (nextStreak >= 3) {
+          setShowShootingStars(true);
+          setTimeout(() => setShowShootingStars(false), 3000);
+        }
         if (Math.random() < 0.05) {
           setShowRainbow(true);
           setTimeout(() => setShowRainbow(false), 2000);
@@ -6448,6 +6742,17 @@ export default function MageDuel() {
           newRank,
           isPromotion: trophyRes.isPromotion,
         });
+
+        if (trophyRes.isPromotion) {
+          const newTier = getTierForTrophies(nextTrophies);
+          addChronicleEntry(
+            lang === "pt" ? `Ascensão de Liga: ${newTier.name_pt}` : `League Promotion: ${newTier.name_en}`,
+            lang === "pt"
+              ? `Você alcançou ${nextTrophies} Troféus e foi promovido para a ${newTier.name_pt}!`
+              : `You achieved ${nextTrophies} Trophies and were promoted to ${newTier.name_en}!`,
+            newTier.icon
+          );
+        }
 
         // Material Drops for the Blacksmith Forge
         const matDrops = rollMaterialDrops({
@@ -8474,6 +8779,7 @@ export default function MageDuel() {
 
     const totalConsumables = getTotalConsumablesCount(consumables);
     const HUB_PORTALS = [
+      { id: "journey", label: lang === "pt" ? "Jornada" : "Journey", sub: lang === "pt" ? "História" : "Story", icon: "📜", color: "#F59E0B", hasNotice: hasClaimableJourney },
       { id: "skills", label: lang === "pt" ? "Grimório" : "Grimoire", sub: `${unlockedSkills.size}/${SKILLS.length}`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: lang === "pt" ? "Equipar" : "Gear", sub: previewMage.staffGear?.name || "Itens", icon: "🪄", color: "#38BDF8" },
       { id: "appearance", label: lang === "pt" ? "Aparência" : "Appearance", sub: lang === "pt" ? "Visual" : "Look", icon: "🪞", color: "#EC4899" },
@@ -8501,11 +8807,16 @@ export default function MageDuel() {
               />
             </div>
             {/* Top mini header: Affinity icon & Name */}
-            <div className="relative z-10 flex items-center justify-between w-full px-0.5">
-              <span className="text-[11px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
-              <span className="text-[8.5px] font-sans font-bold text-amber-200 truncate max-w-[55px]">
-                {mageName.trim() || t("newMage")}
-              </span>
+            <div className="relative z-10 flex flex-col items-center justify-center w-full px-0.5">
+              <div className="flex items-center justify-between w-full px-0.5">
+                <span className="text-[11px] drop-shadow-[0_0_6px_currentColor]" style={{ color: el.color }}>{el.icon}</span>
+                <span className="text-[8.5px] font-sans font-bold text-amber-200 truncate max-w-[55px]">
+                  {mageName.trim() || t("newMage")}
+                </span>
+              </div>
+              <div className="mt-0.5 scale-90">
+                <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={(e) => { e.stopPropagation(); setShowHeroJourneyModal(true); }} />
+              </div>
             </div>
             {/* Mage Avatar */}
             <div className="relative z-10 transform origin-center scale-100 transition-transform group-hover:scale-105 my-0.5">
@@ -8588,6 +8899,8 @@ export default function MageDuel() {
 
             {/* Badges on desktop/landscape */}
             <div className="flex justify-center gap-1 items-center flex-wrap mt-0.5">
+              <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={() => setShowHeroJourneyModal(true)} />
+
               <span
                 className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[11px] font-sans font-bold bg-indigo-950/80 border flex items-center gap-1 shadow-sm"
                 style={{ color: el.color, borderColor: `${el.color}66`, boxShadow: `0 0 10px ${el.color}33` }}
@@ -8624,16 +8937,18 @@ export default function MageDuel() {
           </div>
         </div>
 
-        {/* Right: Modern 6 Hub Portals (3x2 grid) */}
+        {/* Right: Modern 9 Hub Portals (3x3 grid) */}
         <div className="flex-1 min-w-0 sm:w-7/12 landscape:w-7/12 md:w-7/12 flex flex-col justify-center flex-shrink-0">
           {extra}
 
-          <div className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-2.5 w-full h-full">
+          <div className="grid grid-cols-3 gap-1 sm:gap-2 md:gap-2.5 w-full h-full">
             {HUB_PORTALS.map(portal => (
               <button
                 key={portal.id}
                 onClick={() => {
-                  if (portal.id === "leaderboard") {
+                  if (portal.id === "journey") {
+                    setShowHeroJourneyModal(true);
+                  } else if (portal.id === "leaderboard") {
                     setShowLeaderboardModal(true);
                   } else if (portal.id === "forge") {
                     setShowForgeModal(true);
@@ -10764,6 +11079,9 @@ export default function MageDuel() {
             <h2 className="font-serif text-xl sm:text-2xl font-black text-amber-200 tracking-wider drop-shadow-[0_2px_10px_rgba(245,158,11,0.3)]">
               {mageName.trim() || "Mage Duel"}
             </h2>
+            <div className="my-1">
+              <TitleBadge titleId={equippedTitleId} size="sm" lang={lang} onClick={() => { setShowInspectModal(false); setShowHeroJourneyModal(true); }} />
+            </div>
             <p className="text-[11px] sm:text-xs font-sans text-zinc-400">
               {lang === "pt" ? "Nível" : "Level"} {mageLevel} · {lang === "pt" ? "Afinidade" : "Affinity"} {getElementName(affinity, lang)} ({el.icon})
             </p>
@@ -11628,6 +11946,7 @@ export default function MageDuel() {
                 <h1 className="font-serif text-[14px] xs:text-[17px] sm:text-[22px] md:text-[26px] font-black tracking-wide text-amber-200 drop-shadow-[0_2px_14px_rgba(245,158,11,0.4)] whitespace-nowrap">
                   {mageName.trim() || "Mage Duel"}
                 </h1>
+                <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} onClick={() => setShowHeroJourneyModal(true)} />
                 {/* Ultra-slim XP Badge & Bar */}
                 <div className="px-1.5 xs:px-2 py-0.5 rounded-full bg-indigo-950/80 border border-amber-400/40 flex items-center gap-1 shadow-[0_0_12px_rgba(245,158,11,0.25)] flex-shrink-0">
                   <span className="font-bold text-amber-300 text-[9px] xs:text-[10px] sm:text-[11px] font-sans">Nv.{mageLevel}</span>
@@ -11655,6 +11974,19 @@ export default function MageDuel() {
                   🌟 Draft
                 </button>
               )}
+
+              {/* Hero's Journey Pill */}
+              <button
+                onClick={() => setShowHeroJourneyModal(true)}
+                title={lang === "pt" ? "A Senda do Arquimago (Jornada, Títulos & Conquistas)" : "The Archmage's Path (Journey, Titles & Achievements)"}
+                className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-amber-500/25 to-purple-600/25 border border-amber-400/50 hover:border-amber-400 text-amber-200 text-[10px] sm:text-xs font-serif font-bold transition-all shadow-sm flex items-center gap-1 hover:-translate-y-0.5 active:scale-95 cursor-pointer relative"
+              >
+                <span>📜</span>
+                <span className="hidden xs:inline">{lang === "pt" ? "Jornada" : "Journey"}</span>
+                {hasClaimableJourney && (
+                  <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#F59E0B] animate-ping" />
+                )}
+              </button>
 
               {/* Leaderboard Ranking Pill */}
               <LeaderboardHeaderPill
@@ -11933,6 +12265,8 @@ export default function MageDuel() {
         {renderLeaderboardModal()}
         {renderForgeModal()}
         {renderAlchemyModal()}
+        {renderHeroJourneyModal()}
+        {renderAchievementToast()}
       </div>
     );
   }
@@ -12139,7 +12473,7 @@ export default function MageDuel() {
                   borderColor: `${playerEl.color}66`,
                 }}
               >
-                <div className="w-full flex items-center justify-between gap-1 mb-1">
+                <div className="w-full flex items-center justify-between gap-1 mb-0.5">
                   <div className="flex items-center gap-1.5 min-w-0 truncate">
                     <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: T.textPrimary }}>
                       {mageName.trim() || (lang === "pt" ? "Você" : "You")}
@@ -12149,6 +12483,9 @@ export default function MageDuel() {
                     </span>
                   </div>
                   <ElementBadge el={affinity} />
+                </div>
+                <div className="w-full flex justify-center mb-0.5">
+                  <TitleBadge titleId={equippedTitleId} size="xs" lang={lang} />
                 </div>
                 <div className="my-0.5 flex justify-center items-center">
                   <MageSprite mage={previewMage} facing="right" size={1.15} />
@@ -12193,7 +12530,7 @@ export default function MageDuel() {
                   borderColor: `${enemyEl.color}66`,
                 }}
               >
-                <div className="w-full flex items-center justify-between gap-1 mb-1">
+                <div className="w-full flex items-center justify-between gap-1 mb-0.5">
                   <div className="flex items-center gap-1.5 min-w-0 truncate">
                     <span className="font-serif text-[11px] xs:text-[12.5px] sm:text-[15px] font-bold leading-tight truncate" style={{ color: enemyEl.color }}>
                       {enemy.name}
@@ -12203,6 +12540,9 @@ export default function MageDuel() {
                     </span>
                   </div>
                   <ElementBadge el={enemy.affinity} />
+                </div>
+                <div className="w-full flex justify-center mb-0.5">
+                  <TitleBadge titleId={enemy.titleId || (enemy.affinity === "fire" ? "title_pyromancer" : enemy.affinity === "ice" ? "title_frostlord" : enemy.affinity === "nature" ? "title_earthwarden" : "title_apprentice")} size="xs" lang={lang} />
                 </div>
                 <div className="my-0.5 flex justify-center items-center">
                   <MageSprite mage={enemy} facing="left" size={1.15} />
@@ -13318,6 +13658,8 @@ export default function MageDuel() {
         {renderLeaderboardModal()}
         {renderForgeModal()}
         {renderAlchemyModal()}
+        {renderHeroJourneyModal()}
+        {renderAchievementToast()}
       </div>
     );
   }
@@ -13608,6 +13950,8 @@ export default function MageDuel() {
       {renderEnemyGearModal()}
       {renderBattleBagModal()}
       {renderBattleSkillInspectModal()}
+      {renderHeroJourneyModal()}
+      {renderAchievementToast()}
     </div>
   );
 }
