@@ -396,13 +396,138 @@ html {
 
 @media (min-width: 1024px) {
   .bottom-nav-bar {
-    max-width: 1200px;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    border-radius: 16px 16px 0 0;
-    border-left: 1px solid rgba(196, 181, 253, 0.3);
-    border-right: 1px solid rgba(196, 181, 253, 0.3);
-    margin-bottom: 0;
+    display: none !important;
   }
 }
+
+/* ================= CLASH ROYALE JUICY 3D BUTTONS & SLOTS ================= */
+
+/* 3D Battle King Button (Supercell Style) */
+.btn-battle-3d {
+  background: linear-gradient(180deg, #FFE838 0%, #FFB703 40%, #FB8500 75%, #D95D00 100%);
+  border: 2px solid #572A00;
+  border-radius: 18px;
+  box-shadow: 0 6px 0 #7A3700, 0 12px 24px rgba(0, 0, 0, 0.65), inset 0 2px 0 rgba(255, 255, 255, 0.85);
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(60, 25, 0, 0.9), 0 -1px 0 rgba(0, 0, 0, 0.4);
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.btn-battle-3d:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 7px 0 #7A3700, 0 14px 28px rgba(251, 133, 0, 0.5), inset 0 2px 0 rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+}
+.btn-battle-3d:active:not(:disabled) {
+  transform: translateY(5px);
+  box-shadow: 0 1px 0 #7A3700, 0 4px 10px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.btn-battle-3d:disabled {
+  filter: grayscale(0.7) opacity(0.5);
+  box-shadow: 0 3px 0 #4A2500;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 3D Green Action Button (Claims / Confirmations) */
+.btn-3d-green {
+  background: linear-gradient(180deg, #4ADE80 0%, #22C55E 45%, #16A34A 100%);
+  border: 1.5px solid #0F5132;
+  border-radius: 12px;
+  box-shadow: 0 4px 0 #14532D, 0 6px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.7);
+  color: #FFFFFF;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-green:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.btn-3d-green:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #14532D, 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* 3D Blue Action Button */
+.btn-3d-blue {
+  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 45%, #0369A1 100%);
+  border: 1.5px solid #082F49;
+  border-radius: 12px;
+  box-shadow: 0 4px 0 #0C4A6E, 0 6px 14px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.7);
+  color: #FFFFFF;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-blue:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.btn-3d-blue:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0C4A6E, 0 2px 6px rgba(0,0,0,0.3);
+}
+
+/* Collectible Spell / Chest Card (Clash Royale 4-Slot Style) */
+.clash-slot-card {
+  background: linear-gradient(180deg, #1C1645 0%, #100C2C 65%, #0A071E 100%);
+  border: 2px solid rgba(196, 181, 253, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 5px 0 #07051A, 0 10px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.clash-slot-card:hover {
+  transform: translateY(-4px) scale(1.03);
+  border-color: #FBBF24;
+  box-shadow: 0 8px 0 #07051A, 0 16px 28px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.clash-slot-card:active {
+  transform: translateY(3px) scale(0.98);
+  box-shadow: 0 1px 0 #07051A, 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Circular Floating Side Buttons (Like Quest / Piggy / Chest in Clash Royale) */
+.clash-floating-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #075985 100%);
+  border: 2px solid #E0F2FE;
+  box-shadow: 0 4px 0 #082F49, 0 8px 16px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+.clash-floating-btn:hover {
+  transform: translateY(-3px) scale(1.08);
+  filter: brightness(1.12);
+}
+.clash-floating-btn:active {
+  transform: translateY(3px) scale(0.95);
+  box-shadow: 0 1px 0 #082F49, 0 3px 8px rgba(0,0,0,0.4);
+}
+
+/* Desktop Left Fixed Sidebar */
+.desktop-sidebar {
+  background: linear-gradient(180deg, #18123C 0%, #0D0924 50%, #080516 100%);
+  border-right: 1.5px solid rgba(196, 181, 253, 0.22);
+  box-shadow: 8px 0 32px rgba(5, 3, 16, 0.65), inset -1px 0 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+}
+
