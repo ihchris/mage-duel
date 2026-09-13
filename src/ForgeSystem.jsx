@@ -286,29 +286,65 @@ export const FORGE_RECIPES = [
     cost: { mat_ember: 20, mat_crystal: 8, mat_phoenix_core: 1 },
   },
 
-  // --- COSMÉTICOS FORJÁVEIS ---
+  // --- VESTIMENTAS & EQUIPAMENTOS FORJÁVEIS ---
+  {
+    id: "recipe_boots_ironward",
+    resultItemId: "boots_ironward",
+    category: "apparel",
+    cost: { mat_iron: 8, mat_ironwood: 4 },
+  },
+  {
+    id: "recipe_boots_cinder",
+    resultItemId: "boots_cinder",
+    category: "apparel",
+    cost: { mat_ember: 12, mat_iron: 6 },
+  },
+  {
+    id: "recipe_boots_frostbite",
+    resultItemId: "boots_frostbite",
+    category: "apparel",
+    cost: { mat_glacial: 12, mat_iron: 6 },
+  },
+  {
+    id: "recipe_boots_verdant",
+    resultItemId: "boots_verdant",
+    category: "apparel",
+    cost: { mat_sap: 12, mat_ironwood: 6 },
+  },
+  {
+    id: "recipe_robe_crimson",
+    resultItemId: "robe_crimson",
+    category: "apparel",
+    cost: { mat_ember: 16, mat_dragonblood: 1 },
+  },
+  {
+    id: "recipe_hat_warlord",
+    resultItemId: "hat_warlord",
+    category: "apparel",
+    cost: { mat_iron: 14, mat_ember: 8 },
+  },
   {
     id: "recipe_cape_banner",
     resultItemId: "cape_banner",
-    category: "cosmetics",
+    category: "apparel",
     cost: { mat_iron: 8, mat_ember: 6 },
   },
   {
     id: "recipe_cape_fur",
     resultItemId: "cape_fur",
-    category: "cosmetics",
+    category: "apparel",
     cost: { mat_glacial: 14, mat_ironwood: 6 },
   },
   {
     id: "recipe_cape_void",
     resultItemId: "cape_void",
-    category: "cosmetics",
+    category: "apparel",
     cost: { mat_stardust: 22, mat_void_tesseract: 1 },
   },
   {
     id: "recipe_wings_phoenix",
     resultItemId: "wings_phoenix",
-    category: "cosmetics",
+    category: "apparel",
     cost: { mat_ember: 25, mat_phoenix_core: 1 },
   },
 ];
@@ -527,7 +563,7 @@ export function ForgeModal({
             ["rings", "💍", lang === "pt" ? "Anéis" : "Rings"],
             ["weapons", "🪄", lang === "pt" ? "Cajados & Mãos" : "Weapons"],
             ["relics", "🔮", lang === "pt" ? "Relíquias" : "Relics"],
-            ["cosmetics", "✨", lang === "pt" ? "Cosméticos" : "Cosmetics"],
+            ["apparel", "🥋", lang === "pt" ? "Vestimentas" : "Apparel"],
           ].map(([catKey, icon, label]) => (
             <button
               key={catKey}

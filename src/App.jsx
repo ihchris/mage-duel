@@ -671,14 +671,14 @@ const RELICS = [
   { id: "twinfang",  name: "Twinfang Relic", rarity: "legendary", offAffinityBonus: 0.15, desc: "+15% damage with off-affinity spells" },
 ];
 const HATS = [
-  { id: "hat_pointed", name: "Pointed Hat",       rarity: "common" },
-  { id: "hat_hood",    name: "Mystic Hood",       rarity: "rare" },
-  { id: "hat_wide",    name: "Starfall Brim",     rarity: "epic" },
-  { id: "hat_crown",   name: "Archon Crown",      rarity: "legendary" },
-  { id: "hat_circlet", name: "Enchanted Circlet", rarity: "rare" },
-  { id: "hat_warlord", name: "Warlord Helm",      rarity: "epic",      desc: "Horned battle helm forged for dread sorcerers" },
-  { id: "hat_laurel",  name: "Archon Laurel",     rarity: "legendary", desc: "Golden circlet crowned by 4 orbiting elemental gems" },
-  { id: "hat_jester",  name: "Chaos Jester Cap",  rarity: "rare",      desc: "Mischievous split hood with jingling bells" },
+  { id: "hat_pointed", name: "Pointed Hat",       name_pt: "Chapéu Cônico",       rarity: "common",    maxManaBonus: 2, desc: "+2 Max Mana · Traditional apprentice felt", desc_pt: "+2 Mana Máxima · Feltro cônico de aprendiz" },
+  { id: "hat_hood",    name: "Mystic Hood",       name_pt: "Capuz Místico",       rarity: "rare",      maxManaBonus: 3, crit: 4, desc: "+3 Max Mana · +4% crit chance · Shrouded cowl", desc_pt: "+3 Mana Máxima · +4% chance crítica · Capuz envolto em névoa" },
+  { id: "hat_circlet", name: "Enchanted Circlet", name_pt: "Diadema Encantado",   rarity: "rare",      maxManaBonus: 3, startShield: 4, desc: "+3 Max Mana · +4 Start Shield · Runic silver", desc_pt: "+3 Mana Máxima · +4 Escudo Inicial · Prata rúnica" },
+  { id: "hat_wide",    name: "Starfall Brim",     name_pt: "Aba Estelar",         rarity: "epic",      maxManaBonus: 5, allDmg: 0.05, desc: "+5 Max Mana · +5% all dmg · Starfall brim", desc_pt: "+5 Mana Máxima · +5% dano global · Aba estelar mágica" },
+  { id: "hat_warlord", name: "Warlord Helm",      name_pt: "Elmo do Belicista",   rarity: "epic",      maxHpBonus: 10, crit: 5, desc: "+10 Max HP · +5% crit · Horned battle helm", desc_pt: "+10 Vida Máxima · +5% chance crítica · Elmo de guerra com chifres" },
+  { id: "hat_jester",  name: "Chaos Jester Cap",  name_pt: "Gorro do Bobo Caótico", rarity: "rare",   crit: 6, regen: 1, desc: "+6% crit · +1 Mana/turn · Jingling chaos bells", desc_pt: "+6% chance crítica · +1 Mana/turno · Guizos caóticos tilintantes" },
+  { id: "hat_crown",   name: "Archon Crown",      name_pt: "Coroa do Arconte",    rarity: "legendary", maxManaBonus: 6, allDmg: 0.08, desc: "+6 Max Mana · +8% all dmg · Archon regalia", desc_pt: "+6 Mana Máxima · +8% dano global · Coroa imperial dourada" },
+  { id: "hat_laurel",  name: "Archon Laurel",     name_pt: "Louros do Arconte",  rarity: "legendary", maxManaBonus: 4, maxHpBonus: 10, regen: 1, desc: "+4 Max Mana · +10 Max HP · +1 Mana/turn · 4 elemental gems", desc_pt: "+4 Mana Máxima · +10 Vida Máxima · +1 Mana/turno · 4 gemas elementais" },
 ];
 const AURAS = [
   { id: "aura_none",      name: "No aura",                rarity: "common",    color: null },
@@ -704,15 +704,15 @@ const CAPES = [
   { id: "cape_void",   name: "Void Tear Mantle",  name_pt: "Rasgão do Vazio",      rarity: "legendary", color: "#581C87", dark: "#2E1065", desc: "Ripped cosmic void with gazing astral eyes", desc_pt: "Fenda cósmica ondulante com olhos astrais" },
 ];
 const ROBES = [
-  { id: "robe_classic",   name: "Classic Robe",       rarity: "common",    colors: null, desc: "—" },
-  { id: "robe_midnight",  name: "Midnight Robe",      rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" } },
-  { id: "robe_ivory",     name: "Ivory Robe",         rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" } },
-  { id: "robe_crimson",   name: "Crimson Robe",       rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" } },
-  { id: "robe_gilded",    name: "Gilded Robe",        rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" } },
-  { id: "robe_celestial", name: "Celestial Robe",     rarity: "legendary", colors: { robe: "#181B34", dark: "#0F1224", light: "#2C3259" } },
-  { id: "robe_sunburst",  name: "Sunburst Vestments", rarity: "epic",      colors: { robe: "#D97706", dark: "#92400E", light: "#FDE68A" }, desc: "Radiant solar silks with flared golden trim" },
-  { id: "robe_frostveil", name: "Frostveil Shroud",   rarity: "epic",      colors: { robe: "#1E3A8A", dark: "#0F172A", light: "#93C5FD" }, desc: "Glacial weave embroidered with rime patterns" },
-  { id: "robe_verdant",   name: "Verdant Regalia",    rarity: "rare",      colors: { robe: "#166534", dark: "#052E16", light: "#86EFAC" }, desc: "Living leafweave lined with floral filigree" },
+  { id: "robe_classic",   name: "Classic Robe",       name_pt: "Túnica Clássica",      rarity: "common",    colors: null, maxHpBonus: 6, startShield: 2, desc: "+6 Max HP · +2 Start Shield · Traditional apprentice weave", desc_pt: "+6 Vida Máxima · +2 Escudo Inicial · Tecido tradicional de aprendiz" },
+  { id: "robe_midnight",  name: "Midnight Robe",      name_pt: "Túnica da Meia-Noite",  rarity: "rare",      colors: { robe: "#2B2447", dark: "#1C1833", light: "#4A4488" }, maxHpBonus: 8, maxManaBonus: 2, desc: "+8 Max HP · +2 Max Mana · Woven with shadow threads", desc_pt: "+8 Vida Máxima · +2 Mana Máxima · Tecida com fios das sombras" },
+  { id: "robe_ivory",     name: "Ivory Robe",         name_pt: "Túnica de Marfim",     rarity: "rare",      colors: { robe: "#EDE6D6", dark: "#C9BFA8", light: "#FFFBF0" }, maxHpBonus: 12, dmgReduction: 0.04, desc: "+12 Max HP · -4% damage taken · Blessed protective silk", desc_pt: "+12 Vida Máxima · -4% dano recebido · Seda abençoada protetora" },
+  { id: "robe_crimson",   name: "Crimson Robe",       name_pt: "Túnica Carmesim",      rarity: "epic",      colors: { robe: "#8B1E3F", dark: "#5C1329", light: "#C44368" }, maxHpBonus: 14, fireBonus: 0.08, desc: "+14 Max HP · +8% Fire dmg · Infused with ember flame", desc_pt: "+14 Vida Máxima · +8% Dano de Fogo · Imbuída em chamas vivas" },
+  { id: "robe_frostveil", name: "Frostveil Shroud",   name_pt: "Manto Véu-Glacial",    rarity: "epic",      colors: { robe: "#1E3A8A", dark: "#0F172A", light: "#93C5FD" }, maxHpBonus: 14, iceBonus: 0.08, desc: "+14 Max HP · +8% Ice dmg · Embroidered with glacial rime", desc_pt: "+14 Vida Máxima · +8% Dano de Gelo · Bordado com cristais de gelo" },
+  { id: "robe_verdant",   name: "Verdant Regalia",    name_pt: "Regalia Verdejante",   rarity: "rare",      colors: { robe: "#166534", dark: "#052E16", light: "#86EFAC" }, maxHpBonus: 12, natureBonus: 0.06, desc: "+12 Max HP · +6% Nature dmg · Living leafweave", desc_pt: "+12 Vida Máxima · +6% Dano de Natureza · Folhas vivas entrelaçadas" },
+  { id: "robe_sunburst",  name: "Sunburst Vestments", name_pt: "Vestes Solares",       rarity: "epic",      colors: { robe: "#D97706", dark: "#92400E", light: "#FDE68A" }, maxHpBonus: 16, startShield: 6, desc: "+16 Max HP · +6 Start Shield · Radiant solar silks", desc_pt: "+16 Vida Máxima · +6 Escudo Inicial · Sedas solares radiantes" },
+  { id: "robe_gilded",    name: "Gilded Robe",        name_pt: "Túnica Dourada",       rarity: "legendary", colors: { robe: "#3A2E1A", dark: "#241A0D", light: "#E8B44F" }, maxHpBonus: 18, allDmg: 0.05, desc: "+18 Max HP · +5% all dmg · Spun pure gold threads", desc_pt: "+18 Vida Máxima · +5% dano global · Tecida com fios de ouro puro" },
+  { id: "robe_celestial", name: "Celestial Robe",     name_pt: "Túnica Celestial",     rarity: "legendary", colors: { robe: "#181B34", dark: "#0F1224", light: "#2C3259" }, maxHpBonus: 20, maxManaBonus: 4, dmgReduction: 0.05, desc: "+20 Max HP · +4 Max Mana · -5% damage taken · Astral weave", desc_pt: "+20 Vida Máxima · +4 Mana Máxima · -5% dano recebido · Tecido cósmico astral" },
 ];
 const OFFHANDS = [
   { id: "offhand_none",      name: "Empty Hand",      rarity: "common",    color: null, desc: "—" },
@@ -744,10 +744,20 @@ const PETS = [
 ];
 
 const GLOVES = [
-  { id: "gloves_arcane",  name: "Arcane Spellweaver", rarity: "legendary", desc: "Midnight velvet gauntlets with gold trim & glowing affinity gem" },
-  { id: "gloves_leather", name: "Battlemage Leather", rarity: "rare",      desc: "Reinforced saddle leather with brass buckle & riveted knuckles" },
-  { id: "gloves_wraps",   name: "Runic Handwraps",   rarity: "epic",      desc: "Mystic channeled linen wraps pulsing with elemental mana" },
-  { id: "gloves_bare",    name: "Stylized Mage Hands", rarity: "common",   desc: "Clean minimalist hands without glove armor" },
+  { id: "gloves_bare",    name: "Stylized Mage Hands", name_pt: "Mãos Despidas",       rarity: "common",    desc: "Clean minimalist hands · No combat bonus", desc_pt: "Mãos livres sem luvas · Sem bônus de combate" },
+  { id: "gloves_leather", name: "Battlemage Leather",  name_pt: "Couro do Batalhador",  rarity: "rare",      dmgReduction: 0.03, crit: 3, desc: "-3% damage taken · +3% crit · Reinforced grip", desc_pt: "-3% dano recebido · +3% chance crítica · Couro reforçado" },
+  { id: "gloves_wraps",   name: "Runic Handwraps",     name_pt: "Faixas Rúnicas",       rarity: "epic",      allDmg: 0.06, regen: 1, desc: "+6% all dmg · +1 Mana/turn · Mana-pulsing linen", desc_pt: "+6% dano global · +1 Mana/turno · Linho rúnico canalizador" },
+  { id: "gloves_arcane",  name: "Arcane Spellweaver",  name_pt: "Tecer-Mágico Arcano",  rarity: "legendary", allDmg: 0.08, crit: 5, maxManaBonus: 3, desc: "+8% all dmg · +5% crit · +3 Max Mana · Velvet gauntlets", desc_pt: "+8% dano global · +5% chance crítica · +3 Mana Máxima · Veludo bordado com gemas" },
+];
+
+const BOOTS = [
+  { id: "boots_apprentice", name: "Apprentice Boots",    name_pt: "Botas do Aprendiz",      rarity: "common",    color: "#261A12", maxHpBonus: 4, startShield: 2, desc: "+4 Max HP · +2 Start Shield · Flexible calf leather", desc_pt: "+4 Vida Máxima · +2 Escudo Inicial · Couro flexível resistente" },
+  { id: "boots_windstride", name: "Windstrider Boots",   name_pt: "Passo-do-Vento",          rarity: "rare",      color: "#1E293B", maxManaBonus: 2, regen: 1, desc: "+2 Max Mana · +1 Mana/turn · Featherweight soles", desc_pt: "+2 Mana Máxima · +1 Mana/turno · Solas rúnicas leves como penas" },
+  { id: "boots_ironward",   name: "Ironward Greaves",    name_pt: "Grevas da Guarda de Ferro", rarity: "rare",   color: "#334155", maxHpBonus: 8, dmgReduction: 0.04, desc: "+8 Max HP · -4% damage taken · Steel plates", desc_pt: "+8 Vida Máxima · -4% dano recebido · Placas de aço reforçado" },
+  { id: "boots_cinder",     name: "Cinder Striders",     name_pt: "Passos de Brasa",         rarity: "epic",      color: "#7F1D1D", maxHpBonus: 8, fireBonus: 0.06, desc: "+8 Max HP · +6% Fire dmg · Obsidian treads", desc_pt: "+8 Vida Máxima · +6% Dano de Fogo · Solas de obsidiana aquecida" },
+  { id: "boots_frostbite",  name: "Frostbite Treads",    name_pt: "Passadas Glaciais",       rarity: "epic",      color: "#0C4A6E", startShield: 6, iceBonus: 0.06, desc: "+6 Start Shield · +6% Ice dmg · Never slips", desc_pt: "+6 Escudo Inicial · +6% Dano de Gelo · Firmeza inabalável no gelo" },
+  { id: "boots_verdant",    name: "Briarstep Moccasins", name_pt: "Passos da Espinheira",    rarity: "epic",      color: "#14532D", maxHpBonus: 10, natureBonus: 0.06, desc: "+10 Max HP · +6% Nature dmg · Root soles", desc_pt: "+10 Vida Máxima · +6% Dano de Natureza · Solas de raízes vivas" },
+  { id: "boots_celestial",  name: "Celestial Striders",  name_pt: "Passadas Celestiais",     rarity: "legendary", color: "#312E81", maxHpBonus: 12, maxManaBonus: 3, allDmg: 0.05, desc: "+12 Max HP · +3 Max Mana · +5% all dmg", desc_pt: "+12 Vida Máxima · +3 Mana Máxima · +5% dano global · Passos astrais" },
 ];
 
 const START_OWNED = [
@@ -761,6 +771,7 @@ const START_OWNED = [
   "robe_classic", "robe_midnight",
   "offhand_none", "offhand_tome",
   "gloves_arcane", "gloves_leather", "gloves_wraps", "gloves_bare",
+  "boots_apprentice", "boots_windstride",
   "ring_none", "ring_cinder", "ring_glacier"
 ];
 const LOOTABLE = [
@@ -774,11 +785,13 @@ const LOOTABLE = [
   "hat_warlord", "hat_laurel", "hat_jester", "cape_banner", "cape_fur", "cape_void",
   "robe_sunburst", "robe_frostveil", "robe_verdant", "offhand_buckler", "offhand_skull", "offhand_prism",
   "pet_dragon", "pet_owl", "pet_mushroom", "aura_starlight", "aura_bloodmoon",
+  // Calçados e Botas Mágicas
+  "boots_ironward", "boots_cinder", "boots_frostbite", "boots_verdant", "boots_celestial",
   // Anéis Arcanos (Jewelry)
   "ring_cinder", "ring_combustion", "ring_glacier", "ring_shatter", "ring_spore", "ring_ironroot",
   "ring_runic", "ring_singularity", "ring_chronos", "ring_prismatic"
 ];
-const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES, ...RINGS];
+const ALL_ITEMS = [...STAFFS, ...RELICS, ...HATS, ...AURAS, ...CAPES, ...ARMORS, ...PETS, ...ROBES, ...OFFHANDS, ...GLOVES, ...BOOTS, ...RINGS];
 const findItem = (id) => ALL_ITEMS.find(i => i.id === id);
 
 // ================= TABELA DE ITENS DA LOJA (100% COSMÉTICO) =================
@@ -1030,9 +1043,34 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   if (skill.el === "ice" && atk.pet?.iceBonus) mult *= 1 + atk.pet.iceBonus;
   if (skill.el === "nature" && atk.pet?.natureBonus) mult *= 1 + atk.pet.natureBonus;
   if (skill.el === "arcane" && atk.pet?.arcaneBonus) mult *= 1 + atk.pet.arcaneBonus;
+
+  // Robe Gear offensive bonuses
+  if (atk.robeGear) {
+    if (atk.robeGear.allDmg) mult *= 1 + atk.robeGear.allDmg;
+    if (skill.el === "fire" && atk.robeGear.fireBonus) mult *= 1 + atk.robeGear.fireBonus;
+    if (skill.el === "ice" && atk.robeGear.iceBonus) mult *= 1 + atk.robeGear.iceBonus;
+    if (skill.el === "nature" && atk.robeGear.natureBonus) mult *= 1 + atk.robeGear.natureBonus;
+    if (skill.el === "arcane" && atk.robeGear.arcaneBonus) mult *= 1 + atk.robeGear.arcaneBonus;
+  }
+
+  // Hat Gear offensive bonuses
+  if (atk.hatGear?.allDmg) mult *= 1 + atk.hatGear.allDmg;
+
+  // Gloves Gear offensive bonuses
+  if (atk.glovesGear?.allDmg) mult *= 1 + atk.glovesGear.allDmg;
+
+  // Boots Gear offensive bonuses
+  if (atk.bootsGear) {
+    if (atk.bootsGear.allDmg) mult *= 1 + atk.bootsGear.allDmg;
+    if (skill.el === "fire" && atk.bootsGear.fireBonus) mult *= 1 + atk.bootsGear.fireBonus;
+    if (skill.el === "ice" && atk.bootsGear.iceBonus) mult *= 1 + atk.bootsGear.iceBonus;
+    if (skill.el === "nature" && atk.bootsGear.natureBonus) mult *= 1 + atk.bootsGear.natureBonus;
+  }
+
   let chilled = false;
   if (atk.status.chill) { mult *= 0.7; chilled = true; }
-  let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0) + (atk.pet?.crit || 0);
+  let critChance = BASE_CRIT + (atk.staffGear?.crit || 0) + (atk.relic?.crit || 0) + (atk.offhand?.crit || 0) + (atk.pet?.crit || 0)
+    + (atk.hatGear?.crit || 0) + (atk.glovesGear?.crit || 0);
   if (todayMod.id === "critical_overload") critChance += 20;
   const crit = chance(critChance);
   if (crit) mult *= 1.6;
@@ -1053,6 +1091,10 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   if (def.offhand?.dmgReduction) mult *= (1 - def.offhand.dmgReduction);
   // Pet Sporeling: 3% damage reduction
   if (def.pet?.dmgReduction) mult *= (1 - def.pet.dmgReduction);
+  // Gear Damage Reduction: Robe, Gloves, Boots
+  if (def.robeGear?.dmgReduction) mult *= (1 - def.robeGear.dmgReduction);
+  if (def.glovesGear?.dmgReduction) mult *= (1 - def.glovesGear.dmgReduction);
+  if (def.bootsGear?.dmgReduction) mult *= (1 - def.bootsGear.dmgReduction);
   // Defensive Rings
   const defRings = [def.ring1, def.ring2].filter(Boolean);
   for (const ring of defRings) {
@@ -1063,17 +1105,29 @@ function computeDamage(skill, atk, def, comboMult = 1, bonusFlat = 0) {
   return { dmg, crit, chilled };
 }
 
-function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId, ring1Id = "ring_none", ring2Id = "ring_none") {
+function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, look, offhandId, glovesId, ring1Id = "ring_none", ring2Id = "ring_none", bootsId = "boots_apprentice") {
   const armor = ARMORS.find(a => a.id === armorId && a.id !== "armor_none") || null;
   const pet = PETS.find(p => p.id === petId && p.id !== "pet_none") || null;
   const ring1 = RINGS.find(r => r.id === ring1Id && r.id !== "ring_none") || null;
   const ring2 = RINGS.find(r => r.id === ring2Id && r.id !== "ring_none") || null;
-  let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0) + (ring1?.maxHpBonus || 0) + (ring2?.maxHpBonus || 0);
+  const robeGear = ROBES.find(r => r.id === (robeId || "robe_classic")) || null;
+  const hatGear = HATS.find(h => h.id === hatId) || null;
+  const glovesGear = GLOVES.find(g => g.id === (glovesId || "gloves_arcane")) || null;
+  const bootsGear = BOOTS.find(b => b.id === (bootsId || "boots_apprentice")) || null;
+
+  let maxHp = MAX_HP + (armor?.maxHpBonus || 0) + (pet?.hpBonus || 0) + (ring1?.maxHpBonus || 0) + (ring2?.maxHpBonus || 0)
+    + (robeGear?.maxHpBonus || 0) + (hatGear?.maxHpBonus || 0) + (bootsGear?.maxHpBonus || 0);
+
   // Bloodpact Spike tradeoff: -8 Max HP
   if (staffId === "bloodpact") maxHp -= 8;
+
   const relic = RELICS.find(r => r.id === relicId && r.id !== "none") || null;
-  const startShield = (relic?.startShield || 0) + (pet?.startShield || 0) + (ring1?.startShield || 0) + (ring2?.startShield || 0);
-  const maxMana = MAX_MANA + (pet?.maxManaBonus || 0) + (ring1?.maxManaBonus || 0) + (ring2?.maxManaBonus || 0);
+  const startShield = (relic?.startShield || 0) + (pet?.startShield || 0) + (ring1?.startShield || 0) + (ring2?.startShield || 0)
+    + (robeGear?.startShield || 0) + (hatGear?.startShield || 0) + (bootsGear?.startShield || 0);
+
+  const maxMana = MAX_MANA + (pet?.maxManaBonus || 0) + (ring1?.maxManaBonus || 0) + (ring2?.maxManaBonus || 0)
+    + (robeGear?.maxManaBonus || 0) + (hatGear?.maxManaBonus || 0) + (glovesGear?.maxManaBonus || 0) + (bootsGear?.maxManaBonus || 0);
+
   return {
     name, affinity, skills,
     staffGear: STAFFS.find(s => s.id === staffId) || null,
@@ -1083,8 +1137,11 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
     offhand: OFFHANDS.find(o => o.id === offhandId && o.id !== "offhand_none") || null,
     pet,
     ring1, ring2, ring1Id: ring1Id || "ring_none", ring2Id: ring2Id || "ring_none",
+    robeGear, hatGear, glovesGear, bootsGear,
     hat: hatId, aura: auraId, robe: robeId || "robe_classic",
     gloves: glovesId || look?.gloves || "gloves_arcane",
+    boots: bootsId || "boots_apprentice",
+    bootsId: bootsId || "boots_apprentice",
     skinTone: look?.skinTone || "skin_fair", hairColor: look?.hairColor || "hair_white",
     hairStyle: look?.hairStyle || (look?.gender === "gender_female" ? "hair_long" : "hair_wavy"),
     beardStyle: look?.beardStyle || "beard_long", eyeColor: look?.eyeColor || "eye_dark",
@@ -1107,17 +1164,19 @@ function makeEnemy() {
     Math.random() < 0.5 ? pick(CAPES.filter(c => c.id !== "cape_none")).id : "cape_none",
     "armor_none", // armor hidden from the game for now
     Math.random() < 0.4 ? pick(PETS.filter(p => p.id !== "pet_none")).id : "pet_none",
-    "robe_classic", // keep enemy robe tied to their affinity color so it reads clearly
+    pick(ROBES).id,
     {
       skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, hairStyle: pick(HAIR_STYLES).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id, gender: pick(GENDERS).id,
       face: pick(FACES).id, earrings: Math.random() < 0.3 ? pick(EARRINGS.filter(x => x.id !== "earring_none")).id : "earring_none",
       noseRing: Math.random() < 0.15 ? pick(NOSE_RINGS.filter(x => x.id !== "nosering_none")).id : "nosering_none",
     },
     Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none",
-    pick(["gloves_arcane", "gloves_leather", "gloves_wraps"]),
+    pick(GLOVES).id,
     Math.random() < 0.7 ? pick(RINGS.filter(r => r.id !== "ring_none" && (!r.el || r.el === affinity))).id : "ring_none",
-    Math.random() < 0.5 ? pick(RINGS.filter(r => r.id !== "ring_none")).id : "ring_none");
-  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0) + (e.ring1?.startShield || 0) + (e.ring2?.startShield || 0);
+    Math.random() < 0.5 ? pick(RINGS.filter(r => r.id !== "ring_none")).id : "ring_none",
+    pick(BOOTS).id);
+  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0) + (e.ring1?.startShield || 0) + (e.ring2?.startShield || 0)
+    + (e.robeGear?.startShield || 0) + (e.hatGear?.startShield || 0) + (e.bootsGear?.startShield || 0);
   const archKeys = Object.keys(ARCHETYPES);
   e.archetype = ARCHETYPES[pick(archKeys)];
   return e;
@@ -1508,7 +1567,7 @@ function getGloveColors(gloves = "gloves_arcane", look, affinity = "arcane") {
   };
 }
 
-function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hatId = "", robeTrim = null, armor = null, hasOffhand = false, gloves = "gloves_arcane", casting = false, easterEgg = null }) {
+function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hatId = "", robeTrim = null, armor = null, hasOffhand = false, gloves = "gloves_arcane", boots = "boots_apprentice", casting = false, easterEgg = null }) {
   const eyeShiftX = casting ? 1.5 : 0;
   const { skin, skinD, hair, hairD, eye } = look;
   const beardStyle = look.beardStyle || "beard_long";
@@ -1525,6 +1584,7 @@ function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hat
   const chinY = 224 + jawDrop;
 
   const gemColor = affinity === "fire" ? "#E11D48" : affinity === "ice" ? "#0284C7" : affinity === "nature" ? "#16A34A" : "#9333EA";
+  const bootsColor = BOOTS.find(b => b.id === boots)?.color || "#261A12";
 
   return (
     <g>
@@ -1534,11 +1594,11 @@ function Base({ p, look = DEFAULT_LOOK, hasHat = false, affinity = "arcane", hat
       {/* Pointed wizard boots */}
       <g>
         {/* Left boot */}
-        <path d="M152 448 C 150 456 142 460 138 464 C 134 468 140 470 156 468 C 172 466 182 462 184 454 C 184 448 174 446 152 448 Z" fill="#261A12" />
+        <path d="M152 448 C 150 456 142 460 138 464 C 134 468 140 470 156 468 C 172 466 182 462 184 454 C 184 448 174 446 152 448 Z" fill={bootsColor} />
         <path d="M142 463 C 146 461 162 460 178 456" stroke="#4D3422" strokeWidth="1.2" fill="none" />
         <rect x="156" y="452" width="6" height="5" rx="1" fill={GOLD} />
         {/* Right boot */}
-        <path d="M248 448 C 250 456 258 460 262 464 C 266 468 260 470 244 468 C 228 466 218 462 216 454 C 216 448 226 446 248 448 Z" fill="#261A12" />
+        <path d="M248 448 C 250 456 258 460 262 464 C 266 468 260 470 244 468 C 228 466 218 462 216 454 C 216 448 226 446 248 448 Z" fill={bootsColor} />
         <path d="M258 463 C 254 461 238 460 222 456" stroke="#4D3422" strokeWidth="1.2" fill="none" />
         <rect x="238" y="452" width="6" height="5" rx="1" fill={GOLD} />
       </g>
@@ -4451,7 +4511,7 @@ function MageSprite({ mage, facing, hurt, casting, damageFlash = false, size = 1
         <g className={hurt || casting ? "" : "mageFloatGroup"}>
           <AuraVisual aura={aura} />
           {Cape && mage.cape?.color && <Cape color={mage.cape.color} dark={mage.cape.dark} />}
-          <Base p={p} look={look} hasHat={!!Hat} affinity={mage.affinity} hatId={mage.hat} robeTrim={RobeTrim && <RobeTrim />} armor={Armor && <Armor />} gloves={mage.gloves} hasOffhand={!!Offhand} casting={casting} easterEgg={easterEgg} />
+          <Base p={p} look={look} hasHat={!!Hat} affinity={mage.affinity} hatId={mage.hat} robeTrim={RobeTrim && <RobeTrim />} armor={Armor && <Armor />} gloves={mage.gloves} boots={mage.boots || mage.bootsId || "boots_apprentice"} hasOffhand={!!Offhand} casting={casting} easterEgg={easterEgg} />
           {Staff && (
             <g className="staffFloat">
               {/* Telekinetic Levitation Seal beneath hovering staff */}
@@ -4575,6 +4635,22 @@ function RarityCard({ item, selected, locked, onClick, subtitle, lang = "pt" }) 
           {r.label}
         </span>
       </div>
+      {/* Stat Badges */}
+      {!locked && (item.maxHpBonus || item.maxManaBonus || item.startShield || item.crit || item.allDmg || item.dmgReduction || item.regen || item.fireBonus || item.iceBonus || item.natureBonus || item.arcaneBonus) && (
+        <div className="flex items-center gap-1.5 flex-wrap my-1 text-[10px] font-mono font-bold">
+          {item.maxHpBonus && <span className="px-1.5 py-0.2 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">+{item.maxHpBonus} HP</span>}
+          {item.maxManaBonus && <span className="px-1.5 py-0.2 rounded bg-sky-500/15 border border-sky-500/30 text-sky-300">+{item.maxManaBonus} Mana</span>}
+          {item.startShield && <span className="px-1.5 py-0.2 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300">+{item.startShield} Escudo</span>}
+          {item.crit && <span className="px-1.5 py-0.2 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300">+{item.crit}% Crit</span>}
+          {item.allDmg && <span className="px-1.5 py-0.2 rounded bg-purple-500/15 border border-purple-500/30 text-purple-300">+{Math.round(item.allDmg * 100)}% Dano</span>}
+          {item.dmgReduction && <span className="px-1.5 py-0.2 rounded bg-blue-500/15 border border-blue-500/30 text-blue-300">-{Math.round(item.dmgReduction * 100)}% Dano Rec.</span>}
+          {item.regen && <span className="px-1.5 py-0.2 rounded bg-teal-500/15 border border-teal-500/30 text-teal-300">+{item.regen} Mana/t</span>}
+          {item.fireBonus && <span className="px-1.5 py-0.2 rounded bg-orange-500/15 border border-orange-500/30 text-orange-300">+{Math.round(item.fireBonus * 100)}% Fogo</span>}
+          {item.iceBonus && <span className="px-1.5 py-0.2 rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300">+{Math.round(item.iceBonus * 100)}% Gelo</span>}
+          {item.natureBonus && <span className="px-1.5 py-0.2 rounded bg-green-500/15 border border-green-500/30 text-green-300">+{Math.round(item.natureBonus * 100)}% Natureza</span>}
+          {item.arcaneBonus && <span className="px-1.5 py-0.2 rounded bg-indigo-500/15 border border-indigo-500/30 text-indigo-300">+{Math.round(item.arcaneBonus * 100)}% Arcano</span>}
+        </div>
+      )}
       <div
         className="text-[11px] sm:text-[12px] font-mono leading-relaxed"
         style={{ color: T.textSecondary }}
@@ -4618,6 +4694,7 @@ export default function MageDuel() {
   const [noseRingId, setNoseRingId] = useState(saved?.noseRingId ?? "nosering_none");
   const [offhandId, setOffhandId] = useState(saved?.offhandId ?? "offhand_tome");
   const [glovesId, setGlovesId] = useState(saved?.glovesId ?? "gloves_arcane");
+  const [bootsId, setBootsId] = useState(saved?.bootsId ?? "boots_apprentice");
   const [createTab, setCreateTab] = useState("body");
   const [owned, setOwned] = useState(() => {
     const initial = new Set(DEV_UNLOCK_ALL ? ALL_ITEMS.map(i => i.id) : (saved?.owned ?? START_OWNED));
@@ -4707,7 +4784,7 @@ export default function MageDuel() {
       lang,
       mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId,
-      earringId, noseRingId, offhandId, glovesId,
+      earringId, noseRingId, offhandId, glovesId, bootsId,
       ring1Id, ring2Id,
       owned: [...owned],
       shards,
@@ -4730,7 +4807,7 @@ export default function MageDuel() {
       consumables,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
+  }, [lang, mageName, affinity, chosen, staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId, skinToneId, hairColorId, hairStyleId, beardStyleId, eyeColorId, genderId, faceId, earringId, noseRingId, offhandId, glovesId, bootsId, ring1Id, ring2Id, owned, shards, premiumOwned, seasonXp, passPremiumOwned, claimedRewards, mageXp, unlockedSkills, skillMastery, pendingLevelDraft, bossesDefeated, trophies, highestTrophies, rankedWins, rankedLosses, claimedTierRewards, materials, consumables]);
 
   const [friends, setFriends] = useState(() => loadFriends());
   const [showFriends, setShowFriends] = useState(false);
@@ -5218,8 +5295,7 @@ export default function MageDuel() {
 
   function confirmDuel() {
     const p = makeMage(mageName.trim() || "You", affinity, chosen.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
-      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id);
-    if (p.relic?.startShield) p.shield = p.relic.startShield;
+      { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id, bootsId);
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setShowSurrenderModal(false);
     setRoundNum(1);
@@ -5540,7 +5616,7 @@ export default function MageDuel() {
     if (n.status.entangled > 0) { n.status.entangled -= 1; }
     let baseRegen = REGEN;
     if (todayMod.id === "arcane_surge") baseRegen += 2;
-    n.mana = Math.min(MAX_MANA, n.mana + baseRegen + (n.staffGear?.regen || 0) + (n.relic?.regen || 0));
+    n.mana = Math.min(n.maxMana || MAX_MANA, n.mana + baseRegen + (n.staffGear?.regen || 0) + (n.relic?.regen || 0) + (n.hatGear?.regen || 0) + (n.glovesGear?.regen || 0) + (n.bootsGear?.regen || 0));
     return n;
   }
 
@@ -7690,6 +7766,12 @@ export default function MageDuel() {
       ring1Id,
       ring2Id,
       gloves: activeGloves,
+      boots: bootsId,
+      bootsId,
+      robeGear: ROBES.find(r => r.id === activeRobe) || null,
+      hatGear: HATS.find(h => h.id === activeHat) || null,
+      glovesGear: GLOVES.find(g => g.id === activeGloves) || null,
+      bootsGear: BOOTS.find(b => b.id === bootsId) || null,
       skinTone: skinToneId, hairColor: activeHairColor, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: activeEyeColor, gender: genderId,
       face: faceId, earrings: activeEarring, noseRing: activeNoseRing,
       status: {},
@@ -7713,12 +7795,12 @@ export default function MageDuel() {
     const HUB_PORTALS = [
       { id: "skills", label: lang === "pt" ? "Grimório" : "Grimoire", sub: `${unlockedSkills.size}/${SKILLS.length}`, icon: "📖", color: "#E8B44F" },
       { id: "gear", label: lang === "pt" ? "Equipar" : "Gear", sub: previewMage.staffGear?.name || "Itens", icon: "🪄", color: "#38BDF8" },
+      { id: "appearance", label: lang === "pt" ? "Aparência" : "Appearance", sub: lang === "pt" ? "Visual" : "Look", icon: "🪞", color: "#EC4899" },
       { id: "forge", label: lang === "pt" ? "Forja" : "Forge", sub: "Brokk", icon: "🔨", color: "#F59E0B" },
       { id: "alchemy", label: lang === "pt" ? "Alquimia" : "Alchemy", sub: "Lyra", icon: "🧪", color: "#A855F7" },
       { id: "leaderboard", label: lang === "pt" ? "Ranking" : "Rank", sub: `#${playerRank}`, icon: "🏆", color: playerTier.color },
       { id: "shop", label: lang === "pt" ? "Loja" : "Shop", sub: `${shards}✦`, icon: "✦", color: "#F59E0B" },
       { id: "pass", label: lang === "pt" ? "Passe" : "Pass", sub: `Nv.${seasonLevel}`, icon: "🎫", color: "#EC4899", hasNotice: hasUnclaimedPass },
-      { id: "bag", label: lang === "pt" ? "Mochila" : "Bag", sub: `${totalConsumables}`, icon: "🎒", color: "#10B981" },
     ];
 
     return (
@@ -7729,7 +7811,7 @@ export default function MageDuel() {
           <div
             onClick={() => setTab("appearance")}
             className="flex sm:hidden landscape:hidden flex-col items-center justify-between p-1 rounded-xl glass-panel w-full h-full shadow-md border border-white/10 relative overflow-hidden cursor-pointer group select-none"
-            title="Toque para personalizar aparência"
+            title={lang === "pt" ? "Toque para personalizar aparência" : "Tap to customize appearance"}
           >
             <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-25">
               <div
@@ -7765,9 +7847,10 @@ export default function MageDuel() {
                   e.stopPropagation();
                   setTab("appearance");
                 }}
-                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-medium bg-slate-900/90 border border-white/20 text-zinc-300 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+                className="px-1.5 py-0.5 rounded text-[8px] font-sans font-bold bg-slate-900/90 border border-pink-500/40 text-pink-200 shadow-sm flex items-center gap-0.5 active:scale-95 cursor-pointer"
+                title={lang === "pt" ? "Personalizar Aparência" : "Customize Appearance"}
               >
-                <span>👤</span><span>{t("edit")}</span>
+                <span>🪞</span><span>{lang === "pt" ? "Aparência" : "Look"}</span>
               </button>
             </div>
           </div>
@@ -7777,7 +7860,7 @@ export default function MageDuel() {
             <div
               className="flex flex-col items-center justify-center cursor-pointer group relative py-0.5 sm:py-1 select-none"
               onClick={() => setTab("appearance")}
-              title="Clique para customizar aparência"
+              title={lang === "pt" ? "Clique para customizar aparência" : "Click to customize appearance"}
             >
               {/* Atmospheric Ambient Glow behind mage */}
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30">
@@ -7804,16 +7887,17 @@ export default function MageDuel() {
                   className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-amber-400/20 border border-amber-400/60 text-amber-300 hover:bg-amber-400/30 transition-all flex items-center gap-1 shadow-sm cursor-pointer active:scale-95"
                   title={lang === "pt" ? "Ver personagem maior em tela cheia" : "Inspect character fullscreen"}
                 >
-                  <span>👁️</span><span>{lang === "pt" ? "Inspecionar em Tela Cheia" : "Inspect Fullscreen"}</span>
+                  <span>👁️</span><span>{lang === "pt" ? "Inspecionar" : "Inspect"}</span>
                 </button>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setTab("appearance");
                   }}
-                  className="px-2 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-medium bg-slate-900/90 border border-white/10 text-zinc-300 hover:border-amber-400/50 hover:text-amber-200 transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                  className="px-2.5 py-0.5 rounded-full text-[9.5px] sm:text-[10.5px] font-sans font-bold bg-slate-900/90 border border-pink-500/40 text-pink-200 hover:border-pink-400 hover:text-white transition-all flex items-center gap-1 shadow-sm cursor-pointer"
+                  title={lang === "pt" ? "Personalizar Aparência" : "Customize Appearance"}
                 >
-                  <span>👤</span><span>{t("customize")}</span>
+                  <span>🪞</span><span>{lang === "pt" ? "Aparência" : "Appearance"}</span>
                 </button>
               </div>
             </div>
@@ -7995,11 +8079,39 @@ export default function MageDuel() {
             </span>
             <button
               onClick={() => setTab(null)}
-              className="p-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-bold"
+              className="p-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-700/60 border border-white/10 text-zinc-400 hover:text-white transition-all text-xs font-bold cursor-pointer"
             >
               ✕
             </button>
           </div>
+
+          {/* Top-Level Quick Tab Navigation */}
+          {(tab === "gear" || tab === "appearance" || tab === "style" || tab === "shop") && (
+            <div className="flex items-center gap-1 p-1 bg-slate-950/95 border-b border-white/10 px-2 sm:px-3 flex-shrink-0 overflow-x-auto">
+              {[
+                { id: "gear", label: lang === "pt" ? "Equipamentos" : "Gear", icon: "🪄" },
+                { id: "appearance", label: lang === "pt" ? "Aparência" : "Appearance", icon: "🪞" },
+                { id: "style", label: lang === "pt" ? "Estilo & Capas" : "Style", icon: "🎨" },
+                { id: "shop", label: lang === "pt" ? "Loja Arcana" : "Shop", icon: "✦" },
+              ].map(sub => {
+                const isActive = tab === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => setTab(sub.id)}
+                    className={`flex-1 py-1 px-1.5 sm:px-2 rounded-lg text-[10.5px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
+                      isActive
+                        ? "bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-sm"
+                        : "text-zinc-400 hover:text-zinc-200 border border-transparent hover:bg-white/5"
+                    }`}
+                  >
+                    <span>{sub.icon}</span>
+                    <span>{sub.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           {/* Sticky Live Character Preview Stage for Customization (Mobile & Desktop) */}
           {(tab === "gear" || tab === "style" || tab === "appearance" || tab === "shop") && (
@@ -8386,21 +8498,32 @@ export default function MageDuel() {
           {tab === "gear" && (
             <div>
               {/* Modern Gear Sub-tab Pill Switcher */}
-              <div className="flex items-center gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-white/10 mb-3 flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-1.5 p-1 bg-slate-950/80 rounded-xl border border-white/10 mb-3 flex-shrink-0 overflow-x-auto">
                 <button
                   onClick={() => setGearSubTab("weapons")}
-                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
                     gearSubTab === "weapons"
                       ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                       : "text-zinc-400 hover:text-zinc-200 border border-transparent"
                   }`}
                 >
                   <span>🪄</span>
-                  <span>{lang === "pt" ? "Armas & Mão" : "Weapons"}</span>
+                  <span>{lang === "pt" ? "Armas" : "Weapons"}</span>
+                </button>
+                <button
+                  onClick={() => setGearSubTab("apparel")}
+                  className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
+                    gearSubTab === "apparel"
+                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
+                      : "text-zinc-400 hover:text-zinc-200 border border-transparent"
+                  }`}
+                >
+                  <span>🥋</span>
+                  <span>{lang === "pt" ? "Vestimentas" : "Apparel"}</span>
                 </button>
                 <button
                   onClick={() => setGearSubTab("rings")}
-                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
                     gearSubTab === "rings"
                       ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                       : "text-zinc-400 hover:text-zinc-200 border border-transparent"
@@ -8411,14 +8534,14 @@ export default function MageDuel() {
                 </button>
                 <button
                   onClick={() => setGearSubTab("relics")}
-                  className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-sans font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 py-1.5 px-1.5 sm:px-2 rounded-lg text-[11px] sm:text-xs font-sans font-bold transition-all flex items-center justify-center gap-1 whitespace-nowrap cursor-pointer ${
                     gearSubTab === "relics"
                       ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm"
                       : "text-zinc-400 hover:text-zinc-200 border border-transparent"
                   }`}
                 >
                   <span>🔮</span>
-                  <span>{lang === "pt" ? "Relíquias & Mascotes" : "Relics & Pets"}</span>
+                  <span>{lang === "pt" ? "Relíquias" : "Relics"}</span>
                 </button>
               </div>
 
@@ -8435,6 +8558,59 @@ export default function MageDuel() {
                   <div className="grid gap-2">
                     {OFFHANDS.map(o => (
                       <RarityCard key={o.id} item={o} selected={offhandId === o.id} locked={!owned.has(o.id)} onClick={() => owned.has(o.id) && setOffhandId(o.id)} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Apparel Sub-tab (Robes, Hats, Gloves, Boots) */}
+              {gearSubTab === "apparel" && (
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-mono text-sm font-bold" style={{ color: "#E8B44F" }}>
+                      🥋 {lang === "pt" ? "Túnica / Robe Arcana" : "Arcane Robe"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "vida e defesas" : "hp & defenses"})</span>
+                    </p>
+                    <span className="text-[10px] font-mono text-zinc-400">{ROBES.length} {lang === "pt" ? "itens" : "items"}</span>
+                  </div>
+                  <div className="grid gap-2 mb-5">
+                    {ROBES.map(r => (
+                      <RarityCard key={r.id} item={r} selected={robeId === r.id} locked={!owned.has(r.id)} onClick={() => owned.has(r.id) && setRobeId(r.id)} lang={lang} />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-mono text-sm font-bold" style={{ color: "#E8B44F" }}>
+                      🎩 {lang === "pt" ? "Chapéu / Elmo Arcano" : "Arcane Hat / Helm"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "mana máxima e crítico" : "max mana & crit"})</span>
+                    </p>
+                    <span className="text-[10px] font-mono text-zinc-400">{HATS.length} {lang === "pt" ? "itens" : "items"}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
+                    {HATS.map(h => (
+                      <RarityCard key={h.id} item={h} selected={hatId === h.id} locked={!owned.has(h.id)} onClick={() => owned.has(h.id) && setHatId(h.id)} lang={lang} />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-mono text-sm font-bold" style={{ color: "#E8B44F" }}>
+                      🧤 {lang === "pt" ? "Luvas & Manoplas" : "Gloves & Gauntlets"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "amplificação e conjuração" : "amplification & casting"})</span>
+                    </p>
+                    <span className="text-[10px] font-mono text-zinc-400">{GLOVES.length} {lang === "pt" ? "itens" : "items"}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-5">
+                    {GLOVES.map(gl => (
+                      <RarityCard key={gl.id} item={gl} selected={glovesId === gl.id} locked={!owned.has(gl.id)} onClick={() => owned.has(gl.id) && setGlovesId(gl.id)} lang={lang} />
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="font-mono text-sm font-bold" style={{ color: "#E8B44F" }}>
+                      👢 {lang === "pt" ? "Botas & Sapatos Mágicos" : "Magic Boots & Footwear"} <span style={{ color: "#38BDF8" }}>({lang === "pt" ? "velocidade e proteção" : "speed & protection"})</span>
+                    </p>
+                    <span className="text-[10px] font-mono text-zinc-400">{BOOTS.length} {lang === "pt" ? "itens" : "items"}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+                    {BOOTS.map(b => (
+                      <RarityCard key={b.id} item={b} selected={bootsId === b.id} locked={!owned.has(b.id)} onClick={() => owned.has(b.id) && setBootsId(b.id)} lang={lang} />
                     ))}
                   </div>
                 </div>
@@ -9585,6 +9761,7 @@ export default function MageDuel() {
     const pet = findItem(petId);
     const offhand = findItem(offhandId);
     const gloves = findItem(glovesId);
+    const bootsItem = BOOTS.find(b => b.id === bootsId);
     const staff = previewMage.staffGear;
     const skinTone = SKIN_TONES.find(s => s.id === skinToneId);
 
@@ -9701,15 +9878,17 @@ export default function MageDuel() {
               <span>{lang === "pt" ? "Equipamentos e Cosméticos Ativos:" : "Equipped Gear & Cosmetics:"}</span>
             </h3>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5 w-full">
               {[
                 { label: lang === "pt" ? "Cajado" : "Staff", icon: "🪄", item: staff },
                 { label: lang === "pt" ? "Secundário" : "Off-hand", icon: "🛡️", item: offhand },
                 { label: lang === "pt" ? "Relíquia" : "Relic", icon: "✦", item: relic },
+                { label: lang === "pt" ? "Túnica" : "Robe", icon: "🥋", item: robeSkin },
                 { label: lang === "pt" ? "Chapéu" : "Hat", icon: "🎩", item: hat },
-                { label: lang === "pt" ? "Capa / Asas" : "Cape/Wings", icon: "🧣", item: cape },
+                { label: lang === "pt" ? "Luvas" : "Gloves", icon: "🧤", item: gloves },
+                { label: lang === "pt" ? "Calçados" : "Boots", icon: "👢", item: bootsItem },
+                { label: lang === "pt" ? "Asas / Capa" : "Wings / Cape", icon: "🧣", item: cape },
                 { label: lang === "pt" ? "Mascote" : "Pet", icon: "🐾", item: pet },
-                { label: lang === "pt" ? "Vestimenta" : "Robe", icon: "👘", item: robeSkin },
                 { label: lang === "pt" ? "Pele" : "Skin", icon: "👤", item: skinTone },
               ].map(({ label, icon, item }, idx) => {
                 const isEquipped = item && item.id !== "none" && item.id !== "offhand_none" && item.id !== "armor_none";
@@ -9818,6 +9997,9 @@ export default function MageDuel() {
     if (!showEnemyGearModal || !enemy) return null;
     const foeEl = ELEMENTS[enemy.affinity] || ELEMENTS.fire;
     const foeHat = HATS.find(h => h.id === enemy.hat);
+    const foeRobe = ROBES.find(r => r.id === enemy.robe);
+    const foeGloves = GLOVES.find(g => g.id === enemy.gloves);
+    const foeBoots = BOOTS.find(b => b.id === (enemy.boots || enemy.bootsId));
     const foeCape = enemy.cape;
     const foeStaff = enemy.staffGear;
     const foeRelic = enemy.relic;
@@ -10000,24 +10182,64 @@ export default function MageDuel() {
                 </div>
               </div>
 
-              {/* 5. Asas/Capa & Chapéu */}
+              {/* 5. Vestimentas & Armadura do Inimigo */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="card-surface p-2.5 rounded-xl border border-white/10">
                   <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
-                    🪽 {lang === "pt" ? "Asas / Capa" : "Wings / Cape"}
+                    🥋 {lang === "pt" ? "Túnica" : "Robe"}
                   </div>
-                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200">
-                    {foeCape ? ((lang === "pt" && foeCape.name_pt) ? foeCape.name_pt : foeCape.name) : (lang === "pt" ? "Sem Capa" : "No Cape")}
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200" style={{ color: foeRobe ? (RARITY[foeRobe.rarity]?.color || "#E2E8F0") : "#71717A" }}>
+                    {foeRobe ? ((lang === "pt" && foeRobe.name_pt) ? foeRobe.name_pt : foeRobe.name) : "—"}
                   </div>
+                  {foeRobe?.maxHpBonus && (
+                    <div className="text-[9px] font-mono text-emerald-300 font-bold mt-0.5">+{foeRobe.maxHpBonus} HP</div>
+                  )}
                 </div>
 
                 <div className="card-surface p-2.5 rounded-xl border border-white/10">
                   <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
-                    🎩 {lang === "pt" ? "Chapéu / Adorno" : "Hat / Headgear"}
+                    🎩 {lang === "pt" ? "Chapéu / Elmo" : "Hat / Helm"}
                   </div>
-                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200">
-                    {foeHat ? foeHat.name : (lang === "pt" ? "Sem Chapéu" : "No Hat")}
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200" style={{ color: foeHat ? (RARITY[foeHat.rarity]?.color || "#E2E8F0") : "#71717A" }}>
+                    {foeHat ? ((lang === "pt" && foeHat.name_pt) ? foeHat.name_pt : foeHat.name) : (lang === "pt" ? "Sem Chapéu" : "No Hat")}
                   </div>
+                  {foeHat?.maxManaBonus && (
+                    <div className="text-[9px] font-mono text-sky-300 font-bold mt-0.5">+{foeHat.maxManaBonus} Mana</div>
+                  )}
+                </div>
+
+                <div className="card-surface p-2.5 rounded-xl border border-white/10">
+                  <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
+                    🧤 {lang === "pt" ? "Luvas" : "Gloves"}
+                  </div>
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200" style={{ color: foeGloves ? (RARITY[foeGloves.rarity]?.color || "#E2E8F0") : "#71717A" }}>
+                    {foeGloves ? ((lang === "pt" && foeGloves.name_pt) ? foeGloves.name_pt : foeGloves.name) : "—"}
+                  </div>
+                  {foeGloves?.allDmg && (
+                    <div className="text-[9px] font-mono text-purple-300 font-bold mt-0.5">+{Math.round(foeGloves.allDmg * 100)}% Dano</div>
+                  )}
+                </div>
+
+                <div className="card-surface p-2.5 rounded-xl border border-white/10">
+                  <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
+                    👢 {lang === "pt" ? "Botas" : "Boots"}
+                  </div>
+                  <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200" style={{ color: foeBoots ? (RARITY[foeBoots.rarity]?.color || "#E2E8F0") : "#71717A" }}>
+                    {foeBoots ? ((lang === "pt" && foeBoots.name_pt) ? foeBoots.name_pt : foeBoots.name) : "—"}
+                  </div>
+                  {foeBoots?.maxHpBonus && (
+                    <div className="text-[9px] font-mono text-emerald-300 font-bold mt-0.5">+{foeBoots.maxHpBonus} HP</div>
+                  )}
+                </div>
+              </div>
+
+              {/* 6. Asas / Capa */}
+              <div className="card-surface p-2.5 rounded-xl border border-white/10 mt-2">
+                <div className="text-[9px] font-mono text-zinc-400 uppercase tracking-wider mb-0.5">
+                  🪽 {lang === "pt" ? "Asas / Capa" : "Wings / Cape"}
+                </div>
+                <div className="font-mono text-[11.5px] font-bold truncate text-zinc-200">
+                  {foeCape ? ((lang === "pt" && foeCape.name_pt) ? foeCape.name_pt : foeCape.name) : (lang === "pt" ? "Sem Capa" : "No Cape")}
                 </div>
               </div>
             </div>
