@@ -225,6 +225,10 @@ export const I18N = {
     readyForBattle: "PRONTO PARA BATALHAR",
     tacticalIntel: "Análise Tática do Oponente",
     counterStrategy: "Dica de Contra-Estratégia",
+    fairMatchmaking: "Pareamento Justo (50% vs 50%)",
+    combatPower: "Poder de Combate",
+    levelMatch: "Equivalência de Nível",
+    balancedChance: "Chances de vitória equilibradas (50/50)",
     quickSpells: "Troca Rápida de Feitiços",
     quickGear: "Troca Rápida de Equipamentos",
     unlockedSpellsBank: "Banco de Feitiços Disponíveis",
@@ -378,6 +382,10 @@ export const I18N = {
     readyForBattle: "READY FOR BATTLE",
     tacticalIntel: "Opponent Tactical Intel",
     counterStrategy: "Counter-Strategy Tip",
+    fairMatchmaking: "Fair Matchmaking (50% vs 50%)",
+    combatPower: "Combat Power",
+    levelMatch: "Level Parity",
+    balancedChance: "Balanced win probability (50/50)",
     quickSpells: "Quick Spell Swapper",
     quickGear: "Quick Gear Swapper",
     unlockedSpellsBank: "Available Spells Bank",
@@ -1023,7 +1031,30 @@ const NPC_REPLIES = {
 
 const MAX_HP = 100, MAX_MANA = 40, REGEN = 3, BASE_CRIT = 8;
 const AFFINITY_BONUS = 1.25;
-const ENEMY_NAMES = ["Morwen the Ashen", "Sylra Frostcall", "Bramblewick", "Vex of the Veil", "Ondrel Pyre", "Nissa Thornheart"];
+const ENEMY_NAMES_BY_AFFINITY = {
+  fire: [
+    "Morwen the Ashen", "Ondrel Pyre", "Ignis o Ígneo", "Kaelen Cinzento",
+    "Valeria Chama Eterna", "Aiden Centelha", "Pyra Brasas Negras", "Solas Incandescente"
+  ],
+  ice: [
+    "Sylra Frostcall", "Boreal Glaciar", "Eira da Geada", "Kaelen do Vento Frio",
+    "Lyra Ponta de Gelo", "Frostfang Vesper", "Glacius o Eterno", "Yuki Nevasca"
+  ],
+  nature: [
+    "Bramblewick", "Nissa Thornheart", "Silas Raiz Profunda", "Rowan Espinheiro",
+    "Faelar Verdejante", "Caelum Botânico", "Ivy Espinho Vivo", "Thorne Musgo Antigo"
+  ],
+  arcane: [
+    "Vex of the Veil", "Zephyr Tecelão Astral", "Astraea do Vazio", "Orion Olho do Tempo",
+    "Thorne Arcanista", "Nova do Crepúsculo", "Cosmo Estelar", "Elysia Fenda Noturna"
+  ],
+};
+const ENEMY_NAMES = [
+  ...ENEMY_NAMES_BY_AFFINITY.fire,
+  ...ENEMY_NAMES_BY_AFFINITY.ice,
+  ...ENEMY_NAMES_BY_AFFINITY.nature,
+  ...ENEMY_NAMES_BY_AFFINITY.arcane,
+];
 
 const DAILY_MODIFIERS = [
   { day: 0, id: "arcane_surge", name: "Surto Celestial", icon: "✨", desc: "Regen de Mana +2 por turno e magias arcanas causam +25% de dano.", shortDesc: "Regen +2 · Arcano +25%" },
@@ -1221,32 +1252,208 @@ function makeMage(name, affinity, skills, staffId, relicId, hatId, auraId, capeI
   };
 }
 
-function makeEnemy() {
-  const affinity = pick(Object.keys(ELEMENTS));
-  const own = SKILLS.filter(s => s.el === affinity && s.dmg > 0);
-  const loadout = [...own.slice(0, 2)];
-  while (loadout.length < 4) { const s = pick(SKILLS); if (!loadout.includes(s)) loadout.push(s); }
-  const e = makeMage(pick(ENEMY_NAMES), affinity, loadout, pick(STAFFS).id,
-    Math.random() < 0.6 ? pick(RELICS.filter(r => r.id !== "none")).id : "none",
-    pick(HATS).id, pick(AURAS).id,
-    Math.random() < 0.5 ? pick(CAPES.filter(c => c.id !== "cape_none")).id : "cape_none",
-    "armor_none", // armor hidden from the game for now
-    Math.random() < 0.4 ? pick(PETS.filter(p => p.id !== "pet_none")).id : "pet_none",
+// ================= BALANCED MATCHMAKING ENGINE (E-SPORTS / AAA BENCHMARK) =================
+// Inspired by Clash Royale, Hearthstone, and Brawl Stars:
+// 1. Level Parity: Opponents are 70% exact same level, 15% +/-1 level.
+// 2. Power Score Matching: Evaluates gear rarity, spell tiers, level, and deck synergy.
+// 3. Synergistic Deck Composition: Core affinity attack + fast attack + shield/heal + finisher.
+// 4. Equal 50/50 win chances for both sides.
+
+function calculateMagePowerScore(mage, level = 1) {
+  if (!mage) return 100;
+  const lvl = level || mage.level || 1;
+  let score = lvl * 15; // Base progression per level
+
+  // Equipped Spells Score
+  const skills = mage.skills || [];
+  skills.forEach(s => {
+    if (!s) return;
+    const tierWeight = s.tier === 3 ? 32 : s.tier === 2 ? 18 : 10;
+    score += tierWeight;
+    if (s.el === mage.affinity) score += 6; // Affinity synergy bonus (+25% multiplier)
+  });
+
+  // Equipped Gear Score (by rarity tiers)
+  const RARITY_POWER = { common: 8, rare: 16, epic: 28, legendary: 45 };
+  if (mage.staffGear) score += RARITY_POWER[mage.staffGear.rarity] || 10;
+  if (mage.relic && mage.relic.id !== "none") score += RARITY_POWER[mage.relic.rarity] || 12;
+  if (mage.offhand && mage.offhand.id !== "offhand_none") score += RARITY_POWER[mage.offhand.rarity] || 8;
+  if (mage.ring1 && mage.ring1.id !== "ring_none") score += RARITY_POWER[mage.ring1.rarity] || 6;
+  if (mage.ring2 && mage.ring2.id !== "ring_none") score += RARITY_POWER[mage.ring2.rarity] || 6;
+  if (mage.pet && mage.pet.id !== "pet_none") score += RARITY_POWER[mage.pet.rarity] || 10;
+  if (mage.robeGear) score += RARITY_POWER[mage.robeGear.rarity] || 6;
+  if (mage.hatGear) score += RARITY_POWER[mage.hatGear.rarity] || 6;
+  if (mage.bootsGear) score += RARITY_POWER[mage.bootsGear.rarity] || 6;
+
+  return Math.round(score);
+}
+
+function pickMatchedOpponentLevel(playerLevel = 1, winStreak = 0) {
+  const pLvl = Math.max(1, Math.min(MAX_MAGE_LEVEL, playerLevel));
+  if (pLvl <= 1) return 1;
+  if (pLvl === 2) return Math.random() < 0.75 ? 2 : 1;
+
+  // Strict competitive distribution:
+  // 70% exact same level, 15% -1 level, 15% +1 level
+  let sameWeight = 0.70;
+  let lowerWeight = 0.15;
+  let higherWeight = 0.15;
+
+  if (winStreak >= 3) {
+    sameWeight = 0.55;
+    lowerWeight = 0.05;
+    higherWeight = 0.40;
+  } else if (winStreak <= -2) {
+    sameWeight = 0.45;
+    lowerWeight = 0.45;
+    higherWeight = 0.10;
+  }
+
+  const roll = Math.random();
+  if (roll < lowerWeight) return Math.max(1, pLvl - 1);
+  if (roll < lowerWeight + sameWeight) return pLvl;
+  return Math.min(MAX_MAGE_LEVEL, pLvl + 1);
+}
+
+function makeEnemy(options = {}) {
+  const playerLevel = typeof options === "number" ? options : (options.playerLevel || 1);
+  const playerAffinity = typeof options === "object" ? (options.playerAffinity || "fire") : "fire";
+  const playerPower = typeof options === "object" ? (options.playerPower || 100) : 100;
+  const playerTrophies = typeof options === "object" ? (options.playerTrophies || 1000) : 1000;
+  const winStreak = typeof options === "object" ? (options.winStreak || 0) : 0;
+
+  // 1. Level Parity (Same level or +/-1)
+  const targetLevel = pickMatchedOpponentLevel(playerLevel, winStreak);
+
+  // 2. Elemental Affinity Fair Distribution:
+  // 25% Mirror duel (identical element), 50% neutral/balanced, 25% other.
+  // If player is on a losing streak, protect them from disadvantage counters!
+  const allAffs = Object.keys(ELEMENTS);
+  const ELEMENT_COUNTERS_MAP = { fire: "nature", nature: "arcane", arcane: "ice", ice: "fire" };
+  let enemyAffinity;
+  const rollAff = Math.random();
+  if (rollAff < 0.25) {
+    enemyAffinity = playerAffinity; // Mirror duel
+  } else if (winStreak <= -2) {
+    const nonCounters = allAffs.filter(a => ELEMENT_COUNTERS_MAP[a] !== playerAffinity);
+    enemyAffinity = pick(nonCounters.length ? nonCounters : allAffs);
+  } else {
+    enemyAffinity = pick(allAffs);
+  }
+
+  // 3. Synergistic Deck Assembly based on targetLevel & deck composition
+  const targetSlots = getMaxSlots(targetLevel);
+  const allowedSkills = SKILLS.filter(s => {
+    if (targetLevel <= 2) return s.tier === 1;
+    if (targetLevel <= 6) return s.tier <= 2;
+    return true; // level 7+ can access all tiers
+  });
+
+  // Slot 1: Core affinity attack spell (leverages +25% bonus)
+  const affinityAttacks = allowedSkills.filter(s => s.el === enemyAffinity && (s.dmg || 0) > 0);
+  const coreSpell = pick(affinityAttacks.length ? affinityAttacks : allowedSkills.filter(s => (s.dmg || 0) > 0));
+
+  // Slot 2: Fast attack or combo starter (mana <= 10)
+  const fastSpells = allowedSkills.filter(s => s.id !== coreSpell.id && s.mana <= 10 && (s.dmg || 0) > 0);
+  const fastSpell = pick(fastSpells.length ? fastSpells : allowedSkills.filter(s => s.id !== coreSpell.id));
+
+  // Slot 3: Defense / Sustain (Shield, Heal, or Mana recovery)
+  const sustainSpells = allowedSkills.filter(s => s.id !== coreSpell.id && s.id !== fastSpell.id && ((s.shield || 0) > 0 || (s.heal || 0) > 0 || (s.restore || 0) > 0));
+  const defenseSpell = pick(sustainSpells.length ? sustainSpells : allowedSkills.filter(s => s.id !== coreSpell.id && s.id !== fastSpell.id));
+
+  // Slot 4: Finisher or high-impact spell
+  const remaining = allowedSkills.filter(s => s.id !== coreSpell.id && s.id !== fastSpell.id && s.id !== defenseSpell.id);
+  const finisherSpell = pick(remaining.length ? remaining : allowedSkills);
+
+  const loadout = [coreSpell, fastSpell, defenseSpell, finisherSpell].filter(Boolean);
+
+  // Fill up to targetSlots (e.g. 5, 6, 7 slots for higher levels)
+  while (loadout.length < targetSlots) {
+    const unpicked = allowedSkills.filter(s => !loadout.some(ls => ls.id === s.id));
+    if (unpicked.length === 0) break;
+    loadout.push(pick(unpicked));
+  }
+
+  // 4. Level-Appropriate Gear
+  // Staff
+  const validStaffs = STAFFS.filter(s => {
+    if (targetLevel <= 3) return s.rarity === "common" || s.rarity === "rare";
+    if (targetLevel <= 7) return s.rarity === "rare" || s.rarity === "epic";
+    return s.rarity === "epic" || s.rarity === "legendary";
+  });
+  const staffChoice = pick(validStaffs.filter(s => s.el === enemyAffinity || s.allDmg).length
+    ? validStaffs.filter(s => s.el === enemyAffinity || s.allDmg)
+    : validStaffs);
+
+  // Relic
+  const validRelics = RELICS.filter(r => {
+    if (targetLevel <= 2) return r.id === "none" || r.rarity === "common";
+    if (targetLevel <= 6) return r.rarity === "common" || r.rarity === "rare";
+    return r.rarity === "rare" || r.rarity === "legendary";
+  });
+  const relicChoice = pick(validRelics);
+
+  // Offhand
+  const validOffhands = OFFHANDS.filter(o => {
+    if (targetLevel <= 3) return o.id === "offhand_none" || o.rarity === "common";
+    if (targetLevel <= 7) return o.rarity === "common" || o.rarity === "rare";
+    return o.rarity === "rare" || o.rarity === "epic";
+  });
+  const offhandChoice = pick(validOffhands);
+
+  // Rings
+  const validRings = RINGS.filter(r => {
+    if (targetLevel <= 2) return r.id === "ring_none" || r.rarity === "common";
+    return true;
+  });
+  const ring1Choice = pick(validRings.filter(r => !r.el || r.el === enemyAffinity).length ? validRings.filter(r => !r.el || r.el === enemyAffinity) : validRings);
+  const ring2Choice = targetLevel >= 3 ? pick(validRings) : { id: "ring_none" };
+
+  // Pet
+  const petChoice = targetLevel >= 4 && Math.random() < 0.6 ? pick(PETS.filter(p => p.id !== "pet_none")) : { id: "pet_none" };
+
+  // Name
+  const enemyNamesForAff = ENEMY_NAMES_BY_AFFINITY[enemyAffinity] || ENEMY_NAMES;
+  const enemyName = pick(enemyNamesForAff);
+
+  // 5. Construct Mage
+  const e = makeMage(
+    enemyName,
+    enemyAffinity,
+    loadout,
+    staffChoice?.id || "ashwood",
+    relicChoice?.id || "none",
+    pick(HATS).id,
+    pick(AURAS).id,
+    targetLevel >= 5 && Math.random() < 0.6 ? pick(CAPES.filter(c => c.id !== "cape_none")).id : "cape_none",
+    "armor_none",
+    petChoice.id,
     pick(ROBES).id,
     {
-      skinTone: pick(SKIN_TONES).id, hairColor: pick(HAIR_COLORS).id, hairStyle: pick(HAIR_STYLES).id, beardStyle: pick(BEARD_STYLES).id, eyeColor: pick(EYE_COLORS).id, gender: pick(GENDERS).id,
-      face: pick(FACES).id, earrings: Math.random() < 0.3 ? pick(EARRINGS.filter(x => x.id !== "earring_none")).id : "earring_none",
+      skinTone: pick(SKIN_TONES).id,
+      hairColor: pick(HAIR_COLORS).id,
+      hairStyle: pick(HAIR_STYLES).id,
+      beardStyle: pick(BEARD_STYLES).id,
+      eyeColor: pick(EYE_COLORS).id,
+      gender: pick(GENDERS).id,
+      face: pick(FACES).id,
+      earrings: Math.random() < 0.3 ? pick(EARRINGS.filter(x => x.id !== "earring_none")).id : "earring_none",
       noseRing: Math.random() < 0.15 ? pick(NOSE_RINGS.filter(x => x.id !== "nosering_none")).id : "nosering_none",
     },
-    Math.random() < 0.5 ? pick(OFFHANDS.filter(o => o.id !== "offhand_none")).id : "offhand_none",
+    offhandChoice?.id || "offhand_none",
     pick(GLOVES).id,
-    Math.random() < 0.7 ? pick(RINGS.filter(r => r.id !== "ring_none" && (!r.el || r.el === affinity))).id : "ring_none",
-    Math.random() < 0.5 ? pick(RINGS.filter(r => r.id !== "ring_none")).id : "ring_none",
-    pick(BOOTS).id);
-  e.shield = (e.relic?.startShield || 0) + (e.pet?.startShield || 0) + (e.ring1?.startShield || 0) + (e.ring2?.startShield || 0)
-    + (e.robeGear?.startShield || 0) + (e.hatGear?.startShield || 0) + (e.bootsGear?.startShield || 0);
+    ring1Choice?.id || "ring_none",
+    ring2Choice?.id || "ring_none",
+    pick(BOOTS).id
+  );
+
+  e.level = targetLevel;
+  e.trophies = Math.max(500, Math.round(playerTrophies + rand(-25, 25)));
+  e.power = calculateMagePowerScore(e, targetLevel);
+
   const archKeys = Object.keys(ARCHETYPES);
   e.archetype = ARCHETYPES[pick(archKeys)];
+
   return e;
 }
 
@@ -5490,22 +5697,52 @@ export default function MageDuel() {
     setBossEncounter(null);
     setMatchmaking(true);
     setMatchTimer(0);
-    setMatchStatus("Scanning arcane leylines for duelists...");
     if (matchIntervalRef.current) clearInterval(matchIntervalRef.current);
     if (matchTimeoutRef.current) clearTimeout(matchTimeoutRef.current);
+
+    const previewM = buildPreviewMage();
+    const playerPower = calculateMagePowerScore(previewM, mageLevel);
+
+    setMatchStatus(
+      lang === "pt"
+        ? `Buscando oponente Nível ${mageLevel} (Faixa: Nv.${Math.max(1, mageLevel - 1)}-${Math.min(30, mageLevel + 1)})...`
+        : `Searching for Level ${mageLevel} duelists (Range: Lvl.${Math.max(1, mageLevel - 1)}-${Math.min(30, mageLevel + 1)})...`
+    );
 
     let elapsed = 0;
     matchIntervalRef.current = setInterval(() => {
       elapsed += 1;
       setMatchTimer(elapsed);
-      if (elapsed === 1) setMatchStatus("Evaluating rating & power (Bot Queue)...");
-      else if (elapsed === 2) setMatchStatus("Duelist located! Synchronizing arena...");
+      if (elapsed === 1) {
+        setMatchStatus(
+          lang === "pt"
+            ? `Avaliando Poder de Combate (${playerPower} Poder) & Classificação (${trophies} 🏆)...`
+            : `Evaluating Combat Power (${playerPower} Power) & Rating (${trophies} 🏆)...`
+        );
+      } else if (elapsed === 2) {
+        setMatchStatus(
+          lang === "pt"
+            ? "Mago equivalente localizado! Equilibrando chances (50% vs 50%)..."
+            : "Equivalent mage located! Balancing win probability (50% vs 50%)..."
+        );
+      }
     }, 1000);
 
     matchTimeoutRef.current = setTimeout(() => {
       if (matchIntervalRef.current) clearInterval(matchIntervalRef.current);
-      setEnemy(makeEnemy(mageLevel));
-      setMatchStatus("Match Found! Teleporting to faceoff...");
+      const matchedEnemy = makeEnemy({
+        playerLevel: mageLevel,
+        playerAffinity: affinity,
+        playerPower: playerPower,
+        playerTrophies: trophies,
+        winStreak: winStreak,
+      });
+      setEnemy(matchedEnemy);
+      setMatchStatus(
+        lang === "pt"
+          ? `Pareamento Justo Encontrado! ${matchedEnemy.name} (Nv.${matchedEnemy.level})`
+          : `Fair Match Found! ${matchedEnemy.name} (Lvl.${matchedEnemy.level})`
+      );
       setTimeout(() => {
         setMatchmaking(false);
         setPhase("scout");
@@ -5602,6 +5839,13 @@ export default function MageDuel() {
     }
     const p = makeMage(mageName.trim() || "You", affinity, finalSkills.map(id => SKILLS.find(s => s.id === id)), staffId, relicId, hatId, auraId, capeId, armorId, petId, robeId,
       { skinTone: skinToneId, hairColor: hairColorId, hairStyle: hairStyleId, beardStyle: beardStyleId, eyeColor: eyeColorId, gender: genderId, face: faceId, earrings: earringId, noseRing: noseRingId }, offhandId, glovesId, ring1Id, ring2Id, bootsId);
+    p.level = mageLevel;
+    p.trophies = trophies;
+    p.power = calculateMagePowerScore(p, mageLevel);
+    if (enemy) {
+      if (!enemy.level) enemy.level = mageLevel;
+      if (!enemy.power) enemy.power = calculateMagePowerScore(enemy, enemy.level);
+    }
     setPlayer(p); setResult(null); setLoot(null); setConfirmSurrender(false);
     setShowSurrenderModal(false);
     setRoundNum(1);
@@ -9888,11 +10132,28 @@ export default function MageDuel() {
 
   function renderMatchmakingModal() {
     if (!matchmaking) return null;
+    const playerPower = calculateMagePowerScore(buildPreviewMage(), mageLevel);
+    const minLvl = Math.max(1, mageLevel - 1);
+    const maxLvl = Math.min(30, mageLevel + 1);
+
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop">
-        <div className="relative w-full max-w-sm modal-window p-6 text-center flex flex-col items-center shadow-2xl">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 modal-backdrop">
+        <div className="relative w-full max-w-sm sm:max-w-md modal-window p-4 sm:p-6 text-center flex flex-col items-center shadow-2xl">
+          
+          {/* Header Badge */}
+          <div
+            className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-2 font-bold"
+            style={{ borderColor: `${T.gold}66`, backgroundColor: `${T.gold}18`, color: T.gold }}
+          >
+            <span>⚖️</span><span>{t("fairMatchmaking")}</span>
+          </div>
+
+          <h2 className="font-serif text-[18px] sm:text-[22px] font-bold mb-1" style={{ color: T.textPrimary }}>
+            {t("searchingOpponent")}
+          </h2>
+
           {/* Animated Arcane Matchmaking Radar / Sigil */}
-          <div className="relative w-28 h-28 mb-3 flex items-center justify-center">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 my-1 flex items-center justify-center">
             <svg viewBox="0 0 100 100" className="w-full h-full matchSpin">
               <circle cx="50" cy="50" r="46" fill="none" stroke={T.gold} strokeWidth="1.2" strokeDasharray="6 4" opacity="0.6" />
               <circle cx="50" cy="50" r="36" fill="none" stroke={T.arcane} strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
@@ -9900,37 +10161,64 @@ export default function MageDuel() {
               <polygon points="50,90 15,25 85,25" fill="none" stroke={T.ice} strokeWidth="1" opacity="0.4" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center matchPulse">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ background: `radial-gradient(circle, ${T.gold}44 0%, transparent 70%)` }}>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center" style={{ background: `radial-gradient(circle, ${T.gold}44 0%, transparent 70%)` }}>
                 <span className="text-2xl">⚔️</span>
               </div>
             </div>
           </div>
 
-          <div
-            className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-mono border mb-2 font-bold"
-            style={{ borderColor: `${T.gold}55`, backgroundColor: `${T.gold}18`, color: T.gold }}
-          >
-            <span>🤖</span><span>Fila de Pareamento Arcana</span>
+          {/* Side-by-Side Competitive Matchmaking Comparison Cards */}
+          <div className="w-full grid grid-cols-2 gap-2 my-2 text-left">
+            {/* Player Info */}
+            <div className="p-2 sm:p-2.5 rounded-xl bg-black/40 border border-amber-500/30 flex flex-col justify-between">
+              <div>
+                <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider">{lang === "pt" ? "Seu Mago" : "Your Mage"}</span>
+                <div className="font-serif font-bold text-xs sm:text-sm text-amber-200 truncate">{mageName.trim() || "You"}</div>
+              </div>
+              <div className="flex items-center gap-1 mt-1.5 flex-wrap text-[10px] font-mono">
+                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">Nv.{mageLevel}</span>
+                <span className="text-zinc-300 font-bold">⚡{playerPower}</span>
+                <span className="text-amber-400">🏆{trophies}</span>
+              </div>
+            </div>
+
+            {/* Target Opponent Criteria */}
+            <div className="p-2 sm:p-2.5 rounded-xl bg-black/40 border border-sky-500/30 flex flex-col justify-between">
+              <div>
+                <span className="text-[9.5px] font-mono text-zinc-400 uppercase tracking-wider">{lang === "pt" ? "Faixa Pareada" : "Matched Range"}</span>
+                <div className="font-serif font-bold text-xs sm:text-sm text-sky-200 truncate">
+                  {lang === "pt" ? `Nível ${mageLevel} (±0 Níveis)` : `Level ${mageLevel} (±0 Lvl)`}
+                </div>
+              </div>
+              <div className="flex items-center gap-1 mt-1.5 flex-wrap text-[10px] font-mono">
+                <span className="px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">Nv.{minLvl}-{maxLvl}</span>
+                <span className="px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 font-bold border border-emerald-500/40">50% / 50%</span>
+              </div>
+            </div>
           </div>
 
-          <h2 className="font-serif text-[20px] font-bold mb-1" style={{ color: T.textPrimary }}>
-            Buscando Oponente...
-          </h2>
-
-          <p className="font-mono text-[12px] mb-3 min-h-[20px]" style={{ color: T.textSecondary }}>
+          {/* Status Message */}
+          <p className="font-mono text-[11px] sm:text-[12px] my-1 min-h-[22px] text-zinc-300 px-2" style={{ color: T.textSecondary }}>
             {matchStatus}
           </p>
 
+          {/* Fair Parity Banner */}
+          <div className="w-full text-[10px] font-mono text-zinc-400 mb-2 py-1 px-2 rounded-lg bg-black/30 border border-white/5 flex items-center justify-center gap-1">
+            <span>🛡️</span>
+            <span>{lang === "pt" ? "Curva de feitiços e atributos equalizados para duelo justo" : "Equalized spell curve and stats for fair competitive duel"}</span>
+          </div>
+
           <div
-            className="font-mono text-[12px] font-bold mb-4 px-3 py-1.5 rounded-lg border"
+            className="font-mono text-[11px] sm:text-[12px] font-bold mb-3 px-3 py-1 rounded-lg border flex items-center justify-center gap-1.5"
             style={{ borderColor: T.borderSubtle, backgroundColor: T.bgDeep, color: T.gold }}
           >
-            Tempo Decorrido: 0:0{matchTimer}
+            <span>⏱️</span>
+            <span>Tempo Decorrido: 0:0{matchTimer}</span>
           </div>
 
           <button
             onClick={cancelMatchmaking}
-            className="w-full btn-surface rounded-lg py-2.5 font-serif text-[13px] font-bold transition-all hover:border-red-500 hover:text-red-400"
+            className="w-full btn-surface rounded-xl py-2 font-serif text-[12px] sm:text-[13px] font-bold transition-all hover:border-red-500 hover:text-red-400 cursor-pointer"
           >
             Cancelar Busca
           </button>
@@ -11494,6 +11782,11 @@ export default function MageDuel() {
     const enemyEl = ELEMENTS[enemy.affinity] || ELEMENTS.fire;
     const canEnterArena = chosen.length >= 4;
 
+    // Competitive Matchmaking Power & Level Metrics
+    const playerPower = calculateMagePowerScore(previewMage, mageLevel);
+    const enemyLevel = enemy.level || mageLevel;
+    const enemyPower = enemy.power || calculateMagePowerScore(enemy, enemyLevel);
+
     // Tactical Elemental Counter Analysis
     const ELEMENT_ADVANTAGES = {
       fire: "nature",
@@ -11678,17 +11971,23 @@ export default function MageDuel() {
                 }}
               >
                 <div className="w-full flex items-center justify-between gap-1 mb-1">
-                  <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: T.textPrimary }}>
-                    {mageName.trim() || (lang === "pt" ? "Você" : "You")}
-                  </span>
+                  <div className="flex items-center gap-1.5 min-w-0 truncate">
+                    <span className="font-serif text-[13px] sm:text-[15px] font-bold truncate" style={{ color: T.textPrimary }}>
+                      {mageName.trim() || (lang === "pt" ? "Você" : "You")}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30 flex-shrink-0">
+                      Nv.{mageLevel}
+                    </span>
+                  </div>
                   <ElementBadge el={affinity} />
                 </div>
                 <div className="my-0.5 flex justify-center items-center">
                   <MageSprite mage={previewMage} facing="right" size={1.15} />
                 </div>
                 <div className="w-full">
-                  <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: T.textSecondary }}>
-                    {previewMage.staffGear?.name}
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-[12px] font-mono truncate font-medium" style={{ color: T.textSecondary }}>
+                    <span className="truncate">{previewMage.staffGear?.name}</span>
+                    <span className="text-amber-300 font-bold flex-shrink-0">· ⚡{playerPower}</span>
                   </div>
                   {relic && relic.id !== "none" && (
                     <div className="text-[10px] sm:text-[11px] font-mono truncate font-bold mt-0.5" style={{ color: RARITY[relic.rarity]?.color }}>
@@ -11726,9 +12025,14 @@ export default function MageDuel() {
                 }}
               >
                 <div className="w-full flex items-center justify-between gap-1 mb-1">
-                  <span className="font-serif text-[11px] xs:text-[12.5px] sm:text-[15px] font-bold leading-tight truncate" style={{ color: enemyEl.color }}>
-                    {enemy.name}
-                  </span>
+                  <div className="flex items-center gap-1.5 min-w-0 truncate">
+                    <span className="font-serif text-[11px] xs:text-[12.5px] sm:text-[15px] font-bold leading-tight truncate" style={{ color: enemyEl.color }}>
+                      {enemy.name}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded-full bg-slate-800 text-zinc-300 font-mono text-[9px] font-bold border border-white/20 flex-shrink-0">
+                      Nv.{enemyLevel}
+                    </span>
+                  </div>
                   <ElementBadge el={enemy.affinity} />
                 </div>
                 <div className="my-0.5 flex justify-center items-center">
@@ -11743,6 +12047,7 @@ export default function MageDuel() {
                   >
                     <div className="text-[11px] sm:text-[12px] font-mono truncate font-medium group-hover:underline flex items-center justify-center gap-1" style={{ color: RARITY[enemy.staffGear?.rarity || "common"]?.color || T.textSecondary }}>
                       <span>{enemy.staffGear?.name}</span>
+                      <span className="text-zinc-300 font-bold">· ⚡{enemyPower}</span>
                       <span className="text-[9.5px] opacity-75 group-hover:opacity-100">🔍</span>
                     </div>
                   </button>
@@ -11786,7 +12091,7 @@ export default function MageDuel() {
 
             </div>
 
-            {/* Tactical Intel Card (Opponent Analysis & Counter-Strategy) */}
+            {/* Tactical Intel Card (Opponent Analysis, Fair Matchmaking & Counter-Strategy) */}
             <div className="w-full rounded-2xl panel-base p-2.5 sm:p-3 border shadow-md flex flex-col gap-2" style={{ borderColor: `${T.gold}44` }}>
               <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-mono">
                 <span className="font-bold font-serif text-sm flex items-center gap-1.5" style={{ color: T.gold }}>
@@ -11819,6 +12124,27 @@ export default function MageDuel() {
                     <span>{lang === "pt" ? "Confronto Neutro" : "Neutral Matchup"}</span>
                   </span>
                 )}
+              </div>
+
+              {/* Fair Matchmaking Parity & Power Comparison */}
+              <div className="flex items-center justify-between p-2 rounded-xl bg-black/40 border border-amber-500/25 text-[11px] font-mono flex-wrap gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-amber-300 font-bold flex items-center gap-1">
+                    <span>⚖️</span>
+                    <span>{t("levelMatch")}:</span>
+                  </span>
+                  <span className="font-bold text-zinc-100">Nv.{mageLevel} vs Nv.{enemyLevel}</span>
+                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    {Math.abs(mageLevel - enemyLevel) === 0 ? (lang === "pt" ? "Nível Idêntico" : "Exact Level") : `Δ ${Math.abs(mageLevel - enemyLevel)}`}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-zinc-400">⚡ {t("combatPower")}:</span>
+                  <span className="font-bold text-amber-200">{playerPower} vs {enemyPower}</span>
+                  <span className="px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[9px] font-bold">
+                    50% vs 50%
+                  </span>
+                </div>
               </div>
 
               {/* Opponent Threat Quick Summary */}
@@ -12914,6 +13240,9 @@ export default function MageDuel() {
                 <div className="flex items-center justify-between gap-1.5 mb-0.5 sm:mb-1">
                   <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
                     <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.textPrimary }}>{enemy.name}</span>
+                    <span className="px-1.5 py-0.2 rounded bg-slate-800 text-zinc-300 font-mono text-[9px] font-bold border border-white/20">
+                      Nv.{enemy.level || 1}
+                    </span>
                     <ElementBadge el={enemy.affinity} />
                     <StatusIcons mage={enemy} />
                   </div>
@@ -12998,6 +13327,9 @@ export default function MageDuel() {
                 <div className="flex items-center gap-1.5 mb-0.5 sm:mb-1 flex-wrap">
                   <span className="font-serif text-xs sm:text-sm md:text-base font-bold truncate" style={{ color: T.gold }}>
                     {player.name}
+                  </span>
+                  <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono text-[9px] font-bold border border-amber-500/30">
+                    Nv.{player.level || mageLevel}
                   </span>
                   <ElementBadge el={player.affinity} />
                   <StatusIcons mage={player} />
