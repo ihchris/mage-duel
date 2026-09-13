@@ -482,53 +482,53 @@ const RARITY = {
 
 const BASE_SKILLS = [
   // FIRE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
-  { id: "emberjab",       name: "Ember Jab",       el: "fire", tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap fire strike.", upgradeOf: null, unlock: { type: "starter" } },
-  { id: "fireball",       name: "Fireball",        el: "fire", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Detonates Burn combos.", effect: { status: "burn", duration: 3, chance: 35 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "cauterize",      name: "Cauterize",       el: "fire", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 2, heal: 16, desc: "Heal 16 HP with flame. CD 2.", upgradeOf: null, unlock: { type: "level", value: 2 } },
-  { id: "scorch",         name: "Scorch",          el: "fire", tier: 2, role: "attack",  dmg: 22, mana: 12, cd: 0, desc: "Ignite foe. 100% burn (2t).", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "level", value: 6 } },
-  { id: "firewall",       name: "Fire Wall",       el: "fire", tier: 2, role: "control", dmg: 14, mana: 13, cd: 2, shield: 14, desc: "Barricade: 14 dmg & 14 shield. CD 2.", effect: { status: "shield", amount: 14 }, upgradeOf: null, unlock: { type: "tome", value: "tome_firewall" } },
-  { id: "combustion",     name: "Combustion",      el: "fire", tier: 2, role: "support", dmg: 20, mana: 10, cd: 1, desc: "Quick spark: 20 dmg. CD 1.", upgradeOf: "emberjab", unlock: { type: "mastery", value: "emberjab", casts: 8 } },
-  { id: "inferno",        name: "Inferno",         el: "fire", tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Raging blaze: 38 dmg + 3t burn. CD 2.", effect: { status: "burn", duration: 3, chance: 75 }, upgradeOf: "fireball", unlock: { type: "mastery", value: "fireball", casts: 10 } },
-  { id: "sunburst",       name: "Sunburst",        el: "fire", tier: 3, role: "control", dmg: 34, mana: 16, cd: 2, desc: "Solar flare: 34 dmg + Chills foe. CD 2.", effect: { status: "chill", chance: 80 }, upgradeOf: null, unlock: { type: "tome", value: "tome_sunburst" } },
-  { id: "phoenix_flame",  name: "Phoenix Flame",   el: "fire", tier: 3, role: "support", dmg: 24, mana: 16, cd: 3, heal: 22, desc: "Sacred fire: 24 dmg + 22 HP heal. CD 3.", effect: { status: "drain", amount: 22 }, upgradeOf: null, unlock: { type: "boss", value: "Ignis the Pyromancer" } },
+  { id: "emberjab",       name: "Ember Jab",       name_pt: "Golpe de Brasas",       el: "fire", tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap fire strike.", desc_pt: "Golpe rápido e barato de fogo.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "fireball",       name: "Fireball",        name_pt: "Bola de Fogo",          el: "fire", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Detonates Burn combos.", desc_pt: "Impacto pesado. Detona combos de Queimadura.", effect: { status: "burn", duration: 3, chance: 35 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "cauterize",      name: "Cauterize",       name_pt: "Cauterizar",            el: "fire", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 2, heal: 16, desc: "Heal 16 HP with flame. CD 2.", desc_pt: "Cura 16 de Vida com chamas. Recarga 2.", upgradeOf: null, unlock: { type: "level", value: 2 } },
+  { id: "scorch",         name: "Scorch",          name_pt: "Chamuscar",             el: "fire", tier: 2, role: "attack",  dmg: 22, mana: 12, cd: 0, desc: "Ignite foe. 100% burn (2t).", desc_pt: "Incendeia o alvo. 100% queimar (2 turnos).", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "level", value: 6 } },
+  { id: "firewall",       name: "Fire Wall",       name_pt: "Muralha de Fogo",       el: "fire", tier: 2, role: "control", dmg: 14, mana: 13, cd: 2, shield: 14, desc: "Barricade: 14 dmg & 14 shield. CD 2.", desc_pt: "Barricada: 14 de dano e 14 de escudo. Recarga 2.", effect: { status: "shield", amount: 14 }, upgradeOf: null, unlock: { type: "tome", value: "tome_firewall" } },
+  { id: "combustion",     name: "Combustion",      name_pt: "Combustão",             el: "fire", tier: 2, role: "support", dmg: 20, mana: 10, cd: 1, desc: "Quick spark: 20 dmg. CD 1.", desc_pt: "Faísca fulminante: 20 de dano rápido. Recarga 1.", upgradeOf: "emberjab", unlock: { type: "mastery", value: "emberjab", casts: 8 } },
+  { id: "inferno",        name: "Inferno",         name_pt: "Inferno",               el: "fire", tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Raging blaze: 38 dmg + 3t burn. CD 2.", desc_pt: "Labareda voraz: 38 dano + queimar 3t. Recarga 2.", effect: { status: "burn", duration: 3, chance: 75 }, upgradeOf: "fireball", unlock: { type: "mastery", value: "fireball", casts: 10 } },
+  { id: "sunburst",       name: "Sunburst",        name_pt: "Explosão Solar",        el: "fire", tier: 3, role: "control", dmg: 34, mana: 16, cd: 2, desc: "Solar flare: 34 dmg + Chills foe. CD 2.", desc_pt: "Clarão solar: 34 de dano + resfria o alvo. Recarga 2.", effect: { status: "chill", chance: 80 }, upgradeOf: null, unlock: { type: "tome", value: "tome_sunburst" } },
+  { id: "phoenix_flame",  name: "Phoenix Flame",   name_pt: "Chama da Fênix",        el: "fire", tier: 3, role: "support", dmg: 24, mana: 16, cd: 3, heal: 22, desc: "Sacred fire: 24 dmg + 22 HP heal. CD 3.", desc_pt: "Fogo sagrado: 24 dano + cura 22 de Vida. Recarga 3.", effect: { status: "drain", amount: 22 }, upgradeOf: null, unlock: { type: "boss", value: "Ignis the Pyromancer" } },
 
   // ICE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
-  { id: "iceshard",       name: "Ice Shard",       el: "ice",  tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap ice strike.", upgradeOf: null, unlock: { type: "starter" } },
-  { id: "frostlance",     name: "Frost Lance",     el: "ice",  tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Shatters chilled foes.", effect: { status: "chill", chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "glaze",          name: "Glaze",           el: "ice",  tier: 1, role: "support", dmg: 0,  mana: 8,  cd: 2, shield: 16, desc: "Frost coat: +16 shield. CD 2.", effect: { status: "shield", amount: 16 }, upgradeOf: null, unlock: { type: "level", value: 3 } },
-  { id: "frostbite",      name: "Frostbite",       el: "ice",  tier: 2, role: "attack",  dmg: 20, mana: 11, cd: 0, desc: "Piercing cold: 20 dmg. 60% chill.", effect: { status: "chill", chance: 60 }, upgradeOf: null, unlock: { type: "level", value: 7 } },
-  { id: "blizzard",       name: "Blizzard",        el: "ice",  tier: 2, role: "control", dmg: 28, mana: 14, cd: 2, desc: "Howling storm: 28 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_blizzard" } },
-  { id: "permafrost",     name: "Permafrost",      el: "ice",  tier: 2, role: "support", dmg: 18, mana: 10, cd: 1, shield: 10, desc: "Glacial strike: 18 dmg + 10 shield. CD 1.", effect: { status: "shield", amount: 10 }, upgradeOf: "iceshard", unlock: { type: "mastery", value: "iceshard", casts: 8 } },
-  { id: "glacial_spike",  name: "Glacial Spike",   el: "ice",  tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Pillar of ice: 38 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: "frostlance", unlock: { type: "mastery", value: "frostlance", casts: 10 } },
-  { id: "absolute_zero",  name: "Absolute Zero",   el: "ice",  tier: 3, role: "control", dmg: 32, mana: 16, cd: 3, desc: "Deep freeze: 32 dmg, chills foe. CD 3.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_absolute_zero" } },
-  { id: "ice_barrier",    name: "Ice Barrier",     el: "ice",  tier: 3, role: "support", dmg: 0,  mana: 15, cd: 3, shield: 35, desc: "Glacial fortress: +35 shield. CD 3.", effect: { status: "shield", amount: 35 }, upgradeOf: null, unlock: { type: "boss", value: "Kael the Frostweaver" } },
+  { id: "iceshard",       name: "Ice Shard",       name_pt: "Fragmento de Gelo",     el: "ice",  tier: 1, role: "attack",  dmg: 13, mana: 6,  cd: 0, desc: "Cheap ice strike.", desc_pt: "Disparo rápido e econômico de gelo afiado.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "frostlance",     name: "Frost Lance",     name_pt: "Lança Glacial",         el: "ice",  tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Shatters chilled foes.", desc_pt: "Impacto pesado. Estilhaça alvos congelados.", effect: { status: "chill", chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "glaze",          name: "Glaze",           name_pt: "Glaciar",               el: "ice",  tier: 1, role: "support", dmg: 0,  mana: 8,  cd: 2, shield: 16, desc: "Frost coat: +16 shield. CD 2.", desc_pt: "Manto de geada: concede +16 de escudo. Recarga 2.", effect: { status: "shield", amount: 16 }, upgradeOf: null, unlock: { type: "level", value: 3 } },
+  { id: "frostbite",      name: "Frostbite",       name_pt: "Queimadura de Gelo",    el: "ice",  tier: 2, role: "attack",  dmg: 20, mana: 11, cd: 0, desc: "Piercing cold: 20 dmg. 60% chill.", desc_pt: "Frio cortante: 20 dano. 60% congelar.", effect: { status: "chill", chance: 60 }, upgradeOf: null, unlock: { type: "level", value: 7 } },
+  { id: "blizzard",       name: "Blizzard",        name_pt: "Nevasca",               el: "ice",  tier: 2, role: "control", dmg: 28, mana: 14, cd: 2, desc: "Howling storm: 28 dmg + 100% chill. CD 2.", desc_pt: "Tempestade uivante: 28 dano + 100% congelar. Recarga 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_blizzard" } },
+  { id: "permafrost",     name: "Permafrost",      name_pt: "Permafrost",            el: "ice",  tier: 2, role: "support", dmg: 18, mana: 10, cd: 1, shield: 10, desc: "Glacial strike: 18 dmg + 10 shield. CD 1.", desc_pt: "Golpe glacial: 18 de dano + 10 de escudo. Recarga 1.", effect: { status: "shield", amount: 10 }, upgradeOf: "iceshard", unlock: { type: "mastery", value: "iceshard", casts: 8 } },
+  { id: "glacial_spike",  name: "Glacial Spike",   name_pt: "Espeto Glacial",        el: "ice",  tier: 3, role: "attack",  dmg: 38, mana: 18, cd: 2, desc: "Pillar of ice: 38 dmg + 100% chill. CD 2.", desc_pt: "Pilar de gelo: 38 dano + 100% congelar. Recarga 2.", effect: { status: "chill", chance: 100 }, upgradeOf: "frostlance", unlock: { type: "mastery", value: "frostlance", casts: 10 } },
+  { id: "absolute_zero",  name: "Absolute Zero",   name_pt: "Zero Absoluto",         el: "ice",  tier: 3, role: "control", dmg: 32, mana: 16, cd: 3, desc: "Deep freeze: 32 dmg, chills foe. CD 3.", desc_pt: "Congelamento total: 32 dano e congela o alvo. Recarga 3.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_absolute_zero" } },
+  { id: "ice_barrier",    name: "Ice Barrier",     name_pt: "Barreira de Gelo",      el: "ice",  tier: 3, role: "support", dmg: 0,  mana: 15, cd: 3, shield: 35, desc: "Glacial fortress: +35 shield. CD 3.", desc_pt: "Fortaleza glacial: concede +35 de escudo. Recarga 3.", effect: { status: "shield", amount: 35 }, upgradeOf: null, unlock: { type: "boss", value: "Kael the Frostweaver" } },
 
   // NATURE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
-  { id: "saplife",        name: "Sap Life",        el: "nature", tier: 1, role: "attack",  dmg: 12, mana: 10, cd: 0, heal: 12, desc: "Drain 12 HP, heal 12.", effect: { status: "drain", amount: 12 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "thorns",         name: "Wild Thorns",     el: "nature", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Entangles & pierces roots.", effect: { status: "entangle", amount: 8, chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "soothing_bloom", name: "Soothing Bloom",  el: "nature", tier: 1, role: "support", dmg: 0,  mana: 7,  cd: 2, heal: 15, desc: "Floral restorative: +15 HP. CD 2.", effect: { status: "heal", amount: 15 }, upgradeOf: null, unlock: { type: "level", value: 2 } },
-  { id: "venom_strike",   name: "Venom Strike",    el: "nature", tier: 2, role: "attack",  dmg: 18, mana: 11, cd: 0, desc: "Poison thorn: 18 dmg + 2t poison.", effect: { status: "burn", duration: 2, chance: 75 }, upgradeOf: null, unlock: { type: "level", value: 8 } },
-  { id: "bramble_wrap",   name: "Bramble Wrap",    el: "nature", tier: 2, role: "control", dmg: 20, mana: 12, cd: 2, desc: "Vines: 20 dmg + roots foe (2t). CD 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_bramble_wrap" } },
-  { id: "barkskin",       name: "Barkskin",        el: "nature", tier: 2, role: "support", dmg: 16, mana: 12, cd: 1, heal: 14, shield: 10, desc: "Sylvan armor: 16 dmg, drain 14, +10 shield. CD 1.", effect: { status: "drain", amount: 14 }, upgradeOf: "saplife", unlock: { type: "mastery", value: "saplife", casts: 8 } },
-  { id: "wrath_of_nature",name: "Wrath of Nature", el: "nature", tier: 3, role: "attack",  dmg: 36, mana: 18, cd: 2, desc: "Primal fury: 36 dmg + roots foe. CD 2.", effect: { status: "entangle", amount: 12, chance: 100 }, upgradeOf: "thorns", unlock: { type: "mastery", value: "thorns", casts: 10 } },
-  { id: "spore_cloud",    name: "Spore Cloud",     el: "nature", tier: 3, role: "control", dmg: 28, mana: 15, cd: 2, desc: "Toxic spores: 28 dmg + 2t poison. CD 2.", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_spore_cloud" } },
-  { id: "world_tree_grace",name:"World Tree Grace",el: "nature", tier: 3, role: "support", dmg: 0,  mana: 14, cd: 3, heal: 28, shield: 16, desc: "Ancient blessing: +28 HP, +16 shield. CD 3.", effect: { status: "heal", amount: 28 }, upgradeOf: null, unlock: { type: "boss", value: "Sylva the Archdruid" } },
+  { id: "saplife",        name: "Sap Life",        name_pt: "Drenar Vida",           el: "nature", tier: 1, role: "attack",  dmg: 12, mana: 10, cd: 0, heal: 12, desc: "Drain 12 HP, heal 12.", desc_pt: "Drena 12 de Vida do inimigo e cura 12.", effect: { status: "drain", amount: 12 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "thorns",         name: "Wild Thorns",     name_pt: "Espinhos Selvagens",    el: "nature", tier: 1, role: "control", dmg: 26, mana: 15, cd: 0, desc: "Heavy. Entangles & pierces roots.", desc_pt: "Impacto pesado. Enraíza e perfura com espinhos.", effect: { status: "entangle", amount: 8, chance: 40 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "soothing_bloom", name: "Soothing Bloom",  name_pt: "Flor Calmante",         el: "nature", tier: 1, role: "support", dmg: 0,  mana: 7,  cd: 2, heal: 15, desc: "Floral restorative: +15 HP. CD 2.", desc_pt: "Restauração floral: cura +15 de Vida. Recarga 2.", effect: { status: "heal", amount: 15 }, upgradeOf: null, unlock: { type: "level", value: 2 } },
+  { id: "venom_strike",   name: "Venom Strike",    name_pt: "Golpe Venenoso",        el: "nature", tier: 2, role: "attack",  dmg: 18, mana: 11, cd: 0, desc: "Poison thorn: 18 dmg + 2t poison.", desc_pt: "Espinho venenoso: 18 dano + envenena (2t).", effect: { status: "burn", duration: 2, chance: 75 }, upgradeOf: null, unlock: { type: "level", value: 8 } },
+  { id: "bramble_wrap",   name: "Bramble Wrap",    name_pt: "Amarras de Espinheiro", el: "nature", tier: 2, role: "control", dmg: 20, mana: 12, cd: 2, desc: "Vines: 20 dmg + roots foe (2t). CD 2.", desc_pt: "Cipós: 20 de dano + enraíza por 2t. Recarga 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_bramble_wrap" } },
+  { id: "barkskin",       name: "Barkskin",        name_pt: "Pele de Casca",         el: "nature", tier: 2, role: "support", dmg: 16, mana: 12, cd: 1, heal: 14, shield: 10, desc: "Sylvan armor: 16 dmg, drain 14, +10 shield. CD 1.", desc_pt: "Casca silvestre: 16 dano, drena 14, +10 escudo. Recarga 1.", effect: { status: "drain", amount: 14 }, upgradeOf: "saplife", unlock: { type: "mastery", value: "saplife", casts: 8 } },
+  { id: "wrath_of_nature",name: "Wrath of Nature", name_pt: "Fúria da Natureza",     el: "nature", tier: 3, role: "attack",  dmg: 36, mana: 18, cd: 2, desc: "Primal fury: 36 dmg + roots foe. CD 2.", desc_pt: "Fúria primal: 36 de dano + enraíza o oponente. Recarga 2.", effect: { status: "entangle", amount: 12, chance: 100 }, upgradeOf: "thorns", unlock: { type: "mastery", value: "thorns", casts: 10 } },
+  { id: "spore_cloud",    name: "Spore Cloud",     name_pt: "Nuvem de Esporos",      el: "nature", tier: 3, role: "control", dmg: 28, mana: 15, cd: 2, desc: "Toxic spores: 28 dmg + 2t poison. CD 2.", desc_pt: "Esporos tóxicos: 28 dano + envenena por 2t. Recarga 2.", effect: { status: "burn", duration: 2, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_spore_cloud" } },
+  { id: "world_tree_grace",name:"World Tree Grace",name_pt: "Graça da Árvore-Mundo", el: "nature", tier: 3, role: "support", dmg: 0,  mana: 14, cd: 3, heal: 28, shield: 16, desc: "Ancient blessing: +28 HP, +16 shield. CD 3.", desc_pt: "Bênção ancestral: +28 de Vida e +16 de escudo. Recarga 3.", effect: { status: "heal", amount: 28 }, upgradeOf: null, unlock: { type: "boss", value: "Sylva the Archdruid" } },
 
   // ARCANE (9 skills: 3 attack, 3 control, 3 support across 3 tiers)
-  { id: "bolt",           name: "Arcane Bolt",     el: "arcane", tier: 1, role: "attack",  dmg: 17, mana: 7,  cd: 0, desc: "Reliable neutral hit.", upgradeOf: null, unlock: { type: "starter" } },
-  { id: "mind_sear",      name: "Mind Sear",       el: "arcane", tier: 1, role: "control", dmg: 15, mana: 9,  cd: 0, desc: "Disarray: 15 dmg, 50% drain 6 mana.", effect: { status: "entangle", amount: 6, chance: 50 }, upgradeOf: null, unlock: { type: "level", value: 4 } },
-  { id: "ward",           name: "Runic Ward",      el: "arcane", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 3, shield: 22, desc: "Shield 22 dmg (+20% atk power). CD 3.", effect: { status: "shield", amount: 22 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "aether_lance",   name: "Aether Lance",    el: "arcane", tier: 2, role: "attack",  dmg: 28, mana: 14, cd: 1, desc: "Pure mana spear: 28 dmg. CD 1.", upgradeOf: null, unlock: { type: "level", value: 9 } },
-  { id: "time_dilation",  name: "Time Dilation",   el: "arcane", tier: 2, role: "control", dmg: 18, mana: 12, cd: 2, desc: "Slow time: 18 dmg + 100% chill. CD 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_time_dilation" } },
-  { id: "surge",          name: "Mana Surge",      el: "arcane", tier: 2, role: "support", dmg: 0,  mana: 0,  cd: 3, restore: 18, desc: "Restore 18 mana. CD 3.", effect: { status: "restore", amount: 18 }, upgradeOf: null, unlock: { type: "starter" } },
-  { id: "supernova",      name: "Supernova",       el: "arcane", tier: 3, role: "attack",  dmg: 40, mana: 18, cd: 2, desc: "Cosmic blast: 40 neutral dmg. CD 2.", upgradeOf: "bolt", unlock: { type: "mastery", value: "bolt", casts: 10 } },
-  { id: "void_rift",      name: "Void Rift",       el: "arcane", tier: 3, role: "control", dmg: 32, mana: 15, cd: 2, desc: "Void tear: 32 dmg + drain 10 mana. CD 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_void_rift" } },
-  { id: "astral_projection",name:"Astral Projection",el: "arcane",tier: 3, role: "support", dmg: 0,  mana: 5,  cd: 3, shield: 26, restore: 14, desc: "Shift planes: +26 shield & +14 mana. CD 3.", effect: { status: "shield", amount: 26 }, upgradeOf: null, unlock: { type: "boss", value: "Vaelin the Chronomancer" } },
+  { id: "bolt",           name: "Arcane Bolt",     name_pt: "Disparo Arcano",        el: "arcane", tier: 1, role: "attack",  dmg: 17, mana: 7,  cd: 0, desc: "Reliable neutral hit.", desc_pt: "Disparo rápido e confiável de energia neutra.", upgradeOf: null, unlock: { type: "starter" } },
+  { id: "mind_sear",      name: "Mind Sear",       name_pt: "Chama Mental",          el: "arcane", tier: 1, role: "control", dmg: 15, mana: 9,  cd: 0, desc: "Disarray: 15 dmg, 50% drain 6 mana.", desc_pt: "Desordem: 15 de dano, 50% de drenar 6 de mana.", effect: { status: "entangle", amount: 6, chance: 50 }, upgradeOf: null, unlock: { type: "level", value: 4 } },
+  { id: "ward",           name: "Runic Ward",      name_pt: "Proteção Rúnica",       el: "arcane", tier: 1, role: "support", dmg: 0,  mana: 9,  cd: 3, shield: 22, desc: "Shield 22 dmg (+20% atk power). CD 3.", desc_pt: "Escudo de 22 de absorção (+20% poder atk). Recarga 3.", effect: { status: "shield", amount: 22 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "aether_lance",   name: "Aether Lance",    name_pt: "Lança do Éter",         el: "arcane", tier: 2, role: "attack",  dmg: 28, mana: 14, cd: 1, desc: "Pure mana spear: 28 dmg. CD 1.", desc_pt: "Lança de éter puro: 28 de dano neutro. Recarga 1.", upgradeOf: null, unlock: { type: "level", value: 9 } },
+  { id: "time_dilation",  name: "Time Dilation",   name_pt: "Dilatação Temporal",    el: "arcane", tier: 2, role: "control", dmg: 18, mana: 12, cd: 2, desc: "Slow time: 18 dmg + 100% chill. CD 2.", desc_pt: "Dobra o tempo: 18 dano + 100% de lentidão. Recarga 2.", effect: { status: "chill", chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_time_dilation" } },
+  { id: "surge",          name: "Mana Surge",      name_pt: "Surto de Mana",         el: "arcane", tier: 2, role: "support", dmg: 0,  mana: 0,  cd: 3, restore: 18, desc: "Restore 18 mana. CD 3.", desc_pt: "Canalização pura: recupera 18 de mana. Recarga 3.", effect: { status: "restore", amount: 18 }, upgradeOf: null, unlock: { type: "starter" } },
+  { id: "supernova",      name: "Supernova",       name_pt: "Supernova",             el: "arcane", tier: 3, role: "attack",  dmg: 40, mana: 18, cd: 2, desc: "Cosmic blast: 40 neutral dmg. CD 2.", desc_pt: "Detonação estelar: 40 de dano arcano massivo. Recarga 2.", upgradeOf: "bolt", unlock: { type: "mastery", value: "bolt", casts: 10 } },
+  { id: "void_rift",      name: "Void Rift",       name_pt: "Fenda do Vazio",        el: "arcane", tier: 3, role: "control", dmg: 32, mana: 15, cd: 2, desc: "Void tear: 32 dmg + drain 10 mana. CD 2.", desc_pt: "Ruptura do vazio: 32 de dano + drena 10 mana. Recarga 2.", effect: { status: "entangle", amount: 10, chance: 100 }, upgradeOf: null, unlock: { type: "tome", value: "tome_void_rift" } },
+  { id: "astral_projection",name:"Astral Projection",name_pt:"Projeção Astral",      el: "arcane", tier: 3, role: "support", dmg: 0,  mana: 5,  cd: 3, shield: 26, restore: 14, desc: "Shift planes: +26 shield & +14 mana. CD 3.", desc_pt: "Troca de planos: +26 de escudo e +14 de mana. Recarga 3.", effect: { status: "shield", amount: 26 }, upgradeOf: null, unlock: { type: "boss", value: "Vaelin the Chronomancer" } },
 ];
 
 const SKILLS = [...BASE_SKILLS, ...ALCHEMICAL_SPELLS];
 
-const FOCUS = { id: "focus", name: "Focus", el: "arcane", tier: 1, role: "support", dmg: 0, mana: 0, cd: 0, restore: 10, desc: "Recover 10 mana." };
+const FOCUS = { id: "focus", name: "Focus", name_pt: "Foco Arcano", el: "arcane", tier: 1, role: "support", dmg: 0, mana: 0, cd: 0, restore: 10, desc: "Recover 10 mana.", desc_pt: "Recupera 10 de mana instantaneamente." };
 
 const START_SKILLS = ["fireball", "emberjab", "frostlance", "iceshard", "thorns", "saplife", "bolt", "ward", "surge"];
 
@@ -4803,6 +4803,7 @@ export default function MageDuel() {
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [admToast, setAdmToast] = useState(null);
   const [showEnemyGearModal, setShowEnemyGearModal] = useState(false);
+  const [inspectedBattleSkill, setInspectedBattleSkill] = useState(null);
 
   // Skillbook Filters
   const [skillFilterEl, setSkillFilterEl] = useState("all");
@@ -5070,6 +5071,122 @@ export default function MageDuel() {
         currentTurn={currentTurn}
         lang={lang}
       />
+    );
+  }
+
+  function renderBattleSkillInspectModal() {
+    if (!inspectedBattleSkill) return null;
+    const s = inspectedBattleSkill;
+    const sEl = ELEMENTS[s.el] || { name: "Arcane", color: T.arcane, icon: "✶" };
+    const sName = (lang === "pt" && s.name_pt) ? s.name_pt : (s.name_pt || (s.id === "focus" && lang === "pt" ? "Foco Arcano" : s.name));
+    const sDesc = (lang === "pt" ? (s.desc_pt || s.desc) : (s.desc || s.desc_pt)) || "";
+    const isAffinity = s.el === player?.affinity;
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center safe-all p-3 sm:p-4 modal-backdrop"
+        onClick={() => setInspectedBattleSkill(null)}
+      >
+        <div
+          className="card-surface rounded-2xl border p-4 sm:p-5 max-w-sm w-full relative shadow-2xl animate-scale-up"
+          style={{
+            borderColor: sEl.color || T.gold,
+            backgroundColor: T.bgSurface || "#0e1017",
+            boxShadow: `0 8px 32px rgba(0,0,0,0.8), 0 0 20px ${sEl.color}33`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span
+                className="text-2xl p-2 rounded-xl border flex-shrink-0"
+                style={{
+                  backgroundColor: `${sEl.color}20`,
+                  borderColor: `${sEl.color}60`,
+                  color: sEl.color,
+                }}
+              >
+                {sEl.icon || "✶"}
+              </span>
+              <div className="min-w-0">
+                <h3 className="font-serif text-base sm:text-lg font-bold text-[#FAF6EE] leading-tight truncate">
+                  {sName}
+                </h3>
+                <div className="flex items-center gap-2 text-[10.5px] font-mono mt-0.5" style={{ color: sEl.color }}>
+                  <span>{sEl.name || s.el}</span>
+                  {isAffinity && (
+                    <span className="text-amber-300 font-bold px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-500/40 text-[9px]">
+                      +25% Afinidade
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setInspectedBattleSkill(null)}
+              className="text-zinc-400 hover:text-white p-1 text-lg rounded-lg leading-none cursor-pointer flex-shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-2 mb-3 font-mono text-xs">
+            <div className="p-2 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between">
+              <span className="text-zinc-400">{lang === "pt" ? "Custo:" : "Cost:"}</span>
+              <span className="font-bold text-sky-300">
+                {s.mana === 0 ? (lang === "pt" ? "Grátis" : "Free") : `💧 ${s.mana}`}
+              </span>
+            </div>
+            <div className="p-2 rounded-lg bg-black/40 border border-white/10 flex items-center justify-between">
+              <span className="text-zinc-400">{lang === "pt" ? "Recarga:" : "Cooldown:"}</span>
+              <span className="font-bold text-amber-300">
+                {s.cd > 0 ? `${s.cd} turno${s.cd > 1 ? "s" : ""}` : (lang === "pt" ? "0 turnos" : "None")}
+              </span>
+            </div>
+            {s.dmg > 0 && (
+              <div className="p-2 rounded-lg bg-red-950/40 border border-red-500/30 flex items-center justify-between">
+                <span className="text-red-300">{lang === "pt" ? "Dano:" : "Damage:"}</span>
+                <span className="font-bold text-red-200">⚔️ {s.dmg}</span>
+              </div>
+            )}
+            {s.shield > 0 && (
+              <div className="p-2 rounded-lg bg-sky-950/40 border border-sky-500/30 flex items-center justify-between">
+                <span className="text-sky-300">{lang === "pt" ? "Escudo:" : "Shield:"}</span>
+                <span className="font-bold text-sky-200">🛡️ +{s.shield}</span>
+              </div>
+            )}
+            {s.heal > 0 && (
+              <div className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between">
+                <span className="text-emerald-300">{lang === "pt" ? "Cura:" : "Heal:"}</span>
+                <span className="font-bold text-emerald-200">💚 +{s.heal}</span>
+              </div>
+            )}
+            {s.restore > 0 && (
+              <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/30 flex items-center justify-between">
+                <span className="text-cyan-300">{lang === "pt" ? "Mana:" : "Mana:"}</span>
+                <span className="font-bold text-cyan-200">💧 +{s.restore}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Description Box */}
+          <div className="p-3 rounded-xl bg-black/50 border border-white/10 mb-4 text-xs sm:text-sm font-sans text-zinc-200 leading-relaxed">
+            {sDesc}
+          </div>
+
+          {/* Close Button */}
+          <button
+            type="button"
+            onClick={() => setInspectedBattleSkill(null)}
+            className="w-full py-2 rounded-xl font-mono text-xs font-bold btn-surface cursor-pointer text-center"
+          >
+            {lang === "pt" ? "Entendido" : "Understood"}
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -12237,7 +12354,7 @@ export default function MageDuel() {
           <div className="grid grid-cols-1 landscape:grid-cols-2 md:grid-cols-2 gap-1.5 sm:gap-2.5">
             {/* Enemy Card */}
             <div
-              className="card-surface rounded-2xl border p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-1 landscape:order-2 md:order-2 transition-all shadow-lg"
+              className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-1 landscape:order-2 md:order-2 transition-all shadow-lg"
               style={{
                 borderColor: currentTurn === "enemy" ? T.danger : T.borderSubtle,
                 boxShadow: currentTurn === "enemy" ? `0 0 20px ${T.danger}33` : "0 4px 20px #00000044",
@@ -12315,7 +12432,7 @@ export default function MageDuel() {
 
             {/* Player Card */}
             <div
-              className="card-surface rounded-2xl border p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-2 landscape:order-1 md:order-1 transition-all shadow-lg"
+              className="card-surface rounded-2xl border p-1.5 xs:p-2 sm:p-2.5 md:p-3 flex gap-2 sm:gap-3 items-center relative order-2 landscape:order-1 md:order-1 transition-all shadow-lg"
               style={{
                 borderColor: currentTurn === "player" ? T.gold : T.borderSubtle,
                 boxShadow: currentTurn === "player" ? `0 0 20px ${T.gold}33` : "0 4px 20px #00000044",
@@ -12387,13 +12504,13 @@ export default function MageDuel() {
         {/* Arena Controls Area (Mobile Landscape / Desktop Split) */}
         <div className="flex-1 min-h-0 flex flex-col landscape:grid landscape:grid-cols-12 md:grid md:grid-cols-12 gap-1.5 sm:gap-2 md:gap-3 my-0.5 sm:my-1 md:my-1.5 overflow-hidden">
           {/* Battle Chronicle / Combat Log - Adequado para Smartphone sem cortar */}
-          <div className="w-full min-h-[64px] max-h-[82px] xs:max-h-[92px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 flex-shrink-0">
+          <div className="w-full min-h-[50px] max-h-[66px] xs:max-h-[76px] sm:max-h-[88px] landscape:max-h-none landscape:h-full landscape:col-span-4 md:max-h-none md:h-full md:col-span-4 mb-1 landscape:mb-0 md:mb-0 flex-shrink-0">
             <ArcaneChronicle log={log} logRef={logRef} />
           </div>
 
           {/* Skills Deck & Battle Actions */}
           <div className="landscape:col-span-8 md:col-span-8 flex flex-col justify-between min-h-0 flex-1 overflow-hidden">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar overscroll-contain p-0.5 pb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2 flex-1 items-stretch overflow-y-auto custom-scrollbar overscroll-contain p-0.5 pb-1">
               {menuSkills.map((s, idx) => (
                 <ModernSkillCard
                   key={s.id}
@@ -12403,6 +12520,7 @@ export default function MageDuel() {
                   player={player}
                   busy={busy}
                   onClick={() => playerAction(s)}
+                  onInspect={(skill) => setInspectedBattleSkill(skill)}
                   lang={lang}
                 />
               ))}
@@ -12465,6 +12583,7 @@ export default function MageDuel() {
       {renderMasteryCelebrationModal()}
       {renderEnemyGearModal()}
       {renderBattleBagModal()}
+      {renderBattleSkillInspectModal()}
     </div>
   );
 }

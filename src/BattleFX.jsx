@@ -1012,6 +1012,7 @@ export function ModernSkillCard({
   player,
   busy,
   onClick,
+  onInspect,
   lang = "pt",
 }) {
   const el = element || { name: "Arcane", color: T.arcane, icon: "✶" };
@@ -1043,13 +1044,17 @@ export function ModernSkillCard({
     if (onClick) onClick(e);
   };
 
-  const displayName = skill.name_pt || (skill.id === "focus" && lang === "pt" ? "Foco Arcano" : skill.name);
+  const displayName = (lang === "pt" && skill.name_pt)
+    ? skill.name_pt
+    : (skill.name_pt || (skill.id === "focus" && lang === "pt" ? "Foco Arcano" : skill.name));
+
+  const displayDesc = (lang === "pt" ? (skill.desc_pt || skill.desc) : (skill.desc || skill.desc_pt)) || "";
 
   return (
     <button
       onClick={handleCardClick}
       disabled={disabled}
-      className={`w-full rounded-xl border p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-between select-none ${
+      className={`w-full rounded-xl border p-1.5 xs:p-2 sm:p-2.5 text-left font-mono transition-all duration-150 relative overflow-hidden group flex flex-col justify-start select-none min-h-[96px] xs:min-h-[102px] sm:min-h-[110px] ${
         disabled
           ? "opacity-50 cursor-not-allowed"
           : "hover:-translate-y-0.5 active:translate-y-0.5 hover:border-amber-400/50 cursor-pointer"
@@ -1097,7 +1102,7 @@ export function ModernSkillCard({
             {hotkey}
           </span>
           <span
-            className="text-[9.5px] sm:text-[10.5px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
+            className="text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold flex items-center gap-1 px-1.5 py-0.5 rounded border flex-shrink-0"
             style={{
               color: el.color,
               borderColor: `${el.color}44`,
@@ -1106,10 +1111,10 @@ export function ModernSkillCard({
             title={el.name}
           >
             <span>{el.icon}</span>
-            <span className="hidden xs:inline text-[9px]">{el.name}</span>
+            <span className="hidden xs:inline text-[8.5px] sm:text-[9px]">{el.name}</span>
           </span>
           {isAffinity && (
-            <span className="text-[8.5px] sm:text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-amber-950/70 border border-amber-400/50 text-amber-300 flex-shrink-0 shadow-sm">
+            <span className="text-[8px] xs:text-[8.5px] sm:text-[9px] font-mono font-bold px-1 py-0.5 rounded bg-amber-950/70 border border-amber-400/50 text-amber-300 flex-shrink-0 shadow-sm">
               +25%
             </span>
           )}
@@ -1117,7 +1122,7 @@ export function ModernSkillCard({
 
         <div className="flex items-center gap-1 flex-shrink-0">
           <span
-            className={`text-[9.5px] sm:text-[10.5px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-sm ${
+            className={`text-[9px] xs:text-[9.5px] sm:text-[10.5px] font-mono font-bold px-1.5 sm:px-2 py-0.5 rounded-full border shadow-sm ${
               skill.mana === 0
                 ? "border-emerald-500/50 bg-emerald-950/60 text-emerald-300 shadow-[0_0_8px_rgba(16,185,129,0.25)]"
                 : noMana
@@ -1127,46 +1132,58 @@ export function ModernSkillCard({
           >
             {skill.mana === 0 ? "GRÁTIS" : `💧 ${skill.mana}`}
           </span>
+          {onInspect && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onInspect(skill);
+              }}
+              className="text-[10px] xs:text-[11px] px-1 py-0.5 rounded hover:bg-white/20 active:scale-95 text-zinc-400 hover:text-amber-300 transition-all cursor-pointer"
+              title={lang === "pt" ? "Ver detalhes do feitiço" : "Spell details"}
+            >
+              ℹ️
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Dedicated Spell Name Row - Full Width, Never Truncated */}
-      <div className="w-full my-0.5 min-w-0 flex-1 flex items-center">
+      {/* Dedicated Spell Name Row + Stat Badges */}
+      <div className="w-full my-0.5 min-w-0 flex items-center justify-between gap-1 flex-shrink-0">
         <h4
-          className="font-serif text-[12px] xs:text-[13px] sm:text-[14px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors break-words"
-          style={{ wordBreak: "break-word" }}
+          className="font-serif text-[11.5px] xs:text-[12.5px] sm:text-[13.5px] font-bold leading-tight text-[#FAF6EE] group-hover:text-amber-200 transition-colors truncate max-w-[65%]"
+          title={displayName}
         >
           {displayName}
         </h4>
+        <div className="flex items-center gap-1 flex-shrink-0 flex-wrap justify-end">
+          {skill.dmg > 0 && (
+            <span className="font-bold text-red-200 bg-red-950/70 px-1 py-0.2 rounded border border-red-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              ⚔️ {skill.dmg}
+            </span>
+          )}
+          {skill.shield > 0 && (
+            <span className="font-bold text-sky-200 bg-sky-950/70 px-1 py-0.2 rounded border border-sky-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              🛡️ +{skill.shield}
+            </span>
+          )}
+          {skill.restore > 0 && (
+            <span className="font-bold text-cyan-200 bg-cyan-950/70 px-1 py-0.2 rounded border border-cyan-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              💧 +{skill.restore}
+            </span>
+          )}
+          {skill.heal > 0 && (
+            <span className="font-bold text-emerald-200 bg-emerald-950/70 px-1 py-0.2 rounded border border-emerald-500/40 flex items-center gap-0.5 shadow-sm text-[8.5px] xs:text-[9.5px]">
+              💚 +{skill.heal}
+            </span>
+          )}
+        </div>
       </div>
 
-      {/* Middle row: Primary combat stats badges */}
-      <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap my-0.5 text-[9.5px] sm:text-[10.5px] font-mono flex-shrink-0">
-        {skill.dmg > 0 && (
-          <span className="font-bold text-red-200 bg-red-950/70 px-1.5 py-0.5 rounded border border-red-500/40 flex items-center gap-0.5 shadow-sm">
-            ⚔️ {skill.dmg}
-          </span>
-        )}
-        {skill.shield > 0 && (
-          <span className="font-bold text-sky-200 bg-sky-950/70 px-1.5 py-0.5 rounded border border-sky-500/40 flex items-center gap-0.5 shadow-sm">
-            🛡️ +{skill.shield}
-          </span>
-        )}
-        {skill.restore > 0 && (
-          <span className="font-bold text-cyan-200 bg-cyan-950/70 px-1.5 py-0.5 rounded border border-cyan-500/40 flex items-center gap-0.5 shadow-sm">
-            💧 +{skill.restore}
-          </span>
-        )}
-        {skill.heal > 0 && (
-          <span className="font-bold text-emerald-200 bg-emerald-950/70 px-1.5 py-0.5 rounded border border-emerald-500/40 flex items-center gap-0.5 shadow-sm">
-            💚 +{skill.heal}
-          </span>
-        )}
-      </div>
-
-      {/* Bottom row: Lore/Effect summary */}
-      <div className="text-[9px] sm:text-[10px] font-sans text-zinc-400 leading-tight line-clamp-2 mt-0.5 flex-shrink-0">
-        {skill.desc_pt || skill.desc || ""}
+      {/* Bottom row: Lore/Effect summary - High contrast, clearly readable, never clipped on mobile */}
+      <div className="w-full mt-auto text-[9px] xs:text-[9.5px] sm:text-[10px] font-sans text-zinc-200/95 leading-tight line-clamp-2 bg-black/35 px-1.5 py-0.5 rounded border border-white/5 flex-shrink-0">
+        {displayDesc}
       </div>
 
       {/* Cooldown Sleek Glass Overlay */}
